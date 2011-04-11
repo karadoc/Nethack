@@ -158,7 +158,8 @@ numpad[KEY_LAST][3] = {
   
 #define IS_MAP_ASCII(mode) ((mode)!=MAP_MODE_TILES && (mode)!=MAP_MODE_TILES_FIT_TO_SCREEN)
 
-static const char *extendedlist = "acdefijlmnopqrstuvw?2";
+//static const char *extendedlist = "acdefijlmnopqrstuvw?2";
+static const char *extendedlist = "acdefijlmnopqrstuvwxy?2@"; // K-Mod (x twoweapon, y ride, @ all pickup)
 
 #define SCANLO		0x02
 static const char scanmap[] = { 	/* ... */

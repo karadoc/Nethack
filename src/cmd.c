@@ -1815,6 +1815,7 @@ static const struct func_tab cmdlist[] = {
 	{'r', FALSE, doread},
 	{'R', FALSE, doremring},
 	{M('r'), FALSE, dorub},
+	{M('y'), FALSE, doride}, // K-Mod (better than nothing?)
 	{'s', TRUE, dosearch, "searching"},
 	{'S', TRUE, dosave},
 	{M('s'), FALSE, dosit},
@@ -1831,6 +1832,7 @@ static const struct func_tab cmdlist[] = {
 	{'W', FALSE, dowear},
 	{M('w'), FALSE, dowipe},
 	{'x', FALSE, doswapweapon},
+	{M('x'), FALSE, dotwoweapon}, // K-Mod
 	{'X', TRUE, enter_explore_mode},
 /*	'y', 'Y' : go nw */
 	{'z', FALSE, dozap},
@@ -1852,6 +1854,7 @@ static const struct func_tab cmdlist[] = {
 	{'^', TRUE, doidtrap},
 	{'\\', TRUE, dodiscovered},		/* Robert Viduya */
 	{'@', TRUE, dotogglepickup},
+	{M('@'), TRUE, dotogglepickupall}, // K-Mod
 	{M('2'), FALSE, dotwoweapon},
 	{WEAPON_SYM,  TRUE, doprwep},
 	{ARMOR_SYM,  TRUE, doprarm},

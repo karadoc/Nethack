@@ -552,6 +552,7 @@ initoptions()
 	(void)memcpy((genericptr_t)flags.inv_order,
 		     (genericptr_t)def_inv_order, sizeof flags.inv_order);
 	flags.pickup_types[0] = '\0';
+	flags.pickup_types[MAXOCLASSES-1] = '\0'; // K-Mod, this byte is used for toggling 'all-pickup'
 	flags.pickup_burden = MOD_ENCUMBER;
 
 #ifdef SORTLOOT
@@ -3236,12 +3237,62 @@ char *buf;
 	else return "unknown";
 }
 
+/*
+** K-Mod, 11/apr/2011, karadoc
+** added an option to dotogglepick - it can either be "all" or "restricted"
+*/
 int
 dotogglepickup()
 {
+	return dotogglepickupX(FALSE);
+}
+
+int
+dotogglepickupall()
+{
+	return dotogglepickupX(TRUE);
+}
+
+int
+dotogglepickupX(all)
+BOOLEAN_P all;
+{
 	char buf[BUFSZ], ocl[MAXOCLASSES+1];
 
-	flags.pickup = !flags.pickup;
+	// The Max size of pickup_types is MAXOCLASSES.
+	// We never need to list _all_ object classes, so pick_types[MAXOCLASSES-1] can be our special byte.
+	if (flags.pickup)
+	{
+		if (all && flags.pickup_types[0] != '\0')
+		{
+			// selective pickup is on.
+			// Turn on all-pickup instead
+			flags.pickup_types[MAXOCLASSES-1] = flags.pickup_types[0];
+			flags.pickup_types[0] = '\0';
+			// assert(flags.pickup == TRUE)
+		}
+		else
+		{
+			flags.pickup = FALSE;
+			// Check we need to restore selective pickup settings
+			if (flags.pickup_types[MAXOCLASSES-1] != '\0')
+			{
+				flags.pickup_types[0] = flags.pickup_types[MAXOCLASSES-1];
+				flags.pickup_types[MAXOCLASSES-1] = '\0';
+			}
+		}
+	}
+	else
+	{
+		flags.pickup = TRUE;
+		if (all && flags.pickup_types[0] != '\0')
+		{
+			flags.pickup_types[MAXOCLASSES-1] = flags.pickup_types[0];
+			flags.pickup_types[0] = '\0';
+		}
+	}
+
+	// Print the results of our changes
 	if (flags.pickup) {
 	    oc_to_str(flags.pickup_types, ocl);
 	    Sprintf(buf, "ON, for %s objects%s", ocl[0] ? ocl : "all",

@@ -3980,7 +3980,17 @@ lava_effects()
 			u.utrap = rn1(4, 4) + (rn1(4, 12) << 8);
 			u.utraptype = TT_LAVA;
 			You("sink into the lava.");
-			dmg = Fire_immunity? min(u.uhp-1, d(1,6)) : d(4,6); // Note, this is just the initial damage
+			// Note, this is just the initial damage
+
+			// The following line is bork. I'm just leaving it here to remind us all of the dangers of macros
+			//dmg = Fire_immunity? min(u.uhp-1, d(1,6)) : d(4,6);
+			if (Fire_immunity)
+			{
+				dmg = d(1,6);
+				dmg = min(u.uhp-1, dmg);
+			}
+			else
+				dmg = d(4,6);
 		}
 
 		// You might be fire resistant, but your equipment probably isn't

@@ -292,7 +292,14 @@ NEARDATA extern coord bhitpos;	/* place where throw or zap hits or stops */
 #define rn1(x,y)	(rn2(x)+(y))
 
 /* negative armor class is randomly weakened to prevent invulnerability */
-#define AC_VALUE(AC)	((AC) >= 0 ? (AC) : -rnd(-(AC)))
+/*
+** K-Mod, 11/apr/2011, karadoc
+** I've weakened ac even further
+*/
+//#define AC_VALUE(AC)	((AC) >= 0 ? (AC) : -rnd(-(AC)))
+#define AC_VALUE(AC)	((AC) >= 0 ? (AC) : (-rnd((1-(AC))/2 + rnd((1-(AC))/2))))
+// That's roughly rnd(AC/2 + rnd(AC/2))
+
 
 #if defined(MICRO) && !defined(__DJGPP__)
 #define getuid() 1

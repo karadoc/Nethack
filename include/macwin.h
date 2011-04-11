@@ -9,6 +9,7 @@
 #undef blue
 
 #ifndef __MACH__
+#define NOMINMAX
 #include <windows.h>
 #include <dialogs.h>
 #endif

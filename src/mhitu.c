@@ -912,7 +912,11 @@ register struct attack  *mattk;
 ** I've made a variable to store the AC based damage reduction, so that it can be altered case-by-case
 */
 	if (u.uac < 0)
-		dmgreduct = min(dmg-1, rnd(-u.uac));
+	{
+		//dmgreduct = min(dmg-1, rnd(-u.uac));
+		dmgreduct = rnd(-u.uac);
+		dmgreduct = min(dmgreduct, dmg-1);
+	}
 	else
 		dmgreduct = 0;
 // K-Mod end
@@ -1602,11 +1606,15 @@ do_stone:
 	if (dmg && u.uac < 0) {
 	dmg -= rnd(-u.uac);
 	if (dmg < 1) dmg = 1;
-	}*/
-	dmg-=dmgreduct;
-// K-Mod end
+	}
+
+	if(dmg) {*/
 
 	if(dmg) {
+		dmg -= dmgreduct;
+		if (dmg < 1)
+			dmg = 1;
+// K-Mod end
 		if (Half_physical_damage
 		// Mitre of Holiness
 			|| (Role_if(PM_PRIEST) && uarmh && is_quest_artifact(uarmh) &&

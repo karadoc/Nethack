@@ -1859,9 +1859,33 @@ nextclass:
 	      classcount++;
 	    }
 	    any.a_char = ilet;
-	    add_menu(win, obj_to_glyph(otmp),
-		     &any, ilet, 0, ATR_NONE, doname(otmp),
-		     MENU_UNSELECTED);
+/*
+** K-Mod, 24/mar/2011, karadoc
+** include weight
+*/
+		/* original code
+		add_menu(win, obj_to_glyph(otmp),
+			&any, ilet, 0, ATR_NONE, doname(otmp),
+			MENU_UNSELECTED);*/
+		{
+			char *tmpbuf = doname(otmp);
+			if (otmp->owt > 0)
+			{
+
+				// 1 unit = 50g
+				if (otmp->owt < 20)
+					Sprintf(eos(tmpbuf), "\t%ldg", otmp->owt*50);
+				else if (otmp->owt < 200)
+					Sprintf(eos(tmpbuf), "\t%ld.%ldkg", (otmp->owt*50)/1000, ((otmp->owt*50)%1000)/100);
+				else
+					Sprintf(eos(tmpbuf), "\t%ldkg", (otmp->owt*50)/1000);
+			}
+			add_menu(win, obj_to_glyph(otmp),
+				&any, ilet, 0, ATR_NONE, tmpbuf,
+				MENU_UNSELECTED);;
+		}
+// K-Mod end
+    
 #ifdef DUMP_LOG
 	    if (want_dump) {
 	      char letbuf[7];

@@ -49,6 +49,15 @@ M       Followed by direction, move a distance without picking anything up
 n       Go southeast 1 space
 N       Go southeast until you are on something (if number_pad, name an object)
 ^N      Go southeast until you are near something
+1       Go southwest (if number_pad)
+2       Go south (if number_pad)
+3       Go southeast (if number_pad)
+4       Go west (if number_pad)
+5       Followed by direction, move some distance (if number_pad)
+6       Go east (if number_pad)
+7       Go northwest (if number_pad)
+8       Go north (if number_pad)
+9       Go northeast (if number_pad)
 o       Open a door
 O       Show option settings, possibly change them
 p       Pay your shopping bill
@@ -100,6 +109,8 @@ $       Count your gold
 #       Perform an extended command
 M-?     Display extended command help (if the platform allows this)
 M-2     Toggle two-weapon combat (unless number_pad is enabled)
+M-x     Toggle two-weapon combat
+M-@     Toggle the pickup-all option
 M-a     Adjust inventory letters
 M-c     Talk to someone
 M-d     Dip an object into something
@@ -113,9 +124,10 @@ M-n     Name an item or type of object
 M-o     Offer a sacrifice to the gods
 M-p     Pray to the gods for help
 M-q     Quit
-M-r     Rub a lamp
+M-r     Rub an object choosen from your inventory
 M-s     Sit down
 M-t     Turn undead
 M-u     Untrap something (trap, door, or chest)
 M-v     Print compile time options for this version of NetHack
 M-w     Wipe off your face
+M-y     Ride / dismount
