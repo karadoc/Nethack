@@ -1,4 +1,4 @@
-# Sample config file for win32 NetHack
+# Sample config file for win32 NetHack (K-Mod edition)
 # A '#' at the beginning of a line means the rest of the line is a comment.
 #
 # Some options MUST be set in this file, other options can be toggled while
@@ -30,11 +30,47 @@ OPTIONS=IBMGraphics
 #OPTIONS=name:Janet,role:Valkyrie,race:Human,gender:female,align:lawful
 #OPTIONS=dogname:Fido,catname:Morris,fruit:guava
 #OPTIONS=horsename:Silver
-#OPTIONS=autopickup,pickup_types:$"=/!?+
+OPTIONS=autopickup,pickup_types:$"=/,fruit:pomegranate
+#$ gold, " amulet, = ring, / wand, ! potion, ? scroll, + book
+
+# don't pickup items named 'junk' or 'empty', or empty wands
+autopickup_exception=">*junk*"
+autopickup_exception=">*empty*"
+autopickup_exception=">*:0)*"
+autopickup_exception=">*:-1)*"
+# pickup items labeled <; ignore items labeled >
+autopickup_exception="<*<*"
+autopickup_exception=">*>*"
+
 #OPTIONS=packorder:")[%?+/=!(*0_`
 #OPTIONS=scores:10 top/2 around/own
 #OPTIONS=nolegacy,noverbose
 #OPTIONS=menustyle:traditional
+#OPTIONS=nomouse_support
+
+#remember up to 100 message, alphabetically sort items on the ground
+#(sortloot options are 'none', 'all', 'loot')
+OPTIONS=msghistory:100,sortloot:loot
+
+# pause for delayed instadeath message
+MSGTYPE=stop "You're being drowned!"
+MSGTYPE=stop "You don't feel very well."
+MSGTYPE=stop "You are turning a little green."
+MSGTYPE=stop "Your limbs are getting oozy."
+MSGTYPE=stop "Your skin begins to peel away."
+MSGTYPE=stop "You are turning into a green slime."
+MSGTYPE=stop "You are slowing down."
+MSGTYPE=stop "Your limbs are stiffening."
+MSGTYPE=stop "It constricts your throat!"
+MSGTYPE=stop "You find it hard to breathe."
+MSGTYPE=stop "You're gasping for air."
+MSGTYPE=stop "Your blood is having trouble reaching your brain."
+MSGTYPE=stop "You can no longer breathe."
+MSGTYPE=stop "You're turning blue."
+MSGTYPE=stop "Your consciousness is fading."
+MSGTYPE=stop "You feel deathly sick."
+MSGTYPE=stop "You feel much worse."
+MSGTYPE=stop "You feel even worse."
 
 #
 # General options.  You might also set "silent" so as not to attract
@@ -42,7 +78,7 @@ OPTIONS=IBMGraphics
 #
 # number_pad option can have an optional value of 0 (off), 1 (on), 
 # or 2(on,legacy-mode) which causes 5='g', alt-5='G', alt-0='I'
-OPTIONS=time,noshowexp,number_pad:2,lit_corridor
+OPTIONS=time,showexp,number_pad:2,lit_corridor
 #
 # If you want to get rid of "use #quit to quit..." use:
 OPTIONS=suppress_alert:3.3.1
@@ -51,7 +87,7 @@ OPTIONS=suppress_alert:3.3.1
 #       appropriate for a beginning NetHack player, since
 #       it could result in use of a turn unintentionally.
 #       If you're new to NetHack, leave it commented it out.
-#OPTIONS=rest_on_space
+OPTIONS=rest_on_space
 #
 # Set some options to control graphical window-port (these will
 # be safely and silently ignored by the tty port)
@@ -63,10 +99,10 @@ OPTIONS=suppress_alert:3.3.1
 OPTIONS=map_mode:tiles,scroll_margin:5
 
 # Message window settings
-OPTIONS=font_message:Arial,font_size_message:9,align_message:top
+OPTIONS=font_message:Verdana,font_size_message:9,align_message:top
 
 # Menu settings
-OPTIONS=font_menu:Arial,font_size_menu:9
+OPTIONS=font_menu:Verdana,font_size_menu:9
 
 # Text settings
 OPTIONS=font_text:Courier New,font_size_text:9
@@ -77,6 +113,12 @@ OPTIONS=font_status:Courier New,font_size_status:9
 # Other
 OPTIONS=hilite_pet,!toptenwin
 #OPTIONS=!splash_screen,player_selection:prompts
+
+# when the game ends, save some information about each character in a dumpfile.
+OPTIONS=dumpfile:dump\%n.txt
+
+# For 'wizard mode' (test mode), load a list of starting equipment
+wizkit=wizkit.txt
 
 # Status/message window colors
 # Possible color options include:
