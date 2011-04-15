@@ -290,6 +290,8 @@ INSTDUNGEONFILES1= \
 	$(SLIB)air.lev		$(SLIB)asmodeus.lev	$(SLIB)astral.lev \
 	$(SLIB)baalz.lev	$(SLIB)bigrm-1.lev	$(SLIB)bigrm-2.lev \
 	$(SLIB)bigrm-3.lev	$(SLIB)bigrm-4.lev	$(SLIB)bigrm-5.lev \
+	$(SLIB)bigrm-6.lev	$(SLIB)bigrm-7.lev	$(SLIB)bigrm-8.lev \
+	$(SLIB)bigrm-9.lev	$(SLIB)bigrm-10.lev	$(SLIB)bigrm-11.lev \
 	$(SLIB)castle.lev	$(SLIB)dungeon		$(SLIB)earth.lev \
 	$(SLIB)fakewiz1.lev	$(SLIB)fakewiz2.lev	$(SLIB)fire.lev \
 	$(SLIB)juiblex.lev	$(SLIB)knox.lev		$(SLIB)medusa-1.lev \
@@ -301,7 +303,7 @@ INSTDUNGEONFILES1= \
 	$(SLIB)soko3-2.lev	$(SLIB)soko4-1.lev	$(SLIB)soko4-2.lev \
 	$(SLIB)tower1.lev	$(SLIB)tower2.lev	$(SLIB)tower3.lev \
 	$(SLIB)valley.lev	$(SLIB)water.lev	$(SLIB)wizard1.lev \
-	$(SLIB)wizard2.lev	$(SLIB)wizard3.lev \
+	$(SLIB)wizard2.lev	$(SLIB)wizard3.lev  $(SLIB)hellfill.lev \
 	$(XDFILES)
 
 INSTDUNGEONFILES= $(NETHACK)NetHack.cnf $(INSTDUNGEONFILES1)
@@ -778,7 +780,9 @@ $(NETHACK)options : $(DAT)options
 	copy $(DAT)options $@
 
 # Create compiled dungeon files
-BGM= $(SLIB)bigrm-2.lev $(SLIB)bigrm-3.lev $(SLIB)bigrm-4.lev $(SLIB)bigrm-5.lev
+BGM= $(SLIB)bigrm-2.lev $(SLIB)bigrm-3.lev $(SLIB)bigrm-4.lev $(SLIB)bigrm-5.lev \
+  $(SLIB)bigrm-6.lev $(SLIB)bigrm-7.lev $(SLIB)bigrm-8.lev $(SLIB)bigrm-9.lev \
+  $(SLIB)bigrm-10.lev $(SLIB)bigrm-11.lev
 $(BGM):	$(SLIB)bigrm-1.lev
 
 $(SLIB)bigrm-1.lev: $(DAT)bigroom.des $(SBIN)lev_comp

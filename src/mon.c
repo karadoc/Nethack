@@ -84,6 +84,18 @@ int mndx;
 	return mndx;
 }
 
+void
+remove_monster(x,y)
+int x,y;
+{
+    /*if (level.monsters[x][y] &&
+	(level.monsters[x][y]->data == &mons[PM_GIANT_TURTLE] &&
+	 (!level.monsters[x][y]->minvis || See_invisible)))
+	unblock_point(x,y);*/
+    level.monsters[x][y] = (struct monst *)0;
+}
+
+
 /* Convert the monster index of some monsters (such as quest guardians)
  * to their generic species type.
  *
@@ -2737,6 +2749,22 @@ int damtype, dam;
 		pline("%s seems healthier.", Monnam(mon));
 	}
     }
+}
+
+/* Damages mon by amount of type; handles vulnerabilities.
+ * Returns whether mon should have died or not.
+ */
+boolean
+damage_mon(mon,amount,type)
+struct monst* mon;
+int amount;
+int type;
+{
+	/*if (vulnerable_to(mon,type)) {
+		amount *= 1.5;
+	}*/
+	mon->mhp -= amount;
+	return (mon->mhp < 1);
 }
 
 boolean

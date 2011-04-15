@@ -1,8 +1,8 @@
-#YACC   = byacc.exe
-#LEX	= flex.exe
-#YTABC   = y_tab.c
-#YTABH   = y_tab.h
-#LEXYYC  = lexyy.c
+YACC   = bison.exe
+LEX	= flex.exe
+YTABC   = y_tab.c
+YTABH   = y_tab.h
+LEXYYC  = lexyy.c
 
 !IF "$(YACC)"!=""
 @echo Yacc-alike set to $(YACC)

@@ -73,7 +73,7 @@ CHGRP = chgrp
 
 DATHELP = help hh cmdhelp history opthelp wizhelp
 
-SPEC_LEVS = asmodeus.lev baalz.lev bigrm-?.lev castle.lev fakewiz?.lev \
+SPEC_LEVS = asmodeus.lev baalz.lev bigrm-*.lev castle.lev fakewiz?.lev hellfill.lev \
 	juiblex.lev knox.lev medusa-?.lev minend-?.lev minefill.lev \
 	minetn-?.lev oracle.lev orcus.lev sanctum.lev soko?-?.lev \
 	tower?.lev valley.lev wizard?.lev \
@@ -166,7 +166,7 @@ title.img:
 check-dlb: options
 	@if egrep -s librarian dat/options ; then $(MAKE) dlb ; else true ; fi
 
-dlb:
+dlb: spec_levs
 	( cd util ; $(MAKE) dlb )
 	( cd dat ; ../util/dlb cf nhdat $(DATDLB) )
 
@@ -243,10 +243,10 @@ install: $(GAME) recover $(VARDAT) dungeon spec_levs
 # set up the game files
 	( $(MAKE) dofiles )
 # set up some additional files
-	touch $(VARDIR)/perm $(VARDIR)/record $(VARDIR)/logfile
-	-( cd $(VARDIR) ; $(CHOWN) $(GAMEUID) perm record logfile ; \
-			$(CHGRP) $(GAMEGRP) perm record logfile ; \
-			chmod $(FILEPERM) perm record logfile )
+	touch $(VARDIR)/perm $(VARDIR)/record $(VARDIR)/logfile $(VARDIR)/xlogfile
+	-( cd $(VARDIR) ; $(CHOWN) $(GAMEUID) perm record logfile xlogfile ; \
+			$(CHGRP) $(GAMEGRP) perm record logfile xlogfile ; \
+			chmod $(FILEPERM) perm record logfile xlogfile )
 # and a reminder
 	@echo You may also want to reinstall the man pages via the doc Makefile.
 

@@ -188,8 +188,8 @@ int expltype;
 		}
 		curs_on_u();	/* will flush screen and output */
 
-		if (any_shield && flags.sparkle) { /* simulate shield effect */
-		    for (k = 0; k < SHIELD_COUNT; k++) {
+		if (any_shield && flags.sparkle_speed > 0) { /* simulate shield effect */
+		    for (k = 0; k < SHIELD_COUNT; k+=flags.sparkle_speed) {
 			for (i=0; i<3; i++) for (j=0; j<3; j++) {
 			    if (explmask[i][j] == 1)
 				/*

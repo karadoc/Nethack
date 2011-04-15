@@ -17,9 +17,9 @@
 
 #ifdef OVLB
 STATIC_DCL boolean FDECL(isbig, (struct mkroom *));
-STATIC_DCL struct mkroom * FDECL(pick_room,(BOOLEAN_P));
 STATIC_DCL void NDECL(mkshop), FDECL(mkzoo,(int)), NDECL(mkswamp);
 STATIC_DCL void NDECL(mktemple);
+STATIC_DCL void NDECL(mktraproom);
 STATIC_DCL coord * FDECL(shrine_pos, (int));
 STATIC_DCL struct permonst * NDECL(morguemon);
 STATIC_DCL struct permonst * NDECL(antholemon);
@@ -61,6 +61,8 @@ int	roomtype;
 	case LEPREHALL:	mkzoo(LEPREHALL); break;
 	case COCKNEST:	mkzoo(COCKNEST); break;
 	case ANTHOLE:	mkzoo(ANTHOLE); break;
+	case TRAPROOM:  mktraproom(); break;
+	case POOLROOM:  mkpoolroom(); break;
 	default:	impossible("Tried to make a room of type %d.", roomtype);
     }
 }
@@ -182,7 +184,7 @@ gottype:
 	stock_room(i, sroom);
 }
 
-STATIC_OVL struct mkroom *
+struct mkroom *
 pick_room(strict)
 register boolean strict;
 /* pick an unused room, preferably with only one door */
@@ -232,6 +234,7 @@ struct mkroom *sroom;
 	int sh, tx, ty, goldlim, type = sroom->rtype;
 	int rmno = (sroom - rooms) + ROOMOFFSET;
 	coord mm;
+	int has_throne = 0;
 
 #ifdef GCC_WARN
 	tx = ty = goldlim = 0;
@@ -243,8 +246,11 @@ struct mkroom *sroom;
 		if(level.flags.is_maze_lev) {
 		    for(tx = sroom->lx; tx <= sroom->hx; tx++)
 			for(ty = sroom->ly; ty <= sroom->hy; ty++)
-			    if(IS_THRONE(levl[tx][ty].typ))
+			    //if(sobj_at(FUR_THRONE,tx,ty)) {
+				if(IS_THRONE(levl[tx][ty].typ)) {
+				has_throne = 1;
 				goto throne_placed;
+		}
 		}
 		i = 100;
 		do {	/* don't place throne on top of stairs */
@@ -287,6 +293,7 @@ struct mkroom *sroom;
 			    (sy == sroom->hy && doors[sh].y == sy+1))))
 		    continue;
 		/* don't place monster on explicitly placed throne */
+		//if(type == COURT && sobj_at(FUR_THRONE,sx,sy))
 		if(type == COURT && IS_THRONE(levl[sx][sy].typ))
 		    continue;
 		mon = makemon(
@@ -338,7 +345,8 @@ struct mkroom *sroom;
 			break;
 		    case BARRACKS:
 			if(!rn2(20))	/* the payroll and some loot */
-			    (void) mksobj_at((rn2(3)) ? LARGE_BOX : CHEST,
+				//(void) mksobj_at((rn2(3) || depth(&u.uz) < 16) ? CHEST : IRON_SAFE,
+				(void) mksobj_at((rn2(3)) ? LARGE_BOX : CHEST,			    
 					     sx, sy, TRUE, FALSE);
 			break;
 		    case COCKNEST:
@@ -363,11 +371,17 @@ struct mkroom *sroom;
 	      case COURT:
 		{
 		  struct obj *chest;
-		  levl[tx][ty].typ = THRONE;
+		  if (!has_throne)
+			  levl[tx][ty].typ = THRONE;
+		     // mksobj_at(FUR_THRONE, tx,ty, TRUE, FALSE);
 		  (void) somexy(sroom, &mm);
 		  (void) mkgold((long) rn1(50 * level_difficulty(),10), mm.x, mm.y);
 		  /* the royal coffers */
+//		  if (depth(&u.uz) > 15) {
+//				chest = mksobj_at(IRON_SAFE, mm.x, mm.y, TRUE, FALSE);
+//		  } else {
 		  chest = mksobj_at(CHEST, mm.x, mm.y, TRUE, FALSE);
+//		  }
 		  chest->spe = 2; /* so it can be found later */
 		  level.flags.has_court = 1;
 		  break;
@@ -490,6 +504,39 @@ int roomno;
 	buf.x = troom->lx + ((troom->hx - troom->lx) / 2);
 	buf.y = troom->ly + ((troom->hy - troom->ly) / 2);
 	return(&buf);
+}
+
+void
+mktraproom()
+{
+    struct mkroom *sroom;
+    struct rm *lev;
+    int area, ttyp, ntraps;
+    int idx = (level_difficulty() + ((long)u.ubirthday)) % 9;
+
+    if(!(sroom = pick_room(TRUE))) return;
+
+    sroom->rtype = TRAPROOM;
+    if (!rn2(10)) idx = rn2(10); /* occasionally give anything if called twice on same level */
+
+    area = ((sroom->hx - sroom->lx + 1) * (sroom->hy - sroom->ly + 1));
+    ntraps = rn2(area/3) + (area/4);
+
+    while (ntraps-- > 0) {
+	switch (idx) {
+	default: ttyp = LANDMINE; break;
+	case 0:  ttyp = ROLLING_BOULDER_TRAP; ntraps--; break;
+	case 1:  ttyp = rn2(2) ? PIT : SPIKED_PIT; break;
+	case 2:  ttyp = WEB; break;
+	case 3:  ttyp = rn2(3) ? ROCKTRAP : COLLAPSE_TRAP; break;
+	case 4:  ttyp = FIRE_TRAP; break;
+	case 5:  ttyp = rn2(5) ? TRAPDOOR : HOLE; break;
+	case 6:  ttyp = STATUE_TRAP; break;
+	case 7:  ttyp = rn2(2) ? DART_TRAP : ARROW_TRAP; break;
+	}
+	mktrap(ttyp, 0, sroom, NULL);
+    }
+
 }
 
 STATIC_OVL void

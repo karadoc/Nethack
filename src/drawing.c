@@ -67,7 +67,8 @@ const char * const objexplain[] = {	/* these match def_oc_syms, above */
 	"boulder or statue",
 /*15*/	"iron ball",
 	"iron chain",
-	"splash of venom"
+	"splash of venom",
+	"piece of furniture"
 };
 
 /* Object class names.  Used in object_detect(). */
@@ -89,7 +90,8 @@ const char * const oclass_names[] = {
 	"large stones",
 /*15*/	"iron balls",
 	"chains",
-	"venoms"
+	"venoms",
+	"furniture"
 };
 
 /* Default monster class symbols.  See monsym.h. */
@@ -204,7 +206,7 @@ const struct symdef def_warnsyms[WARNCOUNT] = {
  *  Note:  {ibm|dec|mac}_graphics[] arrays also depend on this symbol order.
  */
 const struct symdef defsyms[MAXPCHARS] = {
-/* 0*/	{' ', "dark part of a room",C(NO_COLOR)},	/* stone */
+/* 0*/	{' ', "unexplored area",C(NO_COLOR)},	/* stone */
 	{'|', "wall",		C(CLR_GRAY)},	/* vwall */
 	{'-', "wall",		C(CLR_GRAY)},	/* hwall */
 	{'-', "wall",		C(CLR_GRAY)},	/* tlcorn */
@@ -224,6 +226,7 @@ const struct symdef defsyms[MAXPCHARS] = {
 	{'#', "iron bars",	C(HI_METAL)},	/* bars */
 	{'#', "tree",		C(CLR_GREEN)},	/* tree */
 	{'.', "floor of a room",C(CLR_GRAY)},	/* room */
+	{'.', "dark part of a room",C(CLR_BLACK)},	/* dark room */
 /*20*/	{'#', "corridor",	C(CLR_GRAY)},	/* dark corr */
 	{'#', "lit corridor",	C(CLR_GRAY)},	/* lit corr (see mapglyph.c) */
 	{'<', "staircase up",	C(CLR_GRAY)},	/* upstair */
@@ -271,6 +274,9 @@ const struct symdef defsyms[MAXPCHARS] = {
 /*60*/	{'^', "magic trap",	C(HI_ZAP)},	/* trap */
 	{'^', "anti-magic field", C(HI_ZAP)},	/* trap */
 	{'^', "polymorph trap",	C(CLR_BRIGHT_GREEN)},	/* trap */
+	{'^', "spear trap",	C(CLR_BROWN)},	/* trap */
+	{'^', "falling-rocks trap", C(CLR_GRAY)},	/* trap */
+	{'^', "magic beam trap", C(CLR_YELLOW)},	/* trap */
 	{'|', "wall",		C(CLR_GRAY)},	/* vbeam */
 	{'-', "wall",		C(CLR_GRAY)},	/* hbeam */
 	{'\\',"wall",		C(CLR_GRAY)},	/* lslant */
@@ -335,6 +341,7 @@ static uchar ibm_graphics[MAXPCHARS] = {
 	240,	/* S_bars:	equivalence symbol */
 	241,	/* S_tree:	plus or minus symbol */
 	0xfa,	/* S_room:	meta-z, centered dot */
+	g_FILLER(S_stone),	/* S_darkroom:	meta-z, centered dot */
 /*20*/	0xb0,	/* S_corr:	meta-0, light shading */
 	0xb1,	/* S_litcorr:	meta-1, medium shading */
 	g_FILLER(S_upstair),
@@ -378,6 +385,9 @@ static uchar ibm_graphics[MAXPCHARS] = {
 /*60*/	g_FILLER(S_magic_trap),
 	g_FILLER(S_anti_magic_trap),
 	g_FILLER(S_polymorph_trap),
+	g_FILLER(S_spear_trap),
+	g_FILLER(S_falling_rocks_trap),
+	g_FILLER(S_magic_beam_trap),
 	0xb3,	/* S_vbeam:	meta-3, vertical rule */
 	0xc4,	/* S_hbeam:	meta-D, horizontal rule */
 	g_FILLER(S_lslant),
@@ -434,6 +444,7 @@ static uchar dec_graphics[MAXPCHARS] = {
 	0xfb,	/* S_bars:	meta-{, small pi */
 	0xe7,	/* S_tree:	meta-g, plus-or-minus */
 	0xfe,	/* S_room:	meta-~, centered dot */
+	g_FILLER(S_stone),	/* S_darkroom:	meta-~, centered dot */
 /*20*/	g_FILLER(S_corr),
 	g_FILLER(S_litcorr),
 	g_FILLER(S_upstair),
@@ -477,6 +488,9 @@ static uchar dec_graphics[MAXPCHARS] = {
 /*60*/	g_FILLER(S_magic_trap),
 	g_FILLER(S_anti_magic_trap),
 	g_FILLER(S_polymorph_trap),
+	g_FILLER(S_spear_trap),
+	g_FILLER(S_falling_rocks_trap),
+	g_FILLER(S_magic_beam_trap),
 	0xf8,	/* S_vbeam:	meta-x, vertical rule */
 	0xf1,	/* S_hbeam:	meta-q, horizontal rule */
 	g_FILLER(S_lslant),
@@ -574,6 +588,7 @@ static uchar mac_graphics[MAXPCHARS] = {
 /*60*/	g_FILLER(S_magic_trap),
 	g_FILLER(S_anti_magic_trap),
 	g_FILLER(S_polymorph_trap),
+	g_FILLER(S_spear_trap),
 	g_FILLER(S_vbeam),
 	g_FILLER(S_hbeam),
 	g_FILLER(S_lslant),
@@ -865,6 +880,9 @@ boolean is_rlevel;
 	    showsyms[S_magic_trap] = 0x04;
 	    showsyms[S_anti_magic_trap] = 0x04;
 	    showsyms[S_polymorph_trap] = 0x04;
+	    showsyms[S_spear_trap] = 0x04;
+	    showsyms[S_falling_rocks_trap] = 0x04;
+	    showsyms[S_magic_beam_trap] = 0x04;
 #endif
 	}
 #endif /* ASCIIGRAPH */

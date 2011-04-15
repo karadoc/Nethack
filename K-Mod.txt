@@ -32,3 +32,6 @@
 
 + reduced the weight of spear, javelin, short sword, broadsword, ...
 + tweaked the probabilies of some weapons.
+
++ went to great lenghts to merge the changes I've made so far with the map changes from sporkhack. (only the map changes for now)
++ replaced 'sparkle' boolean option with 'sparkle_speed' integer option.

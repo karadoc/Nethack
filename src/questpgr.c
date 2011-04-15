@@ -288,10 +288,9 @@ STATIC_OVL void
 convert_line()
 {
 	char *c, *cc;
-	char xbuf[BUFSZ];
 
 	cc = out_line;
-	for (c = xcrypt(in_line, xbuf); *c; c++) {
+	for (c = in_line; *c; c++) {
 
 	    *cc = 0;
 	    switch(*c) {
@@ -355,14 +354,44 @@ convert_line()
 	return;
 }
 
+struct permonst *
+qt_montype()
+{
+	int qpm;
+
+	if (rn2(5)) {
+	    qpm = urole.enemy1num;
+	    if (qpm != NON_PM && rn2(5) && !(mvitals[qpm].mvflags & G_GENOD))
+	    	return (&mons[qpm]);
+	    return (mkclass(urole.enemy1sym, 0));
+	}
+	qpm = urole.enemy2num;
+	if (qpm != NON_PM && rn2(5) && !(mvitals[qpm].mvflags & G_GENOD))
+	    return (&mons[qpm]);
+	return (mkclass(urole.enemy2sym, 0));
+}
+
+char *
+string_subst(str)
+     char *str;
+{
+    strncpy(in_line, str, 79);
+    in_line[79] = '\0';
+    convert_line();
+    return out_line;
+}
+
+
 STATIC_OVL void
 deliver_by_pline(qt_msg)
 struct qtmsg *qt_msg;
 {
 	long	size;
+	char xbuf[BUFSZ];
 
 	for (size = 0; size < qt_msg->size; size += (long)strlen(in_line)) {
-	    (void) dlb_fgets(in_line, 80, msg_file);
+	    (void) dlb_fgets(xbuf, 80, msg_file);
+	    (void) xcrypt(xbuf, in_line);
 	    convert_line();
 	    pline(out_line);
 	}
@@ -375,10 +404,12 @@ struct qtmsg *qt_msg;
 int how;
 {
 	long	size;
+	char xbuf[BUFSZ];
 	winid datawin = create_nhwindow(how);
 
 	for (size = 0; size < qt_msg->size; size += (long)strlen(in_line)) {
-	    (void) dlb_fgets(in_line, 80, msg_file);
+	    (void) dlb_fgets(xbuf, 80, msg_file);
+	    (void) xcrypt(xbuf, in_line);
 	    convert_line();
 	    putstr(datawin, 0, out_line);
 	}
@@ -422,21 +453,5 @@ int	msgnum;
 	return;
 }
 
-struct permonst *
-qt_montype()
-{
-	int qpm;
-
-	if (rn2(5)) {
-	    qpm = urole.enemy1num;
-	    if (qpm != NON_PM && rn2(5) && !(mvitals[qpm].mvflags & G_GENOD))
-	    	return (&mons[qpm]);
-	    return (mkclass(urole.enemy1sym, 0));
-	}
-	qpm = urole.enemy2num;
-	if (qpm != NON_PM && rn2(5) && !(mvitals[qpm].mvflags & G_GENOD))
-	    return (&mons[qpm]);
-	return (mkclass(urole.enemy2sym, 0));
-}
 
 /*questpgr.c*/

@@ -76,13 +76,14 @@ struct flag {
 	boolean  silent;	/* whether the bell rings or not */
 	boolean  sortpack;	/* sorted inventory */
 	boolean  soundok;	/* ok to tell about sounds heard */
-	boolean  sparkle;	/* show "resisting" special FX (Scott Bigham) */
+	//boolean  sparkle;	/* show "resisting" special FX (Scott Bigham) */
 	boolean  standout;	/* use standout for --More-- */
 	boolean  time;		/* display elapsed 'time' */
 	boolean  tombstone;	/* print tombstone */
 	boolean  toptenwin;	/* ending list in window instead of stdout */
 	boolean  verbose;	/* max battle info */
 	boolean  prayconfirm;	/* confirm before praying */
+	int  sparkle_speed;	/* faster -> less time spent sparkling. 0 (or less) -> off (K-Mod) */
 	int	 end_top, end_around;	/* describe desired score list */
 	unsigned ident;		/* social security number for each monster */
 	unsigned moonphase;

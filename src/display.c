@@ -780,9 +780,9 @@ shieldeff(x,y)
 {
     register int i;
 
-    if (!flags.sparkle) return;
+    if (flags.sparkle_speed < 1) return;
     if (cansee(x,y)) {	/* Don't see anything if can't see the location */
-	for (i = 0; i < SHIELD_COUNT; i++) {
+	for (i = 0; i < SHIELD_COUNT; i+=flags.sparkle_speed) {
 	    show_glyph(x, y, cmap_to_glyph(shield_static[i]));
 	    flush_screen(1);	/* make sure the glyph shows up */
 	    delay_output();

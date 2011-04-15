@@ -10,6 +10,7 @@
 extern char *lev_message;
 extern lev_region *lregions;
 extern int num_lregions;
+extern char SpLev_Map[COLNO][ROWNO];
 
 STATIC_DCL boolean FDECL(iswall,(int,int));
 STATIC_DCL boolean FDECL(iswall_or_stone,(int,int));
@@ -124,19 +125,6 @@ int x1, y1, x2, y2;
 	uchar type;
 	register int x,y;
 	struct rm *lev;
-	int bits;
-	int locale[3][3];	/* rock or wall status surrounding positions */
-	/*
-	 * Value 0 represents a free-standing wall.  It could be anything,
-	 * so even though this table says VWALL, we actually leave whatever
-	 * typ was there alone.
-	 */
-	static xchar spine_array[16] = {
-	    VWALL,	HWALL,		HWALL,		HWALL,
-	    VWALL,	TRCORNER,	TLCORNER,	TDWALL,
-	    VWALL,	BRCORNER,	BLCORNER,	TUWALL,
-	    VWALL,	TLWALL,		TRWALL,		CROSSWALL
-	};
 
 	/* sanity check on incoming variables */
 	if (x1<0 || x2>=COLNO || x1>x2 || y1<0 || y2>=ROWNO || y1>y2)
@@ -160,11 +148,35 @@ int x1, y1, x2, y2;
 		}
 	    }
 
+	wall_extends(x1,y1,x2,y2);
+}
+
+void
+wall_extends(x1, y1, x2, y2)
+int x1, y1, x2, y2;
+{
+	uchar type;
+	register int x,y;
+	struct rm *lev;
+	int bits;
+	int locale[3][3];	/* rock or wall status surrounding positions */
+
 	/*
-	 * Step 2: set the correct wall type.  We can't combine steps
-	 * 1 and 2 into a single sweep because we depend on knowing if
-	 * the surrounding positions are stone.
+	 * Value 0 represents a free-standing wall.  It could be anything,
+	 * so even though this table says VWALL, we actually leave whatever
+	 * typ was there alone.
 	 */
+	static xchar spine_array[16] = {
+	    VWALL,	HWALL,		HWALL,		HWALL,
+	    VWALL,	TRCORNER,	TLCORNER,	TDWALL,
+	    VWALL,	BRCORNER,	BLCORNER,	TUWALL,
+	    VWALL,	TLWALL,		TRWALL,		CROSSWALL
+	};
+
+	/* sanity check on incoming variables */
+	if (x1<0 || x2>=COLNO || x1>x2 || y1<0 || y2>=ROWNO || y1>y2)
+	    panic("wall_extends: bad bounds (%d,%d) to (%d,%d)",x1,y1,x2,y2);
+
 	for(x = x1; x <= x2; x++)
 	    for(y = y1; y <= y2; y++) {
 		lev = &levl[x][y];
@@ -344,7 +356,6 @@ fixup_special()
 	u.uinwater = 0;
 	unsetup_waterlevel();
     } else if (Is_waterlevel(&u.uz)) {
-	level.flags.hero_memory = 0;
 	was_waterlevel = TRUE;
 	/* water level is an odd beast - it has to be set up
 	   before calling place_lregions etc. */
@@ -405,10 +416,6 @@ fixup_special()
 	place_lregion(0,0,0,0,0,0,0,0,LR_BRANCH,(d_level *)0);
     }
 
-	/* KMH -- Sokoban levels */
-	if(In_sokoban(&u.uz))
-		sokoban_detect();
-
     /* Still need to add some stuff to level file */
     if (Is_medusa_level(&u.uz)) {
 	struct obj *otmp;
@@ -439,10 +446,6 @@ fixup_special()
 		otmp->owt = weight(otmp);
 	    }
 	}
-    } else if(Is_wiz1_level(&u.uz)) {
-	croom = search_special(MORGUE);
-
-	create_secret_door(croom, W_SOUTH|W_EAST|W_WEST);
     } else if(Is_knox(&u.uz)) {
 	/* using an unfilled morgue for rm id */
 	croom = search_special(MORGUE);
@@ -456,15 +459,6 @@ fixup_special()
 		if (!rn2(3) && !is_pool(x,y))
 		    (void)maketrap(x, y, rn2(3) ? LANDMINE : SPIKED_PIT);
 	    }
-    } else if (Role_if(PM_PRIEST) && In_quest(&u.uz)) {
-	/* less chance for undead corpses (lured from lower morgues) */
-	level.flags.graveyard = 1;
-    } else if (Is_stronghold(&u.uz)) {
-	level.flags.graveyard = 1;
-    } else if(Is_sanctum(&u.uz)) {
-	croom = search_special(TEMPLE);
-
-	create_secret_door(croom, W_ANY);
     } else if(on_level(&u.uz, &orcus_level)) {
 	   register struct monst *mtmp, *mtmp2;
 
@@ -498,6 +492,7 @@ register const char *s;
 {
 	int x,y;
 	char protofile[20];
+	struct obj* otmp;
 	s_level	*sp = Is_special(&u.uz);
 	coord mm;
 
@@ -569,7 +564,7 @@ register const char *s;
 #endif
 
 	maze0xy(&mm);
-	walkfrom((int) mm.x, (int) mm.y);
+	walkfrom((int) mm.x, (int) mm.y, 0);
 	/* put a boulder at the maze center */
 	(void) mksobj_at(BOULDER, (int) mm.x, (int) mm.y, TRUE, FALSE);
 
@@ -618,6 +613,7 @@ register const char *s;
 		     !SPACE_POS(levl[x][y].typ) || occupied(x, y));
 	    inv_pos.x = x;
 	    inv_pos.y = y;
+		 //otmp = mksobj_at(FUR_BRAZIER,(int)inv_pos.x,(int)inv_pos.y,TRUE,FALSE);
 #undef INVPOS_X_MARGIN
 #undef INVPOS_Y_MARGIN
 #undef INVPOS_DISTANCE
@@ -659,13 +655,20 @@ register const char *s;
  * that is totally safe.
  */
 void
-walkfrom(x,y)
+walkfrom(x,y,typ)
 int x,y;
+schar typ;
 {
 #define CELLS (ROWNO * COLNO) / 4		/* a maze cell is 4 squares */
 	char mazex[CELLS + 1], mazey[CELLS + 1];	/* char's are OK */
 	int q, a, dir, pos;
 	int dirs[4];
+
+#ifndef WALLIFIED_MAZE
+	if (!typ) typ = CORR;
+#else
+	if (!typ) typ = ROOM;
+#endif
 
 	pos = 1;
 	mazex[pos] = (char) x;
@@ -675,12 +678,9 @@ int x,y;
 		y = (int) mazey[pos];
 		if(!IS_DOOR(levl[x][y].typ)) {
 		    /* might still be on edge of MAP, so don't overwrite */
-#ifndef WALLIFIED_MAZE
-		    levl[x][y].typ = CORR;
-#else
-		    levl[x][y].typ = ROOM;
-#endif
+		    levl[x][y].typ = typ;
 		    levl[x][y].flags = 0;
+		    SpLev_Map[x][y] = 1;
 		}
 		q = 0;
 		for (a = 0; a < 4; a++)
@@ -690,12 +690,10 @@ int x,y;
 		else {
 			dir = dirs[rn2(q)];
 			move(&x, &y, dir);
-#ifndef WALLIFIED_MAZE
-			levl[x][y].typ = CORR;
-#else
-			levl[x][y].typ = ROOM;
-#endif
+			levl[x][y].typ = typ;
+			SpLev_Map[x][y] = 1;
 			move(&x, &y, dir);
+			SpLev_Map[x][y] = 1;
 			pos++;
 			if (pos > CELLS)
 				panic("Overflow in walkfrom");
@@ -707,20 +705,24 @@ int x,y;
 #else
 
 void
-walkfrom(x,y)
+walkfrom(x,y,typ)
 int x,y;
+schar typ;
 {
 	register int q,a,dir;
 	int dirs[4];
 
+#ifndef WALLIFIED_MAZE
+	if (!typ) typ = CORR;
+#else
+	if (!typ) typ = ROOM;
+#endif
+
 	if(!IS_DOOR(levl[x][y].typ)) {
 	    /* might still be on edge of MAP, so don't overwrite */
-#ifndef WALLIFIED_MAZE
-	    levl[x][y].typ = CORR;
-#else
-	    levl[x][y].typ = ROOM;
-#endif
+	    levl[x][y].typ = typ;
 	    levl[x][y].flags = 0;
+	    SpLev_Map[x][y] = 1;
 	}
 
 	while(1) {
@@ -730,13 +732,11 @@ int x,y;
 		if(!q) return;
 		dir = dirs[rn2(q)];
 		move(&x,&y,dir);
-#ifndef WALLIFIED_MAZE
-		levl[x][y].typ = CORR;
-#else
-		levl[x][y].typ = ROOM;
-#endif
+		levl[x][y].typ = typ;
+		SpLev_Map[x][y] = 1;
 		move(&x,&y,dir);
-		walkfrom(x,y);
+		SpLev_Map[x][y] = 1;
+		walkfrom(x,y, typ);
 	}
 }
 #endif /* MICRO */

@@ -8,31 +8,48 @@
 #	Here you meet your (besieged) class leader, the Norn,
 #	and receive your quest assignment.
 #
-MAZE: "Val-strt",' '
-FLAGS: noteleport,hardfloor
+LEVEL: "Val-strt"
+FLAGS: noteleport,hardfloor,mazelevel
+INIT_MAP:solidfill,'I'
+
+# This works because the random coordinates in $pools are evaluated once,
+# when the variable is initialized.
+$pools = selection: random & random & random & random & random &
+	   random & random & random & random & random & random &
+	   random & random &
+	   grow(west, random) &
+	   grow(north, random) &
+	   grow(random & random)
+TERRAIN:grow($pools), 'P'
+TERRAIN:$pools, 'L'
+
+MON_GENERATION:86%, (64,"fire ant"), (16,'a'), (16,"fire giant"), (4,'H')
 GEOMETRY:center,center
 MAP
-IIIIIIPPPIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-IIIIPPPPPIIIIIIII..IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII...IIIIIIIIIIIIIIIIIIIII
-IIIIPLLPPIIIIIII..IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII..{..IIIIIIIIIIIIIIIIIIII
-IIIIPLPPIIIIIII..IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII.....IIIIIIPPPIIIIIIIIII
-IIIPPPPPIIIIII..IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII.IIIIIPPLPIIIIIIIIII
-IIIIPIIIIIIII..IIIIPPPIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII.IIIIIPLPPIIIIIIIIII
-IIIIIIIIIIII..IIIIIPLPPIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII..IIIIIPPPIIIIIIIIIII
-IIIIIIII.....IIIIIIPPPIIII|----------------|IIIIIPPPIII.IIIIIIIIIIIIIIIIIIII
-IIIIIII..III...IIIIIIIIIII|................|IIIIIPLPII..IIIIIIIIIIIIIIIIIIII
-IIIIII..IIIIII......IIIII.|................|.IIIIPPPII.IIIIIIIIIIIIIIIIIIIII
-IIIII..IIIIIIIIIIII.......+................+...IIIIIII.IIIIIIIIIIIIIIIIIIIII
-IIII..IIIIIIIII.....IIIII.|................|.I...IIIII.IIIIIIIIIIIIIIIIIIIII
-III..IIIIIIIII..IIIIIIIIII|................|IIII.......IIIIIIIIIIIIIIIIIIIII
-IIII..IIIIIII..IIIIIIIIIII|----------------|IIIIIIIIII...IIIIIIIIIIIIIIIIIII
-IIIIII..IIII..IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIPPPPIIII...IIIIIIIIIIIIIIIII
-IIIIIII......IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIPLLPPIIIII...IIIIIIIIIIIIIII
-IIIIPPPIP...IIIIIIIIIIIPIIIIIIIIIIIIIIIIIIIIIIIIPPPPIIIIIIII...I......IIIIII
-IIIPPLPPIIIIIIIIIIIIIIPPPIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII.........IIIII
-IIIIPPPIIIIIIIIIIIIIIPPLPIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII.......IIIIII
-IIIIIIIIIIIIIIIIIIIIIIPPPIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxx..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx..{..xxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxx..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.....xxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxx..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxx..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxx..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx..xxxxxxxxxxxxxxxxxxx
+xxxxxxxx.....xxxxxxxxxxxxx|----------------|xxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxx
+xxxxxxx..xxx...xxxxxxxxxxx|................|xxxxxxxxxx..xxxxxxxxxxxxxxxxxxxx
+xxxxxx..xxxxxx......xxxxx.|................|.xxxxxxxxx.xxxxxxxxxxxxxxxxxxxxx
+xxxxx..xxxxxxxxxxxx.......+................+...xxxxxxx.xxxxxxxxxxxxxxxxxxxxx
+xxxx..xxxxxxxxx.....xxxxx.|................|.x...xxxxx.xxxxxxxxxxxxxxxxxxxxx
+xxx..xxxxxxxxx..xxxxxxxxxx|................|xxxx.......xxxxxxxxxxxxxxxxxxxxx
+xxxx..xxxxxxx..xxxxxxxxxxx|----------------|xxxxxxxxxx...xxxxxxxxxxxxxxxxxxx
+xxxxxx..xxxx..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxx
+xxxxxxx......xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxx
+xxxxxxxxx...xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...x......xxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.........xxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.......xxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ENDMAP
+
+REPLACE_TERRAIN:(00,00,75,19), 'I', 'P', 2%
+
 # Dungeon Description
 REGION:(00,00,75,19),lit,"ordinary"
 REGION:(27,08,42,12),lit,"ordinary"
@@ -45,40 +62,66 @@ FOUNTAIN:(53,02)
 DOOR:locked,(26,10)
 DOOR:locked,(43,10)
 # Norn
-MONSTER:'@',"Norn",(35,10)
+MONSTER:('@',"Norn"),(35,10) {
+  OBJECT:'['
+  OBJECT:')'
+  OBJECT:'?'
+  OBJECT:'?'
+}
 # The treasure of the Norn
-OBJECT:'(',"chest",(36,10)
+OBJECT:('(',"chest"),(36,10)
 # valkyrie guards for the audience chamber
-MONSTER:'@',"warrior",(27,08)
-MONSTER:'@',"warrior",(27,09)
-MONSTER:'@',"warrior",(27,11)
-MONSTER:'@',"warrior",(27,12)
-MONSTER:'@',"warrior",(42,08)
-MONSTER:'@',"warrior",(42,09)
-MONSTER:'@',"warrior",(42,11)
-MONSTER:'@',"warrior",(42,12)
+MONSTER:('@',"warrior"),(27,08) {
+  OBJECT[75%]:'['
+  OBJECT[75%]:')'
+}
+MONSTER:('@',"warrior"),(27,09) {
+  OBJECT[75%]:'['
+  OBJECT[75%]:')'
+}
+MONSTER:('@',"warrior"),(27,11) {
+  OBJECT[75%]:'['
+  OBJECT[75%]:')'
+}
+MONSTER:('@',"warrior"),(27,12) {
+  OBJECT[75%]:'['
+  OBJECT[75%]:')'
+}
+MONSTER:('@',"warrior"),(42,08) {
+  OBJECT[75%]:'['
+  OBJECT[75%]:')'
+}
+MONSTER:('@',"warrior"),(42,09) {
+  OBJECT[75%]:'['
+  OBJECT[75%]:')'
+}
+MONSTER:('@',"warrior"),(42,11) {
+  OBJECT[75%]:'['
+  OBJECT[75%]:')'
+}
+MONSTER:('@',"warrior"),(42,12) {
+  OBJECT[75%]:'['
+  OBJECT[75%]:')'
+}
 # Non diggable walls
 NON_DIGGABLE:(26,07,43,13)
 # Random traps
+LOOP [3 + 3d5] {
 TRAP:"fire",random
-TRAP:"fire",random
-TRAP:"fire",random
-TRAP:"fire",random
-TRAP:"fire",random
-TRAP:"fire",random
+}
 # Monsters on siege duty.
-MONSTER: 'a',"fire ant",(04,12)
-MONSTER: 'a',"fire ant",(08,08)
-MONSTER: 'a',"fire ant",(14,04)
-MONSTER: 'a',"fire ant",(17,11)
-MONSTER: 'a',"fire ant",(24,10)
-MONSTER: 'a',"fire ant",(45,10)
-MONSTER: 'a',"fire ant",(54,02)
-MONSTER: 'a',"fire ant",(55,07)
-MONSTER: 'a',"fire ant",(58,14)
-MONSTER: 'a',"fire ant",(63,17)
-MONSTER: 'H',"fire giant",(18,01),hostile
-MONSTER: 'H',"fire giant",(10,16),hostile
+MONSTER: ('a',"fire ant"),(04,12)
+MONSTER: ('a',"fire ant"),(08,08)
+MONSTER: ('a',"fire ant"),(14,04)
+MONSTER: ('a',"fire ant"),(17,11)
+MONSTER: ('a',"fire ant"),(24,10)
+MONSTER: ('a',"fire ant"),(45,10)
+MONSTER: ('a',"fire ant"),(54,02)
+MONSTER: ('a',"fire ant"),(55,07)
+MONSTER: ('a',"fire ant"),(58,14)
+MONSTER: ('a',"fire ant"),(63,17)
+MONSTER: ('H',"fire giant"),(18,01),hostile
+MONSTER: ('H',"fire giant"),(10,16),hostile
 
 #
 #	The "locate" level for the quest.
@@ -87,9 +130,10 @@ MONSTER: 'H',"fire giant",(10,16),hostile
 #	further towards your assigned quest.
 #
 
-MAZE: "Val-loca",' '
-FLAGS: hardfloor
-INIT_MAP: '.' , 'I' , true , true , lit , false
+LEVEL: "Val-loca"
+FLAGS: hardfloor,mazelevel
+INIT_MAP: mines, '.' , 'I' , true , true , lit , false
+MON_GENERATION:86%, (64,"fire ant"), (16,'a'), (16,"fire giant"), (4,'H')
 GEOMETRY:center,center
 MAP
 PPPP....                      ....PPPPP.
@@ -114,56 +158,25 @@ STAIR:(20,06),down
 # Non diggable walls
 NON_DIGGABLE:(00,00,39,12)
 # Objects
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
+LOOP [6 + 3d5] {
+  OBJECT:random,random
+}
 # Random traps
+LOOP [2 + 3d5] {
 TRAP:"fire",random
-TRAP:"fire",random
-TRAP:"fire",random
-TRAP:"fire",random
+}
 TRAP:random,random
 TRAP:random,random
 # Random monsters.
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',random,random
-MONSTER:'H',random,random,hostile
-MONSTER:'H',"fire giant",random,hostile
-MONSTER:'H',"fire giant",random,hostile
-MONSTER:'H',"fire giant",random,hostile
-MONSTER:'H',"fire giant",random,hostile
-MONSTER:'H',"fire giant",random,hostile
-MONSTER:'H',"fire giant",random,hostile
-MONSTER:'H',"fire giant",random,hostile
-MONSTER:'H',random,random,hostile
+LOOP [10 + 3d5] {
+  MONSTER:('a',"fire ant"),random
+}
+MONSTER:'a',random
+MONSTER:'H',random,hostile
+LOOP [2 + 3d5] {
+  MONSTER:('H',"fire giant"),random,hostile
+}
+MONSTER:'H',random,hostile
 
 #
 #	The "goal" level for the quest.
@@ -173,27 +186,29 @@ MONSTER:'H',random,random,hostile
 #	been assigned to retrieve.
 #
 
-MAZE: "Val-goal", 'L'
-INIT_MAP: '.' , 'L' , true , true , lit , false
+LEVEL: "Val-goal"
+FLAGS:mazelevel
+INIT_MAP: mines, '.' , 'L' , true , true , lit , false
+MON_GENERATION:86%, (64,"fire ant"), (16,'a'), (16,"fire giant"), (4,'H')
 GEOMETRY:center,center
 MAP
-.L............................LLLLL
-LLL.........LLLLL.LLLLL.........LLL
-.LLL......LLLLLLLLLLLLLLL.......LL.
-.LLL.....LLL|---------|LLL.....L...
-..LL....LL|--.........--|LL.....LLL
-.......LL|-...LLLLLLL...-|LL.....L.
+xLxxxx......................xxLLLLL
+LLLx........LLLLL.LLLLL.......xxLLL
+xLLL......LLLLLLLLLLLLLLL......xLLx
+xLLL.....LLL|---------|LLL.....Lxxx
+xxLL....LL|--.........--|LL.....LLL
+x......LL|-...LLLLLLL...-|LL.....Lx
 .......LL|...LL.....LL...|LL.......
 ......LL|-..LL.......LL..-|LL......
 ......LL|.................|LL......
 ......LL|-..LL.......LL..-|LL......
 .......LL|...LL.....LL...|LL.......
-.......LL|-...LLLLLLL...-|LL.......
-..L.....LL|--.........--|LL.....LL.
-..LL.....LLL|---------|LLL....LLLL.
-..LLL.....LLLLLLLLLLLLLLL...LLLLL..
-.LLLL.......LLLLL.LLLLL.....LLLL...
-..LL...............................
+.......LL|-...LLLLLLL...-|LL......x
+x.L.....LL|--.........--|LL.....LLx
+xxLL.....LLL|---------|LLL....LLLLx
+xxLLL.....LLLLLLLLLLLLLLL...LLLLLxx
+xLLLL.......LLLLL.LLLLL.....LLLLxxx
+xxLLxxx....................xxxxxxxx
 ENDMAP
 # Dungeon Description
 REGION:(00,00,34,16),lit,"ordinary"
@@ -206,53 +221,41 @@ NON_DIGGABLE:(00,00,34,16)
 DRAWBRIDGE:(17,02),south,open
 DRAWBRIDGE:(17,14),north,open
 # Objects
-OBJECT:'(',"crystal ball",(17,08),blessed,5,"The Orb of Fate"
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
-OBJECT:random,random,random
+OBJECT:('(',"crystal ball"),(17,08),blessed,5,NAME:"The Orb of Fate"
+LOOP [4 + 3d5] {
+  OBJECT:random,random
+}
 # Traps
 TRAP:"board",(13,08)
 TRAP:"board",(21,08)
 # Random traps
+LOOP [2 + 2d3] {
 TRAP:"fire",random
-TRAP:"fire",random
-TRAP:"fire",random
-TRAP:"fire",random
+}
 TRAP:"board",random
 TRAP:random,random
 TRAP:random,random
 # Random monsters.
-MONSTER:'H',"Lord Surtur",(17,08)
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',"fire ant",random
-MONSTER:'a',random,random
-MONSTER:'a',random,random
-MONSTER:'H',"fire giant",(10,06),hostile
-MONSTER:'H',"fire giant",(10,07),hostile
-MONSTER:'H',"fire giant",(10,08),hostile
-MONSTER:'H',"fire giant",(10,09),hostile
-MONSTER:'H',"fire giant",(10,10),hostile
-MONSTER:'H',"fire giant",(24,06),hostile
-MONSTER:'H',"fire giant",(24,07),hostile
-MONSTER:'H',"fire giant",(24,08),hostile
-MONSTER:'H',"fire giant",(24,09),hostile
-MONSTER:'H',"fire giant",(24,10),hostile
-MONSTER:'H',"fire giant",random,hostile
-MONSTER:'H',"fire giant",random,hostile
-MONSTER:'H',random,random,hostile
+MONSTER:('H',"Lord Surtur"),(17,08) {
+  OBJECT:('(', "Bell of Opening"),uncursed
+  OBJECT:'['
+  OBJECT:')'
+  OBJECT:random
+  OBJECT:random
+}
+LOOP [2 + 2d3] {
+  MONSTER:('a',"fire ant"),random
+}
+MONSTER:'a',random
+MONSTER:'a',random
+REGION:(10,6,10,6),lit,"ordinary",filled, true {
+  LOOP [5 + 4d3] {
+    MONSTER:('H',"fire giant"),random,hostile
+  }
+}
+MONSTER:('H',"fire giant"),random,hostile
+MONSTER:('H',"fire giant"),random,hostile
+MONSTER:'H',random,hostile
 
 #
 #	The "fill" levels for the quest.
@@ -263,70 +266,50 @@ MONSTER:'H',random,random,hostile
 #	and goal levels.
 #
 
-MAZE: "Val-fila" , 'I'
-INIT_MAP: '.' , 'I' , true , true , lit, false
+LEVEL: "Val-fila"
+FLAGS:mazelevel,noflip
+INIT_MAP: mines, '.' , 'I' , true , true , lit, false
+MON_GENERATION:86%, (64,"fire ant"), (16,'a'), (16,"fire giant"), (4,'H')
 NOMAP
 #
 STAIR: random, up
 STAIR: random, down
 #
-OBJECT: random, random, random
-OBJECT: random, random, random
-OBJECT: random, random, random
-OBJECT: random, random, random
-OBJECT: random, random, random
-OBJECT: random, random, random
-OBJECT: random, random, random
-OBJECT: random, random, random
-OBJECT: random, random, random
+LOOP [5 + 2d3] {
+  OBJECT: random, random
+}
 #
-MONSTER: 'a', "fire ant", random
-MONSTER: 'a', "fire ant", random
-MONSTER: 'a', "fire ant", random
-MONSTER: 'a', "fire ant", random
-MONSTER: 'a', "fire ant", random
-MONSTER: 'a', random, random
-MONSTER: 'H', "fire giant", random, hostile
+LOOP [2 + 2d2] {
+  MONSTER: ('a', "fire ant"), random
+}
+MONSTER: 'a', random
+MONSTER: ('H', "fire giant"), random, hostile
 #
+LOOP [6 + 2d2] {
 TRAP: random, random
-TRAP: random, random
-TRAP: random, random
-TRAP: random, random
-TRAP: random, random
-TRAP: random, random
-TRAP: random, random
+}
 
-MAZE: "Val-filb" , 'L'
-INIT_MAP: '.' , 'L' , true , true , lit, false
+LEVEL: "Val-filb"
+FLAGS:mazelevel,noflip
+INIT_MAP: mines, '.' , 'L' , true , true , lit, false
+MON_GENERATION:86%, (64,"fire ant"), (16,'a'), (16,"fire giant"), (4,'H')
 NOMAP
 #
 STAIR: random, up
 STAIR: random, down
 #
-OBJECT: random, random, random
-OBJECT: random, random, random
-OBJECT: random, random, random
-OBJECT: random, random, random
-OBJECT: random, random, random
-OBJECT: random, random, random
-OBJECT: random, random, random
-OBJECT: random, random, random
-OBJECT: random, random, random
-OBJECT: random, random, random
-OBJECT: random, random, random
+LOOP [8 + 2d2] {
+  OBJECT: random, random
+}
 #
-MONSTER: 'a', "fire ant", random
-MONSTER: 'a', "fire ant", random
-MONSTER: 'a', "fire ant", random
-MONSTER: 'a', random, random
-MONSTER: 'H', "fire giant", random, hostile
-MONSTER: 'H', "fire giant", random, hostile
-MONSTER: 'H', "fire giant", random, hostile
+LOOP [3 + 2d2] {
+  MONSTER: ('a', "fire ant"), random
+  MONSTER[80%]: ('H', "fire giant"), random, hostile
+}
+MONSTER: 'a', random
 #
+LOOP [3 + 3d2] {
 TRAP: "fire", random
-TRAP: "fire", random
-TRAP: "fire", random
-TRAP: "fire", random
-TRAP: "fire", random
+}
 TRAP: random, random
 TRAP: random, random

@@ -8,6 +8,7 @@ extern const char * const destroy_strings[];	/* from zap.c */
 
 STATIC_DCL void FDECL(dofiretrap, (struct obj *));
 STATIC_DCL void NDECL(domagictrap);
+STATIC_DCL void FDECL(rocks_fall, (int, int));
 STATIC_DCL boolean FDECL(emergency_disrobe,(boolean *));
 STATIC_DCL int FDECL(untrap_prob, (struct trap *ttmp));
 STATIC_DCL void FDECL(cnv_trap_obj, (int, int, struct trap *));
@@ -274,6 +275,48 @@ register int x, y, typ;
 		mongone(mtmp);
 		break;
 	      }
+	    case MAGIC_BEAM_TRAP:
+		{
+		    int d,startdir = rn2(8);
+		    int dist;
+		    int lx, ly;
+		    int ok = 0;
+		    for (d = 0; ((d < 8) && !ok); d++)
+			for (dist = 1; ((dist < 8) && !ok); dist++) {
+			    lx = x;
+			    ly = y;
+			    switch ((startdir + d) % 8) {
+			    case 0: lx += dist; break;
+			    case 1: lx += dist; ly += dist; break;
+			    case 2: ly += dist; break;
+			    case 3: lx -= dist; ly += dist; break;
+			    case 4: lx -= dist; break;
+			    case 5: lx -= dist; ly -= dist; break;
+			    case 6: ly -= dist; break;
+			    case 7: lx += dist; ly -= dist; break;
+			    }
+			    if (isok(lx,ly) && IS_STWALL(levl[lx][ly].typ)) {
+				ttmp->launch.x = lx;
+				ttmp->launch.y = ly;
+				/* no AD_DISN, thanks */
+				ttmp->launch_otyp = -10-(AD_MAGM-1);
+				if (!rn2(15))
+				    ttmp->launch_otyp = -20-(AD_ELEC-1);
+				else if (!rn2(10))
+				    ttmp->launch_otyp = -20-(AD_FIRE-1);
+				else if (!rn2(10))
+				    ttmp->launch_otyp = -10-(AD_COLD-1);
+				else if (!rn2(7))
+				    ttmp->launch_otyp = -20-(AD_DRST-1);
+				else if (!rn2(7))
+				    ttmp->launch_otyp = -20-(AD_ACID-1);
+				else if (!rn2(5))
+				    ttmp->launch_otyp = -10-(AD_SLEE-1);
+				ok = 1;
+			    }
+			}
+		}
+		break;
 	    case ROLLING_BOULDER_TRAP:	/* boulder will roll towards trigger */
 		(void) mkroll_launch(ttmp, x, y, BOULDER, 1L);
 		break;
@@ -495,7 +538,8 @@ int *fail_reason;
 			canspotmon(mon) ? comes_to_life : "disappears");
 	    if (historic) {
 		    You_feel("guilty that the historic statue is now gone.");
-		    adjalign(-1);
+			 //venial_sin();
+			adjalign(-1);
 	    }
 	} else if (cause == ANIMATE_SHATTER)
 	    pline("Instead of shattering, the statue suddenly %s!",
@@ -591,7 +635,7 @@ unsigned trflags;
 	boolean webmsgok = (!(trflags & NOWEBMSG));
 	boolean forcebungle = (trflags & FORCEBUNGLE);
 
-	nomul(0);
+	nomul(00);
 
 	/* KMH -- You can't escape the Sokoban level traps */
 	if (In_sokoban(&u.uz) &&
@@ -658,6 +702,19 @@ unsigned trflags;
 		    if (!Blind) otmp->dknown = 1;
 		    stackobj(otmp);
 		    newsym(u.ux, u.uy);
+		}
+		break;
+	    case MAGIC_BEAM_TRAP:
+		You_hear("a soft click.");
+		seetrap(trap);
+		if (isok(trap->launch.x,trap->launch.y) && IS_STWALL(levl[trap->launch.x][trap->launch.y].typ)) {
+		    buzz(trap->launch_otyp, 8,
+			 trap->launch.x,trap->launch.y,
+			 sgn(trap->tx - trap->launch.x),sgn(trap->ty - trap->launch.y));
+		    trap->once = 1;
+		} else {
+		    deltrap(trap);
+		    newsym(u.ux,u.uy);
 		}
 		break;
 	    case DART_TRAP:
@@ -781,11 +838,14 @@ unsigned trflags;
 
 	    case SLP_GAS_TRAP:
 		seetrap(trap);
+		//if(how_resistant(SLEEP_RES) == 100 || breathless(youmonst.data)) {
 		if(Sleep_resistance || breathless(youmonst.data)) {
+			monstseesu(M_SEEN_SLEEP);
 		    You("are enveloped in a cloud of gas!");
 		    break;
 		}
 		pline("A cloud of gas puts you to sleep!");
+		//fall_asleep(-resist_reduce(rnd(25),SLEEP_RES), TRUE);
 		fall_asleep(-rnd(25), TRUE);
 #ifdef STEED
 		(void) steedintrap(trap, (struct obj *)0);
@@ -825,7 +885,9 @@ unsigned trflags;
 			if (rust_dmg(uarms, "shield", 1, TRUE, &youmonst))
 			    break;
 			if (u.twoweap || (uwep && bimanual(uwep)))
-			    erode_obj(u.twoweap ? uswapwep : uwep, FALSE, TRUE);
+			   // _erode_obj(u.twoweap ? uswapwep : uwep, AD_RUST);
+			   erode_obj(u.twoweap ? uswapwep : uwep, FALSE, TRUE);
+
 glovecheck:		(void) rust_dmg(uarmg, "gauntlets", 1, TRUE, &youmonst);
 			/* Not "metal gauntlets" since it gets called
 			 * even if it's leather for the message
@@ -834,7 +896,8 @@ glovecheck:		(void) rust_dmg(uarmg, "gauntlets", 1, TRUE, &youmonst);
 		    case 2:
 			pline("%s your right %s!", A_gush_of_water_hits,
 				    body_part(ARM));
-			erode_obj(uwep, FALSE, TRUE);
+			//_erode_obj(uwep,AD_RUST);
+			erode_obj(uwep,FALSE, TRUE);
 			goto glovecheck;
 		    default:
 			pline("%s you!", A_gush_of_water_hits);
@@ -1057,13 +1120,28 @@ glovecheck:		(void) rust_dmg(uarmg, "gauntlets", 1, TRUE, &youmonst);
 
 	    case MAGIC_TRAP:	    /* A magic trap. */
 		seetrap(trap);
-		if (!rn2(30)) {
+		/* Trap always goes away... but does it toast you? */
+		if (!rn2(15)) {
 		    deltrap(trap);
-		    newsym(u.ux,u.uy);	/* update position */
+			newsym(u.ux,u.uy);
+			if (!rn2(2)) {
 		    You("are caught in a magical explosion!");
 		    losehp(rnd(10), "magical explosion", KILLED_BY_AN);
 		    Your("body absorbs some of the magical energy!");
 		    u.uen = (u.uenmax += 2);
+			} else {
+				if (!Blind) {
+					if (!Hallucination) {
+						pline("A cloud of brightly colored smoke billows up around you!");
+					} else {
+						pline("The floor lights came on!  Let's disco!");
+					}
+				} else {
+					pline("It smells sort of %s in here.", 
+							Hallucination ? "chartreuse" : "smoggy");
+				}
+				incr_itimeout(&HHallucination,rnd(50)+50);
+			}
 		} else domagictrap();
 #ifdef STEED
 		(void) steedintrap(trap, (struct obj *)0);
@@ -1072,10 +1150,11 @@ glovecheck:		(void) rust_dmg(uarmg, "gauntlets", 1, TRUE, &youmonst);
 
 	    case ANTI_MAGIC:
 		seetrap(trap);
-		if(Antimagic) {
-		    shieldeff(u.ux, u.uy);
+		if (u.uen > 1) {
+			drain_en(rnd(u.uen / 2) + 2);
+		} else {
 		    You_feel("momentarily lethargic.");
-		} else drain_en(rnd(u.ulevel) + 1);
+		}
 		break;
 
 	    case POLY_TRAP: {
@@ -1180,11 +1259,96 @@ glovecheck:		(void) rust_dmg(uarmg, "gauntlets", 1, TRUE, &youmonst);
 		domagicportal(trap);
 		break;
 
+		 case SPEAR_TRAP:
+		seetrap(trap);
+		pline("A spear stabs up from a hole in the ground at you!");
+		if (thick_skinned(youmonst.data)) {
+			pline("But it breaks off against your body.");
+			deltrap(trap);
+		} else if (Levitation) {
+			pline("The spear isn't long enough to reach you.");
+		} else if (unsolid(youmonst.data)) {
+			pline("It passes right through you!");
+		} else {
+			pline("Ouch! That hurts!");
+			losehp(rnd(10)+10,"sharpened bamboo stick",KILLED_BY_AN);
+		}
+		break;
+
+		 case COLLAPSE_TRAP:
+			pline("Rocks fall all around you!");
+			deltrap(trap);
+			newsym(u.ux,u.uy);
+			rocks_fall(u.ux,u.uy);
+		 break;
+
 	    default:
 		seetrap(trap);
 		impossible("You hit a trap of type %u", trap->ttyp);
 	}
 }
+
+STATIC_OVL void
+rocks_fall(zx,zy)
+int zx,zy;
+{
+	int dmg = 0;
+	int mdmg,rocks,rx,ry;
+	boolean somehit = FALSE;
+	struct monst* mtmp;
+	struct obj* mhat;
+	struct obj* otmp;
+
+	for (rocks = rnd(100)+100;rocks > 0;rocks--) {
+		rx = zx + rn2(3)-1; 
+		ry = zy + rn2(3)-1;
+		if (levl[rx][ry].typ == ROOM || levl[rx][ry].typ == CORR) {
+			if (rn2(50)) {
+				otmp = mksobj(ROCK,FALSE,FALSE);
+			} else {
+				otmp = mksobj(BOULDER,FALSE,FALSE);
+			}
+			/* in case of weirdness */
+			if (!flooreffects(otmp,rx,ry,"fall")) {
+				place_object(otmp,rx,ry);
+				stackobj(otmp);
+			}
+			/* postpone player's possible death 'til all the rocks are down */
+			if (rx == u.ux && ry == u.uy) { 
+				somehit = TRUE; 
+				dmg += rn2(4) + (otmp->otyp == BOULDER ? d(2,6) : 0);
+			} else if (mtmp = m_at(rx,ry)) {
+				/* spare the player a barrage of messages for each time
+				 * a monster is hit by a rock; just show the killed message */
+				mhat = which_armor(mtmp, W_ARMH);
+				mdmg = rn2(4) + (otmp->otyp == BOULDER ? d(2,6) : 0);
+				if (thick_skinned(mtmp->data) || (mhat && is_metallic(mhat))) {
+					mdmg /= 2;
+				}
+				if (!unsolid(mtmp->data)) {
+					damage_mon(mtmp,mdmg,AD_PHYS);
+					if (mtmp->mhp <= 0) { monkilled(mtmp,"shower of rocks",AD_PHYS); }
+				}
+			}
+			newsym(rx,ry);
+		}
+	}
+
+	if (somehit) {
+		pline("Some rocks land on your %s!",body_part(HEAD));
+		if (uarmh) {
+			if (is_metallic(uarmh)) {
+				pline("Your hard helmet protects you somewhat.");
+				dmg /= 2;
+			} else if (flags.verbose) {
+				Your("%s does not protect you.", xname(uarmh));
+			}
+		}
+	}
+	losehp(dmg,"shower of rocks",KILLED_BY_AN);
+
+}
+
 
 #ifdef STEED
 STATIC_OVL int
@@ -1235,6 +1399,12 @@ struct obj *otmp;
 			}
 			steedhit = TRUE;
 			break;
+		case SPEAR_TRAP:
+			if (thitm(0, mtmp, (struct obj*)0, rnd(10)+10, FALSE)) {
+				trapkilled = TRUE;
+			}
+			steedhit = TRUE;
+			break;
 		case LANDMINE:
 			if (thitm(0, mtmp, (struct obj *)0, rnd(16), FALSE))
 			    trapkilled = TRUE;
@@ -1265,6 +1435,8 @@ struct obj *otmp;
 		    }
 		    steedhit = TRUE;
 		    break;
+		case COLLAPSE_TRAP:	 /* TODO: make this affect steeds */
+			 break;
 		default:
 			return 0;
 	    }
@@ -1650,6 +1822,7 @@ register struct monst *mtmp;
 	boolean trapkilled = FALSE;
 	struct permonst *mptr = mtmp->data;
 	struct obj *otmp;
+	struct monst* mtmp2;
 
 	if (!trap) {
 	    mtmp->mtrapped = 0;	/* perhaps teleported? */
@@ -1717,6 +1890,15 @@ register struct monst *mtmp;
 
 	    in_sight = canseemon(mtmp);
 	    see_it = cansee(mtmp->mx, mtmp->my);
+
+		 /* some monsters may learn from others' errors */
+		 for (mtmp2 = fmon; mtmp2; mtmp2 = mtmp2->nmon)
+		 {
+			 if (m_cansee(mtmp2,mtmp->mx,mtmp->my) && !mindless(mtmp2->data))
+			 {
+				 mtmp2->mtrapseen |= (1 << (tt-1));
+			 }
+		 }
 #ifdef STEED
 	    /* assume hero can tell what's going on for the steed */
 	    if (mtmp == u.usteed) in_sight = TRUE;
@@ -1840,6 +2022,7 @@ register struct monst *mtmp;
 				break;
 			    target = MON_WEP(mtmp);
 			    if (target && bimanual(target))
+				//_erode_obj(target,AD_RUST);
 				erode_obj(target, FALSE, TRUE);
 glovecheck:		    target = which_armor(mtmp, W_ARMG);
 			    (void) rust_dmg(target, "gauntlets", 1, TRUE, mtmp);
@@ -1848,7 +2031,8 @@ glovecheck:		    target = which_armor(mtmp, W_ARMG);
 			    if (in_sight)
 				pline("%s %s's right %s!", A_gush_of_water_hits,
 				    mon_nam(mtmp), mbodypart(mtmp, ARM));
-			    erode_obj(MON_WEP(mtmp), FALSE, TRUE);
+			    //_erode_obj(MON_WEP(mtmp),AD_RUST);
+				erode_obj(MON_WEP(mtmp), FALSE, TRUE);
 			    goto glovecheck;
 			default:
 			    if (in_sight)
@@ -2078,6 +2262,8 @@ glovecheck:		    target = which_armor(mtmp, W_ARMG);
 			if (!rn2(21)) goto mfiretrap;
 			break;
 		case ANTI_MAGIC:
+			/* simulate energy drain by increasing cast time */
+			mtmp->mspec_used += 2;
 			break;
 
 		case LANDMINE:
@@ -2122,9 +2308,9 @@ glovecheck:		    target = which_armor(mtmp, W_ARMG);
 		    if (resists_magm(mtmp)) {
 			shieldeff(mtmp->mx, mtmp->my);
 		    } else if (!resist(mtmp, WAND_CLASS, 0, NOTELL)) {
-			(void) newcham(mtmp, (struct permonst *)0,
-				       FALSE, FALSE);
+				(void) newcham(mtmp, (struct permonst *)0, FALSE, FALSE);
 			if (in_sight) seetrap(trap);
+				if (!rn2(10)) deltrap(trap);
 		    }
 		    break;
 
@@ -2149,6 +2335,55 @@ glovecheck:		    target = which_armor(mtmp, W_ARMG);
 		    }
 		    break;
 
+		case SPEAR_TRAP:
+			if (in_sight) {
+				seetrap(trap);
+				pline("A spear stabs up from a hole in the ground!");
+			}
+			if (thick_skinned(mptr)) {
+				if (in_sight) {
+					pline("But it breaks off against %s.",mon_nam(mtmp));
+				}
+				deltrap(trap);
+			} else if (unsolid(mptr)) {
+				if (in_sight) {
+					pline("It passes right through %s!",mon_nam(mtmp));
+				}
+			} else if (is_flyer(mptr)) {
+				if (in_sight) {
+					pline("The spear isn't long enough to reach %s.",mon_nam(mtmp));
+				}
+			} else {
+				if (thitm(0, mtmp, (struct obj *)0, rnd(10)+10, FALSE))
+					trapkilled = TRUE;
+				else if (in_sight) {
+					pline("%s is skewered!",Monnam(mtmp));
+				}
+			}
+			 break;
+
+		case COLLAPSE_TRAP:
+			 if (in_sight) {
+				 pline("Rocks suddenly fall all around %s!",mon_nam(mtmp));
+				 deltrap(trap);
+				 rocks_fall(mtmp->mx,mtmp->my);
+			 }
+			 break;
+	    case MAGIC_BEAM_TRAP:
+		if (distu(trap->tx, trap->ty) < 4) You_hear("a faint click.");
+		if (in_sight) {
+		    seetrap(trap);
+		}
+		if (isok(trap->launch.x,trap->launch.y) && IS_STWALL(levl[trap->launch.x][trap->launch.y].typ)) {
+		    buzz(trap->launch_otyp, 8,
+			 trap->launch.x,trap->launch.y,
+			 sgn(trap->tx - trap->launch.x),sgn(trap->ty - trap->launch.y));
+		    trap->once = 1;
+		} else {
+		    deltrap(trap);
+		    newsym(u.ux,u.uy);
+		}
+		break;
 		default:
 			impossible("Some monster encountered a strange trap of type %d.", tt);
 	    }
@@ -2353,6 +2588,13 @@ long hmask, emask;     /* might cancel timeout */
 		if(is_pool(u.ux,u.uy) && !Wwalking && !Swimming && !u.uinwater)
 			no_msg = drown();
 
+		if (is_pool(u.ux,u.uy) && !Levitation && !Flying && uarm &&
+				(uarm->otyp == WHITE_DRAGON_SCALE_MAIL || uarm->otyp == WHITE_DRAGON_SCALES)) {
+			levl[u.ux][u.uy].typ = ICE;
+			pline("The pool crackles and freezes under your feet.");
+			bury_objs(u.ux,u.uy);
+		}
+
 		if(is_lava(u.ux,u.uy)) {
 			(void) lava_effects();
 			no_msg = TRUE;
@@ -2510,8 +2752,26 @@ domagictrap()
 	  switch (fate) {
 
 	     case 10:
-	     case 11:
 		      /* sometimes nothing happens */
+			break;
+	     case 11:	/* toggle any intrinsic invisibility */
+			You_hear("a low hum.");
+			if (!Invis) {
+				if (!Blind) { self_invis_message(); }
+			} else if (!EInvis && !pm_invisible(youmonst.data)) {
+				if (!Blind) {
+					if (!See_invisible) {
+						pline("You can see yourself again!");
+					} else {
+						pline("You can't see through yourself anymore.");
+					}
+				}
+			} else { 
+				/* If we're invisible from another source */
+				You_feel("a little more %s now.",HInvis ? "obvious" : "hidden");
+			}
+			HInvis = HInvis ? 0 : HInvis | FROMOUTSIDE;
+			newsym(u.ux,u.uy);
 			break;
 	     case 12: /* a flash of fire */
 			dofiretrap((struct obj *)0);
@@ -2606,6 +2866,7 @@ xchar x, y;
 	if (Is_container(obj)) {
 	    switch (obj->otyp) {
 	    case ICE_BOX:
+		 //case IRON_SAFE:
 		continue;		/* Immune */
 		/*NOTREACHED*/
 		break;
@@ -2883,15 +3144,6 @@ drown()
 		vision_full_recalc = 1;
 		return(FALSE);
 	}
-	if ((Teleportation || can_teleport(youmonst.data)) &&
-		    !u.usleep && (Teleport_control || rn2(3) < Luck+2)) {
-		You("attempt a teleport spell.");	/* utcsri!carroll */
-		if (!level.flags.noteleport) {
-			(void) dotele();
-			if(!is_pool(u.ux,u.uy))
-				return(TRUE);
-		} else pline_The("attempted teleport spell fails.");
-	}
 #ifdef STEED
 	if (u.usteed) {
 		dismount_steed(DISMOUNT_GENERIC);
@@ -2940,6 +3192,16 @@ drown()
 		}
 		/* still too much weight */
 		pline("But in vain.");
+	}
+	/* moved after crawl attempt */
+	if ((Teleportation || can_teleport(youmonst.data)) &&
+		    !u.usleep && (Teleport_control || rn2(3) < Luck+2)) {
+		You("attempt a teleport spell.");	/* utcsri!carroll */
+		if (!level.flags.noteleport) {
+			(void) dotele();
+			if(!is_pool(u.ux,u.uy))
+				return(TRUE);
+		} else pline_The("attempted teleport spell fails.");
 	}
 	u.uinwater = 1;
 	You("drown.");
@@ -3029,7 +3291,11 @@ int otyp;
 int cnt;
 struct trap *ttmp;
 {
-	struct obj *otmp = mksobj(otyp, TRUE, FALSE);
+	struct obj *otmp;
+	
+	/* "That must have been a claymore mine."  -- DSR */
+	if (otyp == LAND_MINE && rn2(2)) { otyp = TWO_HANDED_SWORD; }
+	otmp = mksobj(otyp, TRUE, FALSE);
 	otmp->quan=cnt;
 	otmp->owt = weight(otmp);
 	/* Only dart traps are capable of being poisonous */
@@ -3124,7 +3390,7 @@ boolean force_failure;
 		    if (mtmp) {		/* must be a trap that holds monsters */
 			if (ttype == BEAR_TRAP) {
 			    if (mtmp->mtame) abuse_dog(mtmp);
-			    if ((mtmp->mhp -= rnd(4)) <= 0) killed(mtmp);
+			    if (damage_mon(mtmp,rnd(4),AD_PHYS)) killed(mtmp);
 			} else if (ttype == WEB) {
 			    if (!webmaker(youmonst.data)) {
 				struct trap *ttmp2 = maketrap(u.ux, u.uy, WEB);
@@ -3898,7 +4164,7 @@ boolean nocorpse;
 			dam = dmgval(obj, mon);
 			if (dam < 1) dam = 1;
 		}
-		if ((mon->mhp -= dam) <= 0) {
+		if (damage_mon(mon,dam,AD_PHYS)) {
 			int xx = mon->mx;
 			int yy = mon->my;
 
@@ -3928,6 +4194,118 @@ unconscious()
 
 static const char lava_killer[] = "molten lava";
 
+#ifdef SPORKHACK_LAVA_EFFECTS
+boolean
+lava_effects()
+{
+    register struct obj *obj, *obj2;
+    int dmg;
+    boolean usurvive;
+
+    burn_away_slime();
+    if (likes_lava(youmonst.data)) return FALSE;
+
+    if (how_resistant(FIRE_RES) < 100) {
+	if(Wwalking) {
+			if (!Levitation && !Flying && uarm && 
+					(uarm->otyp == WHITE_DRAGON_SCALE_MAIL || uarm->otyp == WHITE_DRAGON_SCALES)) {
+				levl[u.ux][u.uy].typ = ROOM;
+				if (!rn2(4)) {
+					pline_The("lava cools and solidifies under your feet.");
+				}
+				bury_objs(u.ux,u.uy);
+				return FALSE;
+			}
+			dmg = resist_reduce(d(6,6),FIRE_RES);
+	    pline_The("lava here burns you!");
+	    if(dmg < u.uhp) {
+		losehp(dmg, lava_killer, KILLED_BY);
+		goto burn_stuff;
+	    }
+	} else
+	    You("fall into the lava!");
+
+	usurvive = Lifesaved || discover;
+#ifdef WIZARD
+	if (wizard) usurvive = TRUE;
+#endif
+	for(obj = invent; obj; obj = obj2) {
+	    obj2 = obj->nobj;
+	    if(is_organic(obj) && !obj->oerodeproof) {
+		if(obj->owornmask) {
+		    if (usurvive)
+			Your("%s into flame!", aobjnam(obj, "burst"));
+
+		    if(obj == uarm) (void) Armor_gone();
+		    else if(obj == uarmc) (void) Cloak_off();
+		    else if(obj == uarmh) (void) Helmet_off();
+		    else if(obj == uarms) (void) Shield_off();
+		    else if(obj == uarmg) (void) Gloves_off();
+		    else if(obj == uarmf) (void) Boots_off();
+#ifdef TOURIST
+		    else if(obj == uarmu) setnotworn(obj);
+#endif
+		    else if(obj == uleft) Ring_gone(obj);
+		    else if(obj == uright) Ring_gone(obj);
+		    else if(obj == ublindf) Blindf_off(obj);
+		    else if(obj == uamul) Amulet_off();
+		    else if(obj == uwep) uwepgone();
+		    else if (obj == uquiver) uqwepgone();
+					else if (obj == ulauncher) ulwepgone();
+		    else if (obj == uswapwep) uswapwepgone();
+		}
+		useupall(obj);
+	    }
+	}
+
+	/* s/he died... */
+	u.uhp = -1;
+	killer_format = KILLED_BY;
+	killer = lava_killer;
+	You("burn to a crisp...");
+	done(BURNING);
+	while (!safe_teleds(TRUE)) {
+		pline("You're still burning.");
+		done(BURNING);
+	}
+	You("find yourself back on solid %s.", surface(u.ux, u.uy));
+	return(TRUE);
+    }
+
+    if (!Wwalking) {
+	u.utrap = rn1(4, 4) + (rn1(4, 12) << 8);
+	u.utraptype = TT_LAVA;
+	You("sink into the lava, but it only burns slightly!");
+		monstseesu(M_SEEN_FIRE);
+	if (u.uhp > 1)
+	    losehp(1, lava_killer, KILLED_BY);
+    } else {
+		if (!Levitation && !Flying && uarm && 
+				(uarm->otyp == WHITE_DRAGON_SCALE_MAIL || uarm->otyp == WHITE_DRAGON_SCALES)) {
+			levl[u.ux][u.uy].typ = ROOM;
+			if (!rn2(4)) {
+				pline_The("lava cools and solidifies under your feet.");
+			}
+			bury_objs(u.ux,u.uy);
+			return FALSE;
+		}
+    }
+    /* just want to burn boots, not all armor; destroy_item doesn't work on
+       armor anyway */
+burn_stuff:
+    if(uarmf && !uarmf->oerodeproof && is_organic(uarmf)) {
+	/* save uarmf value because Boots_off() sets uarmf to null */
+	obj = uarmf;
+	Your("%s bursts into flame!", xname(obj));
+	(void) Boots_off();
+	useup(obj);
+    }
+    destroy_item(SCROLL_CLASS, AD_FIRE);
+    destroy_item(SPBOOK_CLASS, AD_FIRE);
+    destroy_item(POTION_CLASS, AD_FIRE);
+    return(FALSE);
+}
+#else // K-Mod lava
 /*
 ** K-Mod, 5/apr/2011, karadoc
 ** There were a bunch of (what I consider to be) bugs in this function
@@ -4048,6 +4426,7 @@ lava_effects()
 
 	return(FALSE);
 }
+#endif // end K-Mod lava
 
 #endif /* OVLB */
 

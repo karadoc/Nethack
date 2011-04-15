@@ -180,7 +180,7 @@ static struct Bool_Opt
 	{"softkeyboard", &iflags.wc2_softkeyboard, FALSE, SET_IN_FILE},
 	{"sortpack", &flags.sortpack, TRUE, SET_IN_GAME},
 	{"sound", &flags.soundok, TRUE, SET_IN_GAME},
-	{"sparkle", &flags.sparkle, TRUE, SET_IN_GAME},
+//	{"sparkle", &flags.sparkle, TRUE, SET_IN_GAME}, // Replaced with sparkle_speed. K-Mod
 	{"standout", &flags.standout, FALSE, SET_IN_GAME},
 	{"splash_screen",     &iflags.wc_splash_screen, TRUE, DISP_IN_GAME},	/*WC*/
 	{"tiled_map",     &iflags.wc_tiled_map, PREFER_TILED, DISP_IN_GAME},	/*WC*/
@@ -237,6 +237,7 @@ static struct Comp_Opt
 						PL_PSIZ, SET_IN_GAME },
 #endif
 #endif
+	{"sparkle_speed", "the speed at which 'resist' effects are displayed (zero = off)", 1, SET_IN_GAME},
 	{ "dungeon",  "the symbols to use in drawing the dungeon map",
 						MAXDCHARS+1, SET_IN_FILE },
 	{ "effects",  "the symbols to use in drawing special effects",
@@ -522,6 +523,7 @@ initoptions()
 	flags.end_own = FALSE;
 	flags.end_top = 3;
 	flags.end_around = 2;
+	flags.sparkle_speed = 1;
 	iflags.runmode = RUN_LEAP;
 	iflags.msg_history = 20;
 #ifdef TTY_GRAPHICS
@@ -1403,6 +1405,15 @@ goodfruit:
 	if (match_optname(opts, fullname, 2, TRUE)) {
 		if (negated) bad_negation(fullname, FALSE);
 		else graphics_opts(opts, fullname, MAXPCHARS, 0);
+		return;
+	}
+	fullname = "sparkle_speed"; // K-Mod
+	if (match_optname(opts, fullname, sizeof("sparkle_speed")-1, TRUE))
+	{
+		op = string_for_opt(opts, negated);
+		if ((negated && !op) || (!negated && op)) {
+			flags.sparkle_speed = negated ? 0 : atoi(op);
+		} else if (negated) bad_negation(fullname, TRUE);		
 		return;
 	}
 	fullname = "dungeon";
@@ -3015,6 +3026,8 @@ char *buf;
 	else if (!strcmp(optname, "dumpfile"))
 		Sprintf(buf, "%s", dump_fn[0] ? dump_fn: none );
 #endif
+	else if (!strcmp(optname, "sparkle_speed"))
+		Sprintf(buf, "%d", flags.sparkle_speed);
 	else if (!strcmp(optname, "dungeon"))
 		Sprintf(buf, "%s", to_be_done);
 	else if (!strcmp(optname, "effects"))
