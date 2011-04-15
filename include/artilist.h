@@ -147,6 +147,14 @@ A("Snickersnee",		KATANA,
 A("Sunsword",			LONG_SWORD,
 	(SPFX_RESTR|SPFX_DFLAG2), 0, M2_UNDEAD,
 	PHYS(5,0),	DFNS(AD_BLND),	NO_CARY,	0, A_LAWFUL, NON_PM, NON_PM, 1500L ),
+/*
+** K-Mod, 15/apr/2011, karadoc
+** New spear to celebrate the new major update. (or to help valks, whatever)
+** When thrown, Gungnir always hits and does +10 damage.
+*/
+A("Gungnir",		SILVER_SPEAR,
+  SPFX_RESTR, 0, 0,
+  PHYS(5,3), NO_DFNS, NO_CARY, 0, A_NEUTRAL, PM_VALKYRIE, NON_PM, 3000L ),
 
 /*
  *	The artifacts for the quest dungeon, all self-willed.

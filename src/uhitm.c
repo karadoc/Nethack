@@ -599,11 +599,13 @@ int thrown;
 		    }
 		} else {
 		    tmp = dmgval(obj, mon);
+			if (obj->oartifact == ART_GUNGNIR && thrown)
+				tmp+=10; // bonus damage for throwing the great spear
 		    /* a minimal hit doesn't exercise proficiency */
 		    valid_weapon_attack = (tmp > 1);
 		    if (!valid_weapon_attack || mon == u.ustuck || u.twoweap) {
 			;	/* no special bonuses */
-		    } else if (mon->mflee && Role_if(PM_ROGUE) && !Upolyd) {
+		    } else if (mon->mflee && Role_if(PM_ROGUE) && !Upolyd && !thrown) {
 			You("strike %s from behind!", mon_nam(mon));
 			tmp += rnd(u.ulevel);
 			hittxt = TRUE;

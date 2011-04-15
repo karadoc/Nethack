@@ -1183,7 +1183,7 @@ register struct obj   *obj;
 	register int	tmp; /* Base chance to hit */
 	register int	disttmp; /* distance modifier */
 	int otyp = obj->otyp;
-	boolean guaranteed_hit = (u.uswallow && mon == u.ustuck);
+	boolean was_swallowed = u.uswallow && mon == u.ustuck;
 
 	/* Differences from melee weapons:
 	 *
@@ -1233,7 +1233,7 @@ register struct obj   *obj;
 	if (is_orc(mon->data) && maybe_polyd(is_elf(youmonst.data),
 			Race_if(PM_ELF)))
 	    tmp++;
-	if (guaranteed_hit) {
+	if (was_swallowed || obj->oartifact == ART_GUNGNIR) {
 	    tmp += 1000; /* Guaranteed hit */
 	}
 
@@ -1348,7 +1348,6 @@ register struct obj   *obj;
 	} else if (otyp == HEAVY_IRON_BALL) {
 	    exercise(A_STR, TRUE);
 	    if (tmp >= rnd(20)) {
-		int was_swallowed = guaranteed_hit;
 
 		exercise(A_DEX, TRUE);
 		if (!hmon(mon,obj,1)) {		/* mon killed */
@@ -1370,12 +1369,12 @@ register struct obj   *obj;
 
 	} else if ((otyp == EGG || otyp == CREAM_PIE ||
 		    otyp == BLINDING_VENOM || otyp == ACID_VENOM) &&
-		(guaranteed_hit || ACURR(A_DEX) > rnd(25))) {
+		(was_swallowed || ACURR(A_DEX) > rnd(25))) {
 	    (void) hmon(mon, obj, 1);
 	    return 1;	/* hmon used it up */
 
 	} else if (obj->oclass == POTION_CLASS &&
-		(guaranteed_hit || ACURR(A_DEX) > rnd(25))) {
+		(was_swallowed || ACURR(A_DEX) > rnd(25))) {
 	    potionhit(mon, obj, TRUE);
 	    return 1;
 
@@ -1389,7 +1388,7 @@ register struct obj   *obj;
 		mon->msleeping = 0;
 		mon->mstrategy &= ~STRAT_WAITMASK;
 	    }
-	} else if (guaranteed_hit) {
+	} else if (was_swallowed) {
 	    /* this assumes that guaranteed_hit is due to swallowing */
 	    wakeup(mon);
 	    if (obj->otyp == CORPSE && touch_petrifies(&mons[obj->corpsenm])) {

@@ -70,7 +70,7 @@ static struct trobj Healer[] = {
 	{ 0, 0, 0, 0, 0 }
 };
 static struct trobj Knight[] = {
-	{ LONG_SWORD, 1, WEAPON_CLASS, 1, UNDEF_BLESS },
+	{ SHORT_SWORD, 1, WEAPON_CLASS, 1, UNDEF_BLESS },
 	{ LANCE, 1, WEAPON_CLASS, 1, UNDEF_BLESS },
 	{ RING_MAIL, 1, ARMOR_CLASS, 1, UNDEF_BLESS },
 	{ HELMET, 0, ARMOR_CLASS, 1, UNDEF_BLESS },
@@ -151,7 +151,7 @@ static struct trobj Tourist[] = {
 };
 #endif
 static struct trobj Valkyrie[] = {
-	{ LONG_SWORD, 1, WEAPON_CLASS, 1, UNDEF_BLESS },
+	{ SPEAR, 1, WEAPON_CLASS, 1, UNDEF_BLESS },
 	{ DAGGER, 0, WEAPON_CLASS, 1, UNDEF_BLESS },
 	{ SMALL_SHIELD, 3, ARMOR_CLASS, 1, UNDEF_BLESS },
 	{ FOOD_RATION, 0, FOOD_CLASS, 1, 0 },
@@ -320,7 +320,7 @@ static const struct def_skill Skill_H[] = {
 static const struct def_skill Skill_K[] = {
     { P_DAGGER, P_BASIC },		{ P_KNIFE, P_BASIC },
     { P_AXE, P_SKILLED },		{ P_PICK_AXE, P_BASIC },
-    { P_SHORT_SWORD, P_SKILLED },	{ P_BROAD_SWORD, P_SKILLED },
+    { P_SHORT_SWORD, P_EXPERT },	{ P_BROAD_SWORD, P_SKILLED },
     { P_LONG_SWORD, P_EXPERT },	{ P_TWO_HANDED_SWORD, P_SKILLED },
     { P_SCIMITAR, P_BASIC },		{ P_SABER, P_SKILLED },
     { P_CLUB, P_BASIC },		{ P_MACE, P_SKILLED },
@@ -329,7 +329,7 @@ static const struct def_skill Skill_K[] = {
     { P_SPEAR, P_SKILLED },		{ P_JAVELIN, P_SKILLED },
     { P_TRIDENT, P_BASIC },		{ P_LANCE, P_EXPERT },
     { P_BOW, P_BASIC },			{ P_CROSSBOW, P_SKILLED },
-    { P_ATTACK_SPELL, P_SKILLED },	{ P_HEALING_SPELL, P_SKILLED },
+    { P_ATTACK_SPELL, P_BASIC },	{ P_HEALING_SPELL, P_SKILLED },
     { P_CLERIC_SPELL, P_SKILLED },
 #ifdef STEED
     { P_RIDING, P_EXPERT },
@@ -456,11 +456,11 @@ static const struct def_skill Skill_T[] = {
 static const struct def_skill Skill_V[] = {
     { P_DAGGER, P_EXPERT },		{ P_AXE, P_EXPERT },
     { P_PICK_AXE, P_SKILLED },		{ P_SHORT_SWORD, P_SKILLED },
-    { P_BROAD_SWORD, P_SKILLED },	{ P_LONG_SWORD, P_EXPERT },
+    { P_BROAD_SWORD, P_SKILLED },	{ P_LONG_SWORD, P_SKILLED },
     { P_TWO_HANDED_SWORD, P_EXPERT },	{ P_SCIMITAR, P_BASIC },
     { P_SABER, P_BASIC },		{ P_HAMMER, P_EXPERT },
     { P_QUARTERSTAFF, P_BASIC },	{ P_POLEARMS, P_SKILLED },
-    { P_SPEAR, P_SKILLED },		{ P_JAVELIN, P_BASIC },
+    { P_SPEAR, P_EXPERT },		{ P_JAVELIN, P_SKILLED },
     { P_TRIDENT, P_BASIC },		{ P_LANCE, P_SKILLED },
     { P_SLING, P_BASIC },
     { P_ATTACK_SPELL, P_BASIC },	{ P_ESCAPE_SPELL, P_BASIC },
