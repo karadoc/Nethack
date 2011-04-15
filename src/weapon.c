@@ -59,6 +59,32 @@ STATIC_VAR NEARDATA const short skill_names_indices[P_NUM_SKILLS] = {
 #endif
 };
 
+/*
+** K-Mod, 13/apr/2011, karadoc
+** Skill grouping table - related skills share the same skill point cost (but not the same practice points)
+** -1 = No grouping
+*/
+STATIC_VAR NEARDATA const short skill_groupings[P_NUM_SKILLS] =
+{
+	/* none*/ -1,			/* dagger */ 1,			/* knife */ 1,		/* axe */ 2,
+	/* pick_axe */ 2,		/* short_sword */ 3,	/* broadsword */ 3,	/* long_sword */ 4,
+	/* twohanded_sword */ 4,/* scimitar */ 5,		/* saber */ 5,		/* club */ 6,
+	/* mace */ 6,			/* morning_star */ 7,	/* flail */ 7,
+	/* hammer */ 2,			/* quarterstaff */ -1,	/* polearms */ 9,	/* spear */ 10,
+	/* javelin */ 10,			/* trident */ 10,		/* lance */ 9,	/* bow */ 12,
+	/* sling */ 12,				/* crossbow */ 12,		/* dart */ 13,
+	/* shuriken */ 13,			/* boomerang */ 13,		/* whip */ -1,	/* unicorn_horn */ -1,
+	/* attack_spell */ -1,		/* healing_spell */ -1,
+	/* divination_spell */ -1,	/* enchantment_spell */ -1,
+	/* cleric_spell */ -1,		/* escape_spell */ -1,
+	/* matter_spell */ -1,
+	/* bare_handed */ -1,		/* two_weapons */ -1,
+#ifdef STEED
+	/* riding */ -1
+#endif
+};
+// K-Mod end
+
 /* note: entry [0] isn't used */
 STATIC_VAR NEARDATA const char * const odd_skill_names[] = {
     "no skill",
@@ -763,6 +789,26 @@ int skill;
 {
     int tmp = P_SKILL(skill);
 
+/*
+** K-Mod, 13/apr/2011, karadoc
+** First check to see if we can get the skill for free.
+** I know this method is really inefficient. I've done it this way to avoid breaking save compatibility.
+** Maybe in the future I'll have it build a lookup table when the game is loaded.
+*/
+	if (skill_groupings[skill] > 0)
+	{
+		int i;
+		for (i = 1; i < P_NUM_SKILLS; i++)
+		{
+			if (skill_groupings[skill] == skill_groupings[i])
+			{
+				if (P_SKILL(i) > tmp)
+					return 0;
+			}
+		}
+	}
+// K-Mod end
+
     /* The more difficult the training, the more slots it takes.
      *	unskilled -> basic	1
      *	basic -> skilled	2
@@ -873,10 +919,11 @@ int enhance_skill(boolean want_dump)
  */
 #endif
 {
-    int pass, i, n, len, longest,
+    int pass, i, j, n, len, longest,
 	to_advance, eventually_advance, maxxed_cnt;
     char buf[BUFSZ], sklnambuf[BUFSZ];
-    const char *prefix;
+    //const char *prefix;
+	const char *prefix = "";
     menu_item *selected;
     anything any;
     winid win;
@@ -981,37 +1028,99 @@ int enhance_skill(boolean want_dump)
 		 * The 12 is the longest skill level name.
 		 * The "    " is room for a selection letter and dash, "a - ".
 		 */
+/*
+** K-Mod, 11/apr/2011, karadoc
+** altered the prefix to display more info. '|' = skill level learnt, ':' = practiced enough, '.' = need practice
+*/
+		/* original code
 		if (can_advance(i, speedy))
-		    prefix = "";	/* will be preceded by menu choice */
+		    prefix = "";	// will be preceded by menu choice
 		else if (could_advance(i))
 		    prefix = "  * ";
 		else if (peaked_skill(i))
 		    prefix = "  # ";
 		else
 		    prefix = (to_advance + eventually_advance +
-				maxxed_cnt > 0) ? "    " : "";
-		(void) skill_level_name(i, sklnambuf);
+				maxxed_cnt > 0) ? "    " : ""; */
+		//buf[0] = could_advance(i)?'*' :' ';
+		buf[0] = '\0';
+		for (j = P_UNSKILLED; j < P_GRAND_MASTER; j++)
+		{
+			//int cost = 0;
+			if (P_SKILL(i) > j)
+			{
+				buf[j-1] = '|';
+			}
+			else if (P_MAX_SKILL(i) > j)
+			{
+				// note, this calcultion must agree with slots_required(skill)
+				//cost += (i <= P_LAST_WEAPON || i == P_TWO_WEAPON_COMBAT)? j : (j+1)/2;
+				// (at least, it would if it was being used...)
+
+				if (/*u.weapon_slots >= cost && */P_ADVANCE(i) >= practice_needed_to_advance(j))
+				{
+					buf[j-1] = ':';
+				}
+				else
+				{
+					buf[j-1] = '.';
+				}
+			}
+			else
+			{
+				buf[j-1] = ' ';
+			}
+			buf[j] = '\0';
+		}
+
+		//(void) skill_level_name(i, sklnambuf);
+		if (slots_required(i) <= 0)
+		{
+			sklnambuf[0] = '^';
+			(void) skill_level_name(i, sklnambuf+1);
+		}
+		else if (can_advance(i, speedy))
+			(void) skill_level_name(i, sklnambuf);
+		else if (could_advance(i))
+		{
+			sklnambuf[0] = '*';
+			(void) skill_level_name(i, sklnambuf+1);
+		}
+		else if (peaked_skill(i))
+		{
+			sklnambuf[0] = '#';
+			(void) skill_level_name(i, sklnambuf+1);
+		}
+		else // need more practice
+			(void) skill_level_name(i, sklnambuf);
+// K-Mod end - kind of.
+// From here on, I've removed reference to 'prefix' and replaced 'buf' with eos(buf) in the Sprintf calls
+// I'll leave one call as an example.
 #ifdef WIZARD
 		if (wizard) {
 		    if (!iflags.menu_tab_sep)
-			Sprintf(buf, " %s%-*s %-12s %5d(%4d)",
+			/*Sprintf(buf, " %s%-*s %-12s %5d(%4d)",
 			    prefix, longest, P_NAME(i), sklnambuf,
+			    P_ADVANCE(i),
+			    practice_needed_to_advance(P_SKILL(i)));*/
+			Sprintf(eos(buf), " %-*s %-12s %5d(%4d)",
+			    longest, P_NAME(i), sklnambuf,
 			    P_ADVANCE(i),
 			    practice_needed_to_advance(P_SKILL(i)));
 		    else
-			Sprintf(buf, " %s%s\t%s\t%5d(%4d)",
-			    prefix, P_NAME(i), sklnambuf,
+			Sprintf(eos(buf), " %s\t%s\t%5d(%4d)",
+			    P_NAME(i), sklnambuf,
 			    P_ADVANCE(i),
 			    practice_needed_to_advance(P_SKILL(i)));
 		 } else
 #endif
 		{
 		    if (!iflags.menu_tab_sep)
-			Sprintf(buf, " %s %-*s [%s]",
-			    prefix, longest, P_NAME(i), sklnambuf);
+			Sprintf(eos(buf), " %-*s [%s]",
+			    longest, P_NAME(i), sklnambuf);
 		    else
-			Sprintf(buf, " %s%s\t[%s]",
-			    prefix, P_NAME(i), sklnambuf);
+			Sprintf(eos(buf), " %s\t[%s]",
+			    P_NAME(i), sklnambuf);
 		}
 		any.a_int = can_advance(i, speedy) ? i+1 : 0;
 		add_menu(win, NO_GLYPH, &any, 0, 0, ATR_NONE,
@@ -1037,19 +1146,31 @@ int enhance_skill(boolean want_dump)
 	    end_menu(win, buf);
 	    n = select_menu(win, to_advance ? PICK_ONE : PICK_NONE, &selected);
 	    destroy_nhwindow(win);
-	    if (n > 0) {
-		n = selected[0].item.a_int - 1;	/* get item selected */
-		free((genericptr_t)selected);
-		skill_advance(n);
-		/* check for more skills able to advance, if so then .. */
-		for (n = i = 0; i < P_NUM_SKILLS; i++) {
-		    if (can_advance(i, speedy)) {
-			if (!speedy) You_feel("you could be more dangerous!");
-			n++;
-			break;
-		    }
+	    if (n > 0)
+		{
+			n = selected[0].item.a_int - 1;	/* get item selected */
+			free((genericptr_t)selected);
+			skill_advance(n);
+			/* check for more skills able to advance, if so then .. */
+			for (n = i = 0; i < P_NUM_SKILLS; i++)
+			{
+				if (can_advance(i, speedy))
+				{
+	// K-Mod, if the skill is free, just get it automatically.
+					if (slots_required(i) <= 0)
+						skill_advance(i);
+					else
+					{
+						if (!speedy && !n)
+						{
+							You_feel("you could be more dangerous!");
+						}
+						n++;
+					}
+					//break;
+				}
+			}
 		}
-	    }
 #ifdef DUMP_LOG
 	    }
 #endif
@@ -1082,11 +1203,24 @@ int degree;
 {
     boolean advance_before;
 
-    if (skill != P_NONE && !P_RESTRICTED(skill)) {
-	advance_before = can_advance(skill, FALSE);
-	P_ADVANCE(skill)+=degree;
-	if (!advance_before && can_advance(skill, FALSE))
-	    give_may_advance_msg(skill);
+    if (skill != P_NONE && !P_RESTRICTED(skill))
+	{
+		advance_before = can_advance(skill, FALSE);
+		P_ADVANCE(skill)+=degree;
+		if (!advance_before && can_advance(skill, FALSE))
+		{
+/*
+** K-Mod, 13/apr/2011, karadoc
+** check if we get the skill for free
+*/
+			if (slots_required(skill) <= 0)
+			{
+				skill_advance(skill);
+			}
+			else
+// K-Mod end
+				give_may_advance_msg(skill);
+		}
     }
 }
 
@@ -1111,21 +1245,28 @@ int n;	/* number of slots to lose; normally one */
 {
     int skill;
 
-    while (--n >= 0) {
-	/* deduct first from unused slots, then from last placed slot, if any */
-	if (u.weapon_slots) {
-	    u.weapon_slots--;
-	} else if (u.skills_advanced) {
-	    skill = u.skill_record[--u.skills_advanced];
-	    if (P_SKILL(skill) <= P_UNSKILLED)
-		panic("lose_weapon_skill (%d)", skill);
-	    P_SKILL(skill)--;	/* drop skill one level */
-	    /* Lost skill might have taken more than one slot; refund rest. */
-	    u.weapon_slots = slots_required(skill) - 1;
-	    /* It might now be possible to advance some other pending
-	       skill by using the refunded slots, but giving a message
-	       to that effect would seem pretty confusing.... */
-	}
+// K-Mod, I've restructed this a bit. Same functionality but with a minor bug fix.
+	u.weapon_slots-= n;
+
+    while (u.weapon_slots < 0)
+	{
+		if (u.skills_advanced > 0)
+		{
+			skill = u.skill_record[--u.skills_advanced];
+			if (P_SKILL(skill) <= P_UNSKILLED)
+				panic("lose_weapon_skill (%d)", skill);
+			P_SKILL(skill)--;	/* drop skill one level */
+			You_feel("less skilled in %s.",	P_NAME(skill)); // K-Mod
+			/* Lost skill might have taken more than one slot; refund rest. */
+			u.weapon_slots+=slots_required(skill);
+			/* It might now be possible to advance some other pending
+			skill by using the refunded slots, but giving a message
+			to that effect would seem pretty confusing.... */
+		}
+		else
+		{
+			panic("ran out of skills to lose");
+		}
     }
 }
 

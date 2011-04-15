@@ -297,7 +297,7 @@ NEARDATA extern coord bhitpos;	/* place where throw or zap hits or stops */
 ** I've weakened ac even further
 */
 //#define AC_VALUE(AC)	((AC) >= 0 ? (AC) : -rnd(-(AC)))
-#define AC_VALUE(AC)	((AC) >= 0 ? (AC) : (-rnd((1-(AC))/2 + rnd((1-(AC))/2))))
+#define AC_VALUE(AC)	((AC) >= 0 ? (AC) : (-rnd((rnd(-(AC))-(AC))/2)))
 // That's roughly rnd(AC/2 + rnd(AC/2))
 
 

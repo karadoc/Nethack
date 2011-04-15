@@ -1,19 +1,19 @@
 #Set all of these or none of them
-#YACC   = byacc.exe
+#YACC   = yacc.exe
 #LEX	= flex.exe
-#YTABC   = y_tab.c
-#YTABH   = y_tab.h
-#LEXYYC  = lexyy.c
+#YTABC   = y.tab.c
+#YTABH   = y.tab.h
+#LEXYYC  = lex.yy.c
 
 !IF "$(YACC)"!=""
-@echo Yacc-alike set to $(YACC)
-@echo YTABC set to $(YTABC)
-@echo YTABH set to $(YTABH)
+#@echo Yacc-alike set to $(YACC)
+#@echo YTABC set to $(YTABC)
+#@echo YTABH set to $(YTABH)
 !ENDIF
 
 !IF "$(LEX)"!=""
-@echo Lex-alike set to $(LEX)
-@echo LEXYYC set to $(LEXYYC)
+#@echo Lex-alike set to $(LEX)
+#@echo LEXYYC set to $(LEXYYC)
 !ENDIF
 
 default: all

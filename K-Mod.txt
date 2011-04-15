@@ -26,3 +26,9 @@
 + Added toggle for "pickup all", in addtion to the usual auto-pickup toggle. The command is meta+@.
 + Added meta+x hotkey for #twoweapon
 + Added meta+y hotkey for #ride (better than nothing?)
+
++ shortswords are lighter
++ implemented a skill grouping system. Related skills share their skill-points but not their practice.
+
++ reduced the weight of spear, javelin, short sword, broadsword, ...
++ tweaked the probabilies of some weapons.
