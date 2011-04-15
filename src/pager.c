@@ -144,6 +144,7 @@ lookat(x, y, buf, monbuf)
 //			 (is_flying(mtmp) && !is_flyer(mtmp->data) && accurate) ? "flying " : "",
 			 /* don't show 'berserk' unless they've had the spell cast on them */
 //			 (mtmp->mberserk && !is_berserker(mtmp->data) && accurate) ? "enraged " : "",
+				"", "", // Placeholder
 		    name);
 	    if (u.ustuck == mtmp)
 		Strcat(buf, (Upolyd && sticks(youmonst.data)) ?

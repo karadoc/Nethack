@@ -1918,7 +1918,8 @@ boolean ufound;
 common:
 
 		if (!not_affected) {
-		    if (ACURR(A_DEX) > rnd(20)) {
+		    //if (ACURR(A_DEX) > rnd(20)) {  // Too easy
+			if (rnd(ACURR(A_DEX)) > rnd(20)) {
 			You("duck some of the blast.");
 			tmp = (tmp+1) / 2;
 		    } else {

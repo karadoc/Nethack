@@ -1074,21 +1074,21 @@ int enhance_skill(boolean want_dump)
 		}
 
 		//(void) skill_level_name(i, sklnambuf);
-		if (slots_required(i) <= 0)
+		if (can_advance(i, speedy))
+			(void) skill_level_name(i, sklnambuf);
+		else if (peaked_skill(i))
+		{
+			sklnambuf[0] = '#';
+			(void) skill_level_name(i, sklnambuf+1);
+		}
+		else if (slots_required(i) <= 0)
 		{
 			sklnambuf[0] = '^';
 			(void) skill_level_name(i, sklnambuf+1);
 		}
-		else if (can_advance(i, speedy))
-			(void) skill_level_name(i, sklnambuf);
 		else if (could_advance(i))
 		{
 			sklnambuf[0] = '*';
-			(void) skill_level_name(i, sklnambuf+1);
-		}
-		else if (peaked_skill(i))
-		{
-			sklnambuf[0] = '#';
 			(void) skill_level_name(i, sklnambuf+1);
 		}
 		else // need more practice
@@ -1157,7 +1157,7 @@ int enhance_skill(boolean want_dump)
 				if (can_advance(i, speedy))
 				{
 	// K-Mod, if the skill is free, just get it automatically.
-					if (slots_required(i) <= 0)
+					if (slots_required(i) <= 0 && can_advance(i, FALSE))
 						skill_advance(i);
 					else
 					{

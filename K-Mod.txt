@@ -43,3 +43,7 @@
 + Valkyries can now reach expert in spear, and skilled in javelin, but only skilled in longsword
 + New spear artifact 'Gungnir'
 + throwing attacks no longer get rogue backstab bonus
+
++ adjusted some monster stats (freezing/flaming/shocking spheres do more damage, krakens are faster)
++ ducking damage from exploding spheres is now much less likely
+
