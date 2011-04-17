@@ -525,11 +525,11 @@ boolean artif;
 	    break;
 	case AMULET_CLASS:
 		if (otmp->otyp == AMULET_OF_YENDOR) flags.made_amulet = TRUE;
-		if(rn2(10) && (otmp->otyp == AMULET_OF_STRANGULATION ||
+		if(rn2(7) && (otmp->otyp == AMULET_OF_STRANGULATION ||
 		   otmp->otyp == AMULET_OF_CHANGE ||
 		   otmp->otyp == AMULET_OF_RESTFUL_SLEEP)) {
 			curse(otmp);
-		} else	blessorcurse(otmp, 10);
+		} else	blessorcurse(otmp, 5);
 	case VENOM_CLASS:
 	case CHAIN_CLASS:
 	case BALL_CLASS:
@@ -548,11 +548,10 @@ boolean artif;
 		blessorcurse(otmp, 17);
 		break;
 	case ARMOR_CLASS:
-		if(rn2(10) && (otmp->otyp == FUMBLE_BOOTS ||
+		if(!rn2(10) || (rn2(10) && (otmp->otyp == FUMBLE_BOOTS ||
 		   otmp->otyp == LEVITATION_BOOTS ||
 		   otmp->otyp == HELM_OF_OPPOSITE_ALIGNMENT ||
-		   otmp->otyp == GAUNTLETS_OF_FUMBLING ||
-		   !rn2(11))) {
+		   otmp->otyp == GAUNTLETS_OF_FUMBLING))) {
 			curse(otmp);
 			otmp->spe = -rne(3);
 		} else if(!rn2(10)) {
@@ -592,10 +591,10 @@ boolean artif;
 		    if (otmp->spe == 0) otmp->spe = rn2(4) - rn2(3);
 		    /* negative rings are usually cursed */
 		    if (otmp->spe < 0 && rn2(5)) curse(otmp);
-		} else if(rn2(10) && (otmp->otyp == RIN_TELEPORTATION ||
+		} else if(!rn2(7) || (rn2(7) && (otmp->otyp == RIN_TELEPORTATION ||
 			  otmp->otyp == RIN_POLYMORPH ||
 			  otmp->otyp == RIN_AGGRAVATE_MONSTER ||
-			  otmp->otyp == RIN_HUNGER || !rn2(9))) {
+			  otmp->otyp == RIN_HUNGER))) {
 			curse(otmp);
 		}
 		break;

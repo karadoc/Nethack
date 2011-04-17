@@ -2755,22 +2755,26 @@ void
 splev_initlev(linit)
 lev_init *linit;
 {
-    switch (linit->init_style) {
-    default: impossible("Unrecognized level init style."); break;
-    case LVLINIT_NONE: break;
-    case LVLINIT_SOLIDFILL:
-	if (linit->lit == -1) linit->lit = rn2(2);
-	lvlfill_solid(linit->filling, linit->lit);
-	break;
-    case LVLINIT_MAZEGRID:
-	lvlfill_maze_grid(2,0, x_maze_max,y_maze_max, linit->filling);
-	break;
-    case LVLINIT_MINES:
-	if (linit->filling > -1) lvlfill_solid(linit->filling, 0);
-	mkmap(linit);
-	break;
-    }
-		}
+	switch (linit->init_style)
+	{
+	default:
+		impossible("Unrecognized level init style."); break;
+	case LVLINIT_NONE:break;
+	case LVLINIT_SOLIDFILL:
+		if (linit->lit == -1) linit->lit = rn2(2);
+		lvlfill_solid(linit->filling, linit->lit);
+		break;
+	case LVLINIT_MAZEGRID:
+		if (linit->lit == -1) linit->lit = rn2(2); // K-Mod added this. surely missing it was a bug.
+		lvlfill_maze_grid(2,0, x_maze_max,y_maze_max, linit->filling);
+		break;
+	case LVLINIT_MINES:
+		if (linit->lit == -1) linit->lit = rn2(2); // K-Mod
+		if (linit->filling > -1) lvlfill_solid(linit->filling, 0);
+		mkmap(linit);
+		break;
+	}
+}
 
 struct sp_frame *
 frame_new(execptr)

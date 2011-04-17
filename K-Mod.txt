@@ -44,6 +44,7 @@
 + New spear artifact 'Gungnir'
 + throwing attacks no longer get rogue backstab bonus
 
-+ adjusted some monster stats (freezing/flaming/shocking spheres do more damage, krakens are faster)
++ adjusted some monster stats (freezing/flaming/shocking spheres do more damage, krakens are faster, engulfing monsts to more damage)
 + ducking damage from exploding spheres is now much less likely
 
++ increased probably that good ring / amulets / boots will be cursed, and in some cases decreased the probably that bad will will be cursed. The point of this is to make it harder to guess what's good and what's bad.

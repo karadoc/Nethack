@@ -499,8 +499,8 @@ static const NEARDATA short hwep[] = {
 	  CORPSE,  /* cockatrice corpse */
 	  TSURUGI, RUNESWORD, DWARVISH_MATTOCK, TWO_HANDED_SWORD, BATTLE_AXE,
 	  KATANA, UNICORN_HORN, CRYSKNIFE, TRIDENT, LONG_SWORD,
-	  ELVEN_BROADSWORD, BROADSWORD, SCIMITAR, SILVER_SABER,
-	  MORNING_STAR, ELVEN_SHORT_SWORD, DWARVISH_SHORT_SWORD, SHORT_SWORD,
+	  ELVEN_BROADSWORD, BROADSWORD, SCIMITAR, SILVER_SABER, MORNING_STAR,
+	  SILVER_SHORT_SWORD, ELVEN_SHORT_SWORD, DWARVISH_SHORT_SWORD, SHORT_SWORD,
 	  ORCISH_SHORT_SWORD, MACE, AXE, DWARVISH_SPEAR, SILVER_SPEAR,
 	  ELVEN_SPEAR, SPEAR, ORCISH_SPEAR, FLAIL, BULLWHIP, QUARTERSTAFF,
 	  JAVELIN, AKLYS, CLUB, PICK_AXE,
@@ -1081,9 +1081,9 @@ int enhance_skill(boolean want_dump)
 			sklnambuf[0] = '#';
 			(void) skill_level_name(i, sklnambuf+1);
 		}
-		else if (slots_required(i) <= 0)
+		else if (slots_required(i) <= 0 && P_SKILL(i) >= P_MAX_SKILL(i))
 		{
-			sklnambuf[0] = '^';
+			sklnambuf[0] = '^'; // would advance for free, with more practice
 			(void) skill_level_name(i, sklnambuf+1);
 		}
 		else if (could_advance(i))
