@@ -600,7 +600,11 @@ int thrown;
 		} else {
 		    tmp = dmgval(obj, mon);
 			if (obj->oartifact == ART_GUNGNIR && thrown)
-				tmp+=10; // bonus damage for throwing the great spear
+			{
+				// bonus damage for throwing the great spear
+				tmp*=2;
+				tmp+=5;
+			}
 		    /* a minimal hit doesn't exercise proficiency */
 		    valid_weapon_attack = (tmp > 1);
 		    if (!valid_weapon_attack || mon == u.ustuck || u.twoweap) {

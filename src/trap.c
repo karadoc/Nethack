@@ -634,6 +634,7 @@ unsigned trflags;
 	boolean already_seen = trap->tseen;
 	boolean webmsgok = (!(trflags & NOWEBMSG));
 	boolean forcebungle = (trflags & FORCEBUNGLE);
+	int zlevel = level_difficulty(); // K-Mod, used to boost trap damage
 
 	nomul(00);
 
@@ -695,7 +696,7 @@ unsigned trflags;
 		if (u.usteed && !rn2(2) && steedintrap(trap, otmp)) /* nothing */;
 		else
 #endif
-		if (thitu(8, dmgval(otmp, &youmonst), otmp, "arrow")) {
+		if (thitu(8+zlevel/3, dmgval(otmp, &youmonst)+zlevel/3, otmp, "arrow")) {
 		    obfree(otmp, (struct obj *)0);
 		} else {
 		    place_object(otmp, u.ux, u.uy);
@@ -735,7 +736,7 @@ unsigned trflags;
 		if (u.usteed && !rn2(2) && steedintrap(trap, otmp)) /* nothing */;
 		else
 #endif
-		if (thitu(7, dmgval(otmp, &youmonst), otmp, "little dart")) {
+		if (thitu(7+zlevel/3, dmgval(otmp, &youmonst)+zlevel/3, otmp, "little dart")) {
 		    if (otmp->opoisoned)
 			poisoned("dart", A_CON, "little dart", -10);
 		    obfree(otmp, (struct obj *)0);
@@ -4316,6 +4317,7 @@ lava_effects()
 {
     register struct obj *obj, *obj2;
     int dmg = 0;
+	boolean general_destruction = FALSE;
 
 	burn_away_slime();
 	if (Wwalking || likes_lava(youmonst.data))
@@ -4398,9 +4400,13 @@ lava_effects()
 					else if (obj == uquiver) uqwepgone();
 					else if (obj == uswapwep) uswapwepgone();
 				}
+				else
+					general_destruction = TRUE;
 			useupall(obj);
 			}
 		}
+		if (general_destruction)
+			pline("Some of your equipment is destroyed.");
 	}
 
 	if(dmg < u.uhp)

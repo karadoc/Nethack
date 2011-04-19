@@ -983,12 +983,21 @@ pleased(g_align)
 	    } else if (!(HStealth & INTRINSIC))  {
 		HStealth |= FROMOUTSIDE;
 		pline(msg, "Stealth");
-	    } else {
-		if (!(HProtection & INTRINSIC))  {
-		    HProtection |= FROMOUTSIDE;
-		    if (!u.ublessed)  u.ublessed = rn1(3, 2);
-		} else u.ublessed++;
-		pline(msg, "my protection");
+	    } else
+		{
+			if (!(HProtection & INTRINSIC))
+			{
+				HProtection |= FROMOUTSIDE;
+				if (u.ublessed <= 0)
+					u.ublessed = 1; // originally rn1(3, 2); K-Mod
+			}
+			else if ((rn2(15) - u.ublessed >= 0) && (rn2(15) - u.ublessed >= 0)) // same as from priests
+			{
+				u.ublessed++;
+			}
+			// Currently, this message will display whether you actually get more protection or not.
+			// I should probably change it...
+			pline(msg, "my protection");
 	    }
 	    verbalize("Use it wisely in my name!");
 	    break;

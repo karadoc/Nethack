@@ -111,6 +111,7 @@ A("Werebane",			SILVER_SABER,
 
 A("Grayswandir",		SILVER_SABER,
 	(SPFX_RESTR|SPFX_HALRES), 0, 0,
+	/* (PHYS damage && !SPFX_ATTK && damd==0) therefore this weapon does double damage */
 	PHYS(5,0),	NO_DFNS,	NO_CARY,	0, A_LAWFUL, NON_PM, NON_PM, 8000L ),
 
 A("Giantslayer",		LONG_SWORD,
@@ -150,7 +151,7 @@ A("Sunsword",			LONG_SWORD,
 /*
 ** K-Mod, 15/apr/2011, karadoc
 ** New spear to celebrate the new major update. (or to help valks, whatever)
-** When thrown, Gungnir always hits and does +10 damage.
+** When thrown, Gungnir always hits and does x2 damage +5.
 */
 A("Gungnir",		SILVER_SPEAR,
   SPFX_RESTR, 0, 0,

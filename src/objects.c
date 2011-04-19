@@ -233,10 +233,10 @@ WEAPON("mace", (char *)0,
 	1, 0, 0, 40, 30,  5,  6,  6, 0, B,   P_MACE, IRON, HI_METAL),
 						/* +1 small */
 WEAPON("morning star", (char *)0,
-	1, 0, 0, 12,120, 10,  4,  6, 0, B,   P_MORNING_STAR, IRON, HI_METAL),
+	1, 0, 0, 12,100, 10,  4,  6, 0, B,   P_MORNING_STAR, IRON, HI_METAL),
 						/* +d4 small, +1 large */
 WEAPON("war hammer", (char *)0,
-	1, 0, 0, 15, 50,  5,  4,  4, 0, B,   P_HAMMER, IRON, HI_METAL),
+	1, 0, 0, 15, 50,  5,  5,  5, 0, B,   P_HAMMER, IRON, HI_METAL),
 						/* +1 small */
 WEAPON("club", (char *)0,
 	1, 0, 0, 12, 30,  3,  6,  3, 0, B,   P_CLUB, WOOD, HI_WOOD),

@@ -323,19 +323,7 @@ moveloop()
 				destroy_item(SPBOOK_CLASS, AD_FIRE);
 				destroy_item(POTION_CLASS, AD_FIRE);
 				pline_The("lava burns you%s", Fire_immunity? "." : "!");
-				// The following line is bork. I'm just leaving it here to remind us all of the dangers of macros
-				//losehp(Fire_immunity? min(u.uhp-1, d(2,4)) : d(12,4),	"molten lava", KILLED_BY);
-				{
-					int dmg;
-					if (Fire_immunity)
-					{
-						int	dmg = d(2,4);
-						dmg = min(u.uhp-1, dmg);
-					}
-					else
-						dmg = d(12,4);
-					losehp(dmg, "molten lava", KILLED_BY);
-				}
+				losehp(Fire_immunity? d(1,4) : d(8,4),	"molten lava", KILLED_BY);
 			}
 		}
 // K-Mod end
