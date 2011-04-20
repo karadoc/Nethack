@@ -165,7 +165,7 @@ const char *verb;
 			mtmp->mtrapped = 0;
 		    } else {
 			if (!Passes_walls && !throws_rocks(youmonst.data)) {
-			    losehp(rnd(15), "squished under a boulder",
+			    losehp(rnd(15)+5, "squished under a boulder", // K-Mod, +5
 				   NO_KILLER_PREFIX);
 			    return FALSE;	/* player remains trapped */
 			} else u.utrap = 0;
@@ -1133,7 +1133,7 @@ boolean at_stairs, falling, portal;
 		    u_on_newpos(xdnladder, ydnladder);
 		} else {
 		    if (newdungeon) {
-			if (Is_stronghold(&u.uz)) {
+			/*if (Is_stronghold(&u.uz)) {
 			    register xchar x, y;
 
 			    do {
@@ -1143,7 +1143,12 @@ boolean at_stairs, falling, portal;
 				    IS_WALL(levl[x][y].typ));
 			    u_on_newpos(x, y);
 			} else u_on_sstairs();
-		    } else u_on_dnstairs();
+		    } else u_on_dnstairs();*/ // stronghold has stairs now. Why shouldn't it?
+				u_on_sstairs();
+			} else {
+				u_on_dnstairs();
+			}
+
 		}
 		/* Remove bug which crashes with levitation/punishment  KAA */
 		if (Punished && !Levitation) {

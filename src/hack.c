@@ -234,7 +234,7 @@ moverock()
 		    pline("With %s effort you move %s.",
 			  throws_rocks(youmonst.data) ? "little" : "great",
 			  the(xname(otmp)));
-		  exercise(A_STR, TRUE);
+		  // exercise(A_STR, TRUE);// K-Mod, strength is easy enough to improve in other ways.
 #ifdef STEED
 		} else 
 		    pline("%s moves %s.",

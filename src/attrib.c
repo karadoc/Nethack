@@ -305,7 +305,7 @@ boolean	inc_or_dec;
 STATIC_OVL void
 exerper()
 {
-	if(!(moves % 10)) {
+	if(!(moves % 9)) { // K-Mod, changed from %10 to %9, to make it less easy for the player game the system
 		/* Hunger Checks */
 
 		int hs = (u.uhunger > 1000) ? SATIATED :
@@ -321,7 +321,10 @@ exerper()
 					if (Role_if(PM_MONK))
 					    exercise(A_WIS, FALSE);
 					break;
-		    case NOT_HUNGRY:	exercise(A_CON, TRUE); break;
+		    case NOT_HUNGRY:
+				if (!(moves%18)) // K-Mod, kludge to make it a bit harder to exercise con
+					exercise(A_CON, TRUE);
+				break;
 		    case WEAK:		exercise(A_STR, FALSE);
 					if (Role_if(PM_MONK))	/* fasting */
 					    exercise(A_WIS, TRUE);

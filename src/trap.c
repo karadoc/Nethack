@@ -696,7 +696,7 @@ unsigned trflags;
 		if (u.usteed && !rn2(2) && steedintrap(trap, otmp)) /* nothing */;
 		else
 #endif
-		if (thitu(8+zlevel/3, dmgval(otmp, &youmonst)+zlevel/3, otmp, "arrow")) {
+		if (thitu(8+zlevel/2, dmgval(otmp, &youmonst)+zlevel/3, otmp, "arrow")) {
 		    obfree(otmp, (struct obj *)0);
 		} else {
 		    place_object(otmp, u.ux, u.uy);
@@ -736,7 +736,7 @@ unsigned trflags;
 		if (u.usteed && !rn2(2) && steedintrap(trap, otmp)) /* nothing */;
 		else
 #endif
-		if (thitu(7+zlevel/3, dmgval(otmp, &youmonst)+zlevel/3, otmp, "little dart")) {
+		if (thitu(7+zlevel/2, dmgval(otmp, &youmonst)+zlevel/3, otmp, "little dart")) {
 		    if (otmp->opoisoned)
 			poisoned("dart", A_CON, "little dart", -10);
 		    obfree(otmp, (struct obj *)0);
@@ -770,7 +770,8 @@ unsigned trflags;
 		    if (uarmh) {
 			if(is_metallic(uarmh)) {
 			    pline("Fortunately, you are wearing a hard helmet.");
-			    dmg = 2;
+			    //dmg = 2;
+				dmg/=2;
 			} else if (flags.verbose) {
 			    Your("%s does not protect you.", xname(uarmh));
 			}
@@ -2692,7 +2693,7 @@ struct obj *box;	/* null for floor trap */
 	      the(box ? xname(box) : surface(u.ux,u.uy)));
 	if (Fire_resistance) {
 	    shieldeff(u.ux, u.uy);
-		num = Fire_immunity ? rn2(2) : rn2(4);
+		num = Fire_immunity ? rn2(2) : d(2,4);
 	} else if (Upolyd) {
 	    num = d(2,4);
 	    switch (u.umonnum) {
@@ -2709,6 +2710,7 @@ struct obj *box;	/* null for floor trap */
 	    num = d(2,4);
 	    if (u.uhpmax > u.ulevel)
 		u.uhpmax -= rn2(min(u.uhpmax,num + 1)), flags.botl = 1;
+		num += d(2, 4); // K-Mod
 	}
 	if (!num)
 	    You("are uninjured.");
@@ -3292,11 +3294,8 @@ int otyp;
 int cnt;
 struct trap *ttmp;
 {
-	struct obj *otmp;
+	struct obj *otmp = mksobj(otyp, TRUE, FALSE);;
 	
-	/* "That must have been a claymore mine."  -- DSR */
-	if (otyp == LAND_MINE && rn2(2)) { otyp = TWO_HANDED_SWORD; }
-	otmp = mksobj(otyp, TRUE, FALSE);
 	otmp->quan=cnt;
 	otmp->owt = weight(otmp);
 	/* Only dart traps are capable of being poisonous */

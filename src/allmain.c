@@ -151,24 +151,38 @@ moveloop()
 		     * Another possible result is rehumanization, which requires
 		     * that encumbrance and movement rate be recalculated.
 		     */
-		    if (u.uinvulnerable) {
-			/* for the moment at least, you're in tiptop shape */
-			wtcap = UNENCUMBERED;
-		    } else if (Upolyd && youmonst.data->mlet == S_EEL && !is_pool(u.ux,u.uy) && !Is_waterlevel(&u.uz)) {
-			if (u.mh > 1) {
-			    u.mh--;
-			    flags.botl = 1;
-			} else if (u.mh < 1)
-			    rehumanize();
-		    } else if (Upolyd && u.mh < u.mhmax) {
-			if (u.mh < 1)
-			    rehumanize();
-			else if (Regeneration ||
-				    (wtcap < MOD_ENCUMBER && !(moves%20))) {
-			    flags.botl = 1;
-			    u.mh++;
+			if (u.uinvulnerable)
+			{
+				/* for the moment at least, you're in tiptop shape */
+				wtcap = UNENCUMBERED;
 			}
-		    } else if (u.uhp < u.uhpmax &&
+			else if (Upolyd && youmonst.data->mlet == S_EEL && !is_pool(u.ux,u.uy) && !Is_waterlevel(&u.uz))
+			{
+				if (u.mh > 1)
+				{
+					u.mh--;
+					flags.botl = 1;
+				}
+				else if (u.mh < 1)
+					rehumanize();
+			}
+			else if (Upolyd && u.mh < u.mhmax)
+			{
+				if (u.mh < 1)
+					rehumanize();
+				else if (Regeneration ||
+					(wtcap < MOD_ENCUMBER && !(moves%20)))
+				{
+					flags.botl = 1;
+					u.mh++;
+				}
+			}
+/*
+** K-Mod, 20/apr/2011, karadoc
+** rescaled hp regeneration rate
+*/
+			/* original code
+		    else if (u.uhp < u.uhpmax &&
 			 (wtcap < MOD_ENCUMBER || !u.umoved || Regeneration)) {
 			if (u.ulevel > 9 && !(moves % 3)) {
 			    int heal, Con = (int) ACURR(A_CON);
@@ -189,8 +203,56 @@ moveloop()
 			    flags.botl = 1;
 			    u.uhp++;
 			}
-		    }
+			} */
+			else if (u.uhp < u.uhpmax &&
+				(wtcap < MOD_ENCUMBER || !u.umoved || Regeneration))
+			{
+				// (note, original regen rate was between 1/15 and 3. Now it's more like ~1/15 to 1.5
+				int regen_rate, heal, Con = (int) ACURR(A_CON);
+				regen_rate = ((u.ulevel+1) * (Con + 12)) / 24; // per 30 turns
+				if (Regeneration)
+				{
+					regen_rate*=3;  // triple natural regen
+					regen_rate+=30; // +1 hp per turn
+					// I expect this to amount to around 4 hp/turn in the late game
+					// (which is close to what it would have been in the orgininal system)
+				}
 
+				// distribute the healing across 30 turns. I've made a macro to simply the code
+#define HEAL_SHARE(t) \
+				do { \
+					if (!(moves % (t))) \
+					{ \
+						heal += regen_rate / (30 / (t)); \
+					} \
+					regen_rate -= (regen_rate / (30/(t))) * (30/(t)); \
+				} while(0) // swallowing the semicolon
+
+				heal = 0;
+				// per turn
+				HEAL_SHARE(1);
+
+				// per 2 turns
+				HEAL_SHARE(2);
+
+				// etc. (Note, 30 will catch everything left over)
+				HEAL_SHARE(3);
+				HEAL_SHARE(7);
+				HEAL_SHARE(15);
+				HEAL_SHARE(30);
+
+				// apply the healing for this turn
+				if (heal > 0)
+				{
+					u.uhp+=heal;
+					if(u.uhp > u.uhpmax)
+						u.uhp = u.uhpmax;
+					flags.botl = 1;
+				}
+				// remove the macro
+#undef HEAL_SHARE
+			}
+// K-Mod end
 		    /* moving around while encumbered is hard work */
 		    if (wtcap > MOD_ENCUMBER && u.umoved) {
 			if(!(wtcap < EXT_ENCUMBER ? moves%30 : moves%10)) {

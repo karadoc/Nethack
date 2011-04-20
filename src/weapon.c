@@ -745,20 +745,32 @@ abon()		/* attack bonus for strength & dexterity */
 int
 dbon()		/* damage bonus for strength */
 {
-	int str = ACURR(A_STR);
+/*
+** K-Mod, 20/apr/2011, karadoc
+** I liked what sporkhack did with this, so I'm using their system (but not their code)
+** Compared to the original code, it gives +1 damage for gauntlets of power,
+** and double the bonus when using a two-handed weapon.
+*/
+ 	int str = ACURR(A_STR);
+	int dbon = 0;
 
-	if (Upolyd) return(0);
+ 	if (Upolyd) return(0);
+ 
+	if (str < 6) dbon = -1;
+	else if (str < 16) dbon = 0;
+	else if (str < 18) dbon = 1;
+	else if (str == 18) dbon = 2;		/* up to 18 */
+	else if (str <= STR18(75)) dbon = 3;		/* up to 18/75 */
+	else if (str <= STR18(90)) dbon = 4;		/* up to 18/90 */
+	else if (str < STR18(100)) dbon = 5;		/* up to 18/99 */
+	else if (str < 125) dbon = 6;				/* 18/** to 24 */
+	else dbon = 7;								/* 25 (gauntlets of power) */
 
-	if (str < 6) return(-1);
-	else if (str < 16) return(0);
-	else if (str < 18) return(1);
-	else if (str == 18) return(2);		/* up to 18 */
-	else if (str <= STR18(75)) return(3);		/* up to 18/75 */
-	else if (str <= STR18(90)) return(4);		/* up to 18/90 */
-	else if (str < STR18(100)) return(5);		/* up to 18/99 */
-	else return(6);
+	if (uwep && bimanual(uwep))
+		dbon *= 2;
+
+	return dbon;
 }
-
 
 /* copy the skill level name into the given buffer */
 STATIC_OVL char *

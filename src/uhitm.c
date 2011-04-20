@@ -599,12 +599,6 @@ int thrown;
 		    }
 		} else {
 		    tmp = dmgval(obj, mon);
-			if (obj->oartifact == ART_GUNGNIR && thrown)
-			{
-				// bonus damage for throwing the great spear
-				tmp*=2;
-				tmp+=5;
-			}
 		    /* a minimal hit doesn't exercise proficiency */
 		    valid_weapon_attack = (tmp > 1);
 		    if (!valid_weapon_attack || mon == u.ustuck || u.twoweap) {
@@ -908,8 +902,37 @@ int thrown;
 	    /* to be valid a projectile must have had the correct projector */
 	    wep = PROJECTILE(obj) ? uwep : obj;
 	    tmp += weapon_dam_bonus(wep);
-	    /* [this assumes that `!thrown' implies wielded...] */
 	    wtype = thrown ? weapon_type(wep) : uwep_skill_type();
+/*
+** K-Mod, 20/apr/2011, karadoc
+** thrown spears and javalins get extra bonus damage because they can't multishoot.
+*/
+		if (thrown && (wtype == P_SPEAR || wtype == P_JAVELIN))
+		{
+			// multishot is effectively a damage multiplier
+			// So this damage bonus should be significant to compensate.
+			switch (P_SKILL(wtype))
+			{
+			default:
+				break; // no bonus
+			case P_SKILLED: // +40%
+				tmp*=14;
+				tmp/=10;
+				break;
+			case P_EXPERT: // +80%
+				tmp*=18;
+				tmp/=10;
+				break;
+			}
+			if (obj->oartifact == ART_GUNGNIR)
+			{
+				// bonus damage for throwing the great spear
+				tmp*=2;
+				tmp+=5;
+			}
+		}
+// K-Mod end
+	    /* [this assumes that `!thrown' implies wielded...] */
 	    use_skill(wtype, 1);
 	}
 

@@ -933,7 +933,7 @@ GEM("worthless piece of violet glass", "violet", 77, 1, 0, 6, 5, GLASS, CLR_MAGE
  * that is currently everything between luckstones and flint (inclusive).
  */
 ROCK("luckstone", "gray",	0, 10,  10, 60, 3, 3, 1, 10, 7, MINERAL, CLR_GRAY),
-ROCK("loadstone", "gray",	0, 10, 500,  1, 3, 3, 1, 10, 6, MINERAL, CLR_GRAY),
+ROCK("loadstone", "gray",	0, 10, 500,  1, 10, 8, 1, 10, 6, MINERAL, CLR_GRAY), // K-Mod, increased damage (goodluck with that)
 ROCK("touchstone", "gray",	0,  8,  10, 45, 3, 3, 1, 10, 6, MINERAL, CLR_GRAY),
 ROCK("flint", "gray",		0, 10,  10,  1, 6, 6, 0, 10, 7, MINERAL, CLR_GRAY),
 ROCK("rock", (char *)0,		1,100,  10,  0, 3, 3, 0, 10, 7, MINERAL, CLR_GRAY),
@@ -947,7 +947,7 @@ ROCK("rock", (char *)0,		1,100,  10,  0, 3, 3, 0, 10, 7, MINERAL, CLR_GRAY),
  * on a specific type and may act as containers (both affect weight).
  */
 OBJECT(OBJ("boulder",(char *)0), BITS(1,0,0,0,0,0,0,0,1,0,0,P_NONE,MINERAL), 0,
-		ROCK_CLASS,   100, 0, 6000,  0, 20, 20, 0, 0, 2000, HI_MINERAL),
+		ROCK_CLASS,   100, 0, 6000,  0, 40, 30, 0, 0, 2000, HI_MINERAL), // K-Mod, increased damage (was 20/20)
 OBJECT(OBJ("statue", (char *)0), BITS(1,0,0,1,0,0,0,0,0,0,0,P_NONE,MINERAL), 0,
 		ROCK_CLASS,   900, 0, 2500,  0, 20, 20, 0, 0, 2500, CLR_WHITE),
 

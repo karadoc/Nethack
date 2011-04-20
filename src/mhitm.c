@@ -112,8 +112,18 @@ fightm(mtmp)		/* have monsters fight each other */
 	nmon = 0;
 #endif
 	/* perhaps the monster will resist Conflict */
-	if(resist(mtmp, RING_CLASS, 0, 0))
+/*
+** K-Mod, 20/apr/2011, karadoc
+** I dislike this method of resistance, but I'm a bit worried about subtle side effects if I remove it.
+** So rather than just replace it, I'm just going to add an additional check.
+** Note: all this assumes that fightm() has been called because of a ring of conflict.
+*/
+	if (rn2((int)mtmp->m_lev + level_difficulty()) >= u.ulevel || // K-Mod
+		resist(mtmp, RING_CLASS, 0, 0)) // original
+	{
 	    return(0);
+	}
+// K-Mod end
 
 	if(u.ustuck == mtmp) {
 	    /* perhaps we're holding it... */
