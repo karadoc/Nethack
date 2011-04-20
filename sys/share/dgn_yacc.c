@@ -8,6 +8,7 @@ static char yysccsid[] = "@(#)yaccpar	1.9 (Berkeley) 02/21/93";
 #define yyerrok (yyerrflag=0)
 #define YYRECOVERING (yyerrflag!=0)
 #define YYPREFIX "yy"
+#line 2 "dgn_comp.y"
 /*	SCCS Id: @(#)dgn_comp.c	3.4	1996/06/22	*/
 /*	Copyright (c) 1989 by Jean-Christophe Collet */
 /*	Copyright (c) 1990 by M. Stephenson				  */
@@ -70,11 +71,13 @@ extern int fatal_error;
 extern const char *fname;
 extern FILE *yyin, *yyout;	/* from dgn_lex.c */
 
+#line 66 "dgn_comp.y"
 typedef union
 {
 	int	i;
 	char*	str;
 } YYSTYPE;
+#line 81 "y.tab.c"
 #define INTEGER 257
 #define A_DUNGEON 258
 #define BRANCH 259
@@ -331,6 +334,7 @@ YYSTYPE yylval;
 short yyss[YYSTACKSIZE];
 YYSTYPE yyvs[YYSTACKSIZE];
 #define yystacksize YYSTACKSIZE
+#line 433 "dgn_comp.y"
 
 void
 init_dungeon()
@@ -577,6 +581,7 @@ output_dgn()
 }
 
 /*dgn_comp.y*/
+#line 585 "y.tab.c"
 #define YYABORT goto yyabort
 #define YYREJECT goto yyabort
 #define YYACCEPT goto yyaccept
@@ -589,7 +594,7 @@ yyparse()
     register char *yys;
     extern char *getenv();
 
-    if ((yys = getenv("YYDEBUG")) != 0)
+    if (yys = getenv("YYDEBUG"))
     {
         yyn = *yys;
         if (yyn >= '0' && yyn <= '9')
@@ -606,7 +611,7 @@ yyparse()
     *yyssp = yystate = 0;
 
 yyloop:
-    if ((yyn = yydefred[yystate]) != 0) goto yyreduce;
+    if (yyn = yydefred[yystate]) goto yyreduce;
     if (yychar < 0)
     {
         if ((yychar = yylex()) < 0) yychar = 0;
@@ -621,7 +626,7 @@ yyloop:
         }
 #endif
     }
-    if ((yyn = yysindex[yystate]) != 0 && (yyn += yychar) >= 0 &&
+    if ((yyn = yysindex[yystate]) && (yyn += yychar) >= 0 &&
             yyn <= YYTABLESIZE && yycheck[yyn] == yychar)
     {
 #if YYDEBUG
@@ -639,7 +644,7 @@ yyloop:
         if (yyerrflag > 0)  --yyerrflag;
         goto yyloop;
     }
-    if ((yyn = yyrindex[yystate]) != 0 && (yyn += yychar) >= 0 &&
+    if ((yyn = yyrindex[yystate]) && (yyn += yychar) >= 0 &&
             yyn <= YYTABLESIZE && yycheck[yyn] == yychar)
     {
         yyn = yytable[yyn];
@@ -662,7 +667,7 @@ yyinrecovery:
         yyerrflag = 3;
         for (;;)
         {
-            if ((yyn = yysindex[*yyssp]) != 0 && (yyn += YYERRCODE) >= 0 &&
+            if ((yyn = yysindex[*yyssp]) && (yyn += YYERRCODE) >= 0 &&
                     yyn <= YYTABLESIZE && yycheck[yyn] == YYERRCODE)
             {
 #if YYDEBUG
@@ -718,11 +723,13 @@ yyreduce:
     switch (yyn)
     {
 case 2:
+#line 83 "dgn_comp.y"
 {
 			output_dgn();
 		  }
 break;
 case 9:
+#line 99 "dgn_comp.y"
 {
 			init_dungeon();
 			Strcpy(tmpdungeon[n_dgns].name, yyvsp[-3].str);
@@ -734,21 +741,25 @@ case 9:
 		  }
 break;
 case 10:
+#line 111 "dgn_comp.y"
 {
 			yyval.i = 0;
 		  }
 break;
 case 11:
+#line 115 "dgn_comp.y"
 {
 			yyval.i = yyvsp[0].i;
 		  }
 break;
 case 15:
+#line 126 "dgn_comp.y"
 {
 			tmpdungeon[n_dgns].entry_lev = yyvsp[0].i;
 		  }
 break;
 case 17:
+#line 135 "dgn_comp.y"
 {
 			if(yyvsp[0].i <= TOWN || yyvsp[0].i >= D_ALIGN_CHAOTIC)
 			    yyerror("Illegal description - ignoring!");
@@ -757,6 +768,7 @@ case 17:
 		  }
 break;
 case 18:
+#line 142 "dgn_comp.y"
 {
 			if(yyvsp[0].i && yyvsp[0].i < D_ALIGN_CHAOTIC)
 			    yyerror("Illegal alignment - ignoring!");
@@ -765,12 +777,14 @@ case 18:
 		  }
 break;
 case 19:
+#line 151 "dgn_comp.y"
 {
 			Strcpy(tmpdungeon[n_dgns].protoname, yyvsp[0].str);
 			Free(yyvsp[0].str);
 		  }
 break;
 case 25:
+#line 165 "dgn_comp.y"
 {
 			init_level();
 			Strcpy(tmplevel[n_levs].name, yyvsp[-3].str);
@@ -782,6 +796,7 @@ case 25:
 		  }
 break;
 case 26:
+#line 175 "dgn_comp.y"
 {
 			init_level();
 			Strcpy(tmplevel[n_levs].name, yyvsp[-4].str);
@@ -794,6 +809,7 @@ case 26:
 		  }
 break;
 case 27:
+#line 188 "dgn_comp.y"
 {
 			init_level();
 			Strcpy(tmplevel[n_levs].name, yyvsp[-4].str);
@@ -806,6 +822,7 @@ case 27:
 		  }
 break;
 case 28:
+#line 199 "dgn_comp.y"
 {
 			init_level();
 			Strcpy(tmplevel[n_levs].name, yyvsp[-5].str);
@@ -819,6 +836,7 @@ case 28:
 		  }
 break;
 case 29:
+#line 213 "dgn_comp.y"
 {
 			if(yyvsp[0].i >= D_ALIGN_CHAOTIC)
 			    yyerror("Illegal description - ignoring!");
@@ -827,6 +845,7 @@ case 29:
 		  }
 break;
 case 30:
+#line 220 "dgn_comp.y"
 {
 			if(yyvsp[0].i && yyvsp[0].i < D_ALIGN_CHAOTIC)
 			    yyerror("Illegal alignment - ignoring!");
@@ -835,6 +854,7 @@ case 30:
 		  }
 break;
 case 31:
+#line 229 "dgn_comp.y"
 {
 			init_level();
 			Strcpy(tmplevel[n_levs].name, yyvsp[-4].str);
@@ -849,6 +869,7 @@ case 31:
 		  }
 break;
 case 32:
+#line 242 "dgn_comp.y"
 {
 			init_level();
 			Strcpy(tmplevel[n_levs].name, yyvsp[-5].str);
@@ -864,6 +885,7 @@ case 32:
 		  }
 break;
 case 33:
+#line 258 "dgn_comp.y"
 {
 			init_level();
 			Strcpy(tmplevel[n_levs].name, yyvsp[-5].str);
@@ -879,6 +901,7 @@ case 33:
 		  }
 break;
 case 34:
+#line 272 "dgn_comp.y"
 {
 			init_level();
 			Strcpy(tmplevel[n_levs].name, yyvsp[-6].str);
@@ -895,6 +918,7 @@ case 34:
 		  }
 break;
 case 37:
+#line 293 "dgn_comp.y"
 {
 			init_branch();
 			Strcpy(tmpbranch[n_brs].name, yyvsp[-4].str);
@@ -908,6 +932,7 @@ case 37:
 		  }
 break;
 case 38:
+#line 307 "dgn_comp.y"
 {
 			init_branch();
 			Strcpy(tmpbranch[n_brs].name, yyvsp[-5].str);
@@ -923,41 +948,49 @@ case 38:
 		  }
 break;
 case 39:
+#line 323 "dgn_comp.y"
 {
 			yyval.i = TBR_STAIR;	/* two way stair */
 		  }
 break;
 case 40:
+#line 327 "dgn_comp.y"
 {
 			yyval.i = TBR_STAIR;	/* two way stair */
 		  }
 break;
 case 41:
+#line 331 "dgn_comp.y"
 {
 			yyval.i = TBR_NO_UP;	/* no up staircase */
 		  }
 break;
 case 42:
+#line 335 "dgn_comp.y"
 {
 			yyval.i = TBR_NO_DOWN;	/* no down staircase */
 		  }
 break;
 case 43:
+#line 339 "dgn_comp.y"
 {
 			yyval.i = TBR_PORTAL;	/* portal connection */
 		  }
 break;
 case 44:
+#line 345 "dgn_comp.y"
 {
 			yyval.i = 0;	/* defaults to down */
 		  }
 break;
 case 45:
+#line 349 "dgn_comp.y"
 {
 			yyval.i = yyvsp[0].i;
 		  }
 break;
 case 46:
+#line 355 "dgn_comp.y"
 {
 			char *p = yyvsp[0].str;
 			if (strlen(p) != 1) {
@@ -970,6 +1003,7 @@ case 46:
 		  }
 break;
 case 47:
+#line 385 "dgn_comp.y"
 {
 			if (yyvsp[-3].i < -MAXLEVEL || yyvsp[-3].i > MAXLEVEL) {
 			    yyerror("Abs base out of dlevel range - zeroing!");
@@ -986,6 +1020,7 @@ case 47:
 		  }
 break;
 case 48:
+#line 422 "dgn_comp.y"
 {
 			if (yyvsp[-3].i < -MAXLEVEL || yyvsp[-3].i > MAXLEVEL) {
 			    yyerror("Rel base out of dlevel range - zeroing!");
@@ -996,6 +1031,7 @@ case 48:
 			}
 		  }
 break;
+#line 1035 "y.tab.c"
     }
     yyssp -= yym;
     yystate = *yyssp;
@@ -1028,7 +1064,7 @@ break;
         if (yychar == 0) goto yyaccept;
         goto yyloop;
     }
-    if ((yyn = yygindex[yym]) != 0 && (yyn += yystate) >= 0 &&
+    if ((yyn = yygindex[yym]) && (yyn += yystate) >= 0 &&
             yyn <= YYTABLESIZE && yycheck[yyn] == yystate)
         yystate = yytable[yyn];
     else

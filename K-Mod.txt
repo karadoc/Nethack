@@ -48,3 +48,9 @@
 + ducking damage from exploding spheres is now much less likely
 
 + increased probably that good ring / amulets / boots will be cursed, and in some cases decreased the probably that bad will will be cursed. The point of this is to make it harder to guess what's good and what's bad.
+
++ Completely reworked the player hp regen system. Max regen is now lower than before. Regen scales smoothly with character level. Magical regeneration is more powerful in the late-game.
+
++ Added a damage multiplier for thrown spears / javelins when above basic skill level.
++ Added additional conflict resistance for all monsters: r(dlvl + mlvl) >= clvl means conflict is resisted.
++ Increased the bonus damage from strength, and doubled the bonus for 2-handed weapons.
