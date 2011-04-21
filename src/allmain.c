@@ -209,7 +209,9 @@ moveloop()
 			{
 				// (note, original regen rate was between 1/15 and 3. Now it's more like ~1/15 to 1.5
 				int regen_rate, heal, Con = (int) ACURR(A_CON);
-				regen_rate = ((u.ulevel+1) * (Con + 12)) / 24; // per 30 turns
+				regen_rate = ((u.ulevel+1) * (Con + 12)) / 40; // per 30 turns
+				if (regen_rate < 2)
+					regen_rate = 2;
 				if (Regeneration)
 				{
 					regen_rate*=3;  // triple natural regen

@@ -137,7 +137,7 @@ gottype:
 	for(sroom = &rooms[0]; ; sroom++){
 		if(sroom->hx < 0) return;
 		if(sroom - rooms >= nroom) {
-			pline("rooms not closed by -1?");
+			impossible("rooms not closed by -1?");
 			return;
 		}
 		if(sroom->rtype != OROOM) continue;

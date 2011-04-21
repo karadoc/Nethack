@@ -392,7 +392,9 @@ int style;
 	int a, b, i;
 	boolean any = TRUE;
 
-	if (style == -1) style = rn2(4);
+	// if (style == -1) style = rn2(4);
+	// K-Mod: all the 'styles' sporkhack added are broken, so I've disabled them until I get around to fixing them.
+	style = 0;
 
 	switch (style) {
 
@@ -421,6 +423,9 @@ int style;
 	    }
 	break;
 	case 1: /* at least one corridor leaves from each room and goes to random room */
+// K-Mod: The original (sporkhack) code for this was completely bork.
+// In fact, I think this whole idea is poorly thought out. So I've replaced it.
+		/* original code
 	    if (nroom > 1) {
 		int cnt = 0;
 		for (a = 0; a < nroom; a++) {
@@ -435,8 +440,21 @@ int style;
 		    join(a, b, FALSE);
 		}
 	    }
-	    break;
+	    break;*/
+
+		if (nroom > 1)
+		{
+			for (a = 0; a < nroom; a++)
+			{
+				b = ((rnd(4)-2 + a)+nroom)%nroom;
+				while (1)
+					break; // Fuck it. all of these 'styles' are bork. I'm disabling this and going to bed.
+			}
+		}
+		break;
 	case 2: /* circular path: room1 -> room2 -> room3 -> ... -> room1  */
+// K-Mod: this could be good, except that the rooms aren't ordered in a circular fashion.
+// The result of this will be a zig-zag, and then a really long corridor back to the start.
 	    if (nroom > 1) {
 		for (a = 0; a < nroom; a++) {
 		    b = (a + 1) % nroom;
@@ -445,12 +463,14 @@ int style;
 	    }
 	    break;
 	case 3: /* all roads lead to rome. or to the first room. */
-	    if (nroom > 1) {
-		b = 0;
-		for (a = 1; a < nroom; a++) {
-		    join(a, b, FALSE);
+// K-Mod: leading to the first room is a bad idea, because the rooms are sorted.
+// I've changed it to lead to the center room instead.
+		b = nroom/2;
+		for (a = 0; a < nroom; a++)
+		{
+			if (a != b)
+				join(a, b, FALSE);
 		}
-	    }
 	    break;
 	}
 }
@@ -1014,14 +1034,14 @@ skip0:
 #ifdef REINCARNATION
 	skip_nonrogue:
 #endif
-		/* Boost object generation here slightly so that later when we
-		 * start encouraging players to use resources, there _are_ some */
-		if(rn2(3)) {
+		// Some extra loot. K-Mod sets these probabilies somewhere between vanilla and sporkhack.
+		if(rn2(2)) {
 		    (void) mkobj_at(0, somex(croom), somey(croom), TRUE);
 		    tryct = 0;
-		    while(!rn2(4)) {
+		    while(!rn2(5)) {
 			if(++tryct > 100) {
-			    impossible("tryct overflow4");
+			    //impossible("tryct overflow4");
+				// This isn't impossible. I see no reason to pretend that it is.
 			    break;
 			}
 			(void) mkobj_at(0, somex(croom), somey(croom), TRUE);
@@ -1172,7 +1192,7 @@ mkpoolroom()
     if (sroom->hx - sroom->lx < 3 || sroom->hy - sroom->ly < 3) return;
 
     sroom->rtype = POOLROOM;
-    typ = !rn2(5) ? POOL : LAVAPOOL;
+    typ = rn2(5) ? POOL : LAVAPOOL;
 
     wallwalk_right(sroom->lx, sroom->ly, typ, sroom->rlit, ROOM, 96);
 }

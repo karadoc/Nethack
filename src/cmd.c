@@ -123,6 +123,7 @@ STATIC_PTR int NDECL(wiz_show_seenv);
 STATIC_PTR int NDECL(wiz_show_vision);
 STATIC_PTR int NDECL(wiz_mon_polycontrol);
 STATIC_PTR int NDECL(wiz_show_wmodes);
+STATIC_PTR int NDECL(wiz_check); // K-Mod
 #if defined(__BORLANDC__) && !defined(_WIN32)
 extern void FDECL(show_borlandc_stats, (winid));
 #endif
@@ -753,6 +754,22 @@ wiz_show_wmodes(VOID_ARGS)
 	}
 	display_nhwindow(win, TRUE);
 	destroy_nhwindow(win);
+	return 0;
+}
+
+// K-Mod misc. 'check' command.
+// I will change this command to do whatever it is I'm trying to check at the time.
+// There is no fixed functionality. It will change from build to build.
+/* #wmode command */
+STATIC_PTR int
+wiz_check(VOID_ARGS)
+{
+	char *r = in_rooms(u.ux, u.uy, 0);
+	while (*r)
+	{
+		pline("(room %d, doorcnt = %d)", *r-ROOMOFFSET, rooms[*r-ROOMOFFSET].doorct);
+		r++;
+	}
 	return 0;
 }
 
@@ -1946,6 +1963,7 @@ static const struct ext_func_tab debug_extcmdlist[] = {
 	{"wizdebug", "wizard debug command", wiz_debug_cmd, TRUE},
 #endif
 	{"wmode", "show wall modes", wiz_show_wmodes, TRUE},
+	{"check", "miscellaneous debug command (no fixed functionality)", wiz_check, TRUE}, // K-Mod
 	{(char *)0, (char *)0, donull, TRUE}
 };
 

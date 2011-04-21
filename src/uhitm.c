@@ -266,7 +266,7 @@ register struct monst *mtmp;
 	    tmp++;
 	if(Role_if(PM_MONK) && !Upolyd) {
 	    if (uarm) {
-		Your("armor is rather cumbersome...");
+		//Your("armor is rather cumbersome..."); // K-Mod, moved this message elsewhere.
 		tmp -= urole.spelarmr;
 	    } else if (!uwep && !uarms) {
 		tmp += (u.ulevel / 3) + 2;
@@ -476,6 +476,11 @@ struct attack *uattk;
 {
 	boolean malive;
 	int mhit = (tmp > (dieroll = rnd(20)) || u.uswallow);
+
+// K-Mod, moved this message here so that it is only displayed when we miss
+	if(!mhit && Role_if(PM_MONK) && !Upolyd && uarm)
+		Your("armor is rather cumbersome...");
+
 
 	if(tmp > dieroll) exercise(A_DEX, TRUE);
 	malive = known_hitum(mon, &mhit, uattk);
@@ -1312,7 +1317,9 @@ register struct attack *mattk;
 
 	armpro = magic_negation(mdef);
 	/* since hero can't be cancelled, only defender's armor applies */
-	negated = !((rn2(3) >= armpro) || !rn2(50));
+	//negated = !((rn2(3) >= armpro) || !rn2(50));
+	// K-Mod, I guess we should use the modified formula here for consistency...
+	negated = (armpro && !rn2(armpro*2));
 
 	if (is_demon(youmonst.data) && !rn2(13) && !uwep
 		&& u.umonnum != PM_SUCCUBUS && u.umonnum != PM_INCUBUS

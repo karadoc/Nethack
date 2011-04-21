@@ -627,8 +627,10 @@ mdamagem(magr, mdef, mattk)
 	}
 
 	/* cancellation factor is the same as when attacking the hero */
+	// K-Mod: same as the modified version, that is.
 	armpro = magic_negation(mdef);
-	cancelled = magr->mcan || !((rn2(3) >= armpro) || !rn2(50));
+	//cancelled = magr->mcan || !((rn2(3) >= armpro) || !rn2(50));
+	cancelled = magr->mcan || (armpro && !rn2(armpro*2));
 
 	switch(mattk->adtyp) {
 	    case AD_DGST:
