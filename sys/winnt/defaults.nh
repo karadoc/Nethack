@@ -52,6 +52,8 @@ autopickup_exception=">*>*"
 #(sortloot options are 'none', 'all', 'loot')
 OPTIONS=msghistory:100,sortloot:loot
 
+OPTIONS=pickup_thrown,autoquiver
+
 # pause for delayed instadeath message
 MSGTYPE=stop "You're being drowned!"
 MSGTYPE=stop "You don't feel very well."
@@ -97,6 +99,9 @@ OPTIONS=rest_on_space
 #                                    ascii7x12|ascii8x12|ascii16x12|ascii12x16|
 #                                    ascii10x18|fit_to_screen
 OPTIONS=map_mode:tiles,scroll_margin:5
+
+# sparkle_speed (resistance graphical effect): 0 = off, 1 = normal, 2 = faster, ...
+OPTIONS=sparkle_speed:2
 
 # Message window settings
 OPTIONS=font_message:Verdana,font_size_message:9,align_message:top

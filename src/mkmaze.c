@@ -492,7 +492,7 @@ register const char *s;
 {
 	int x,y;
 	char protofile[20];
-	struct obj* otmp;
+	//struct obj* otmp;
 	s_level	*sp = Is_special(&u.uz);
 	coord mm;
 

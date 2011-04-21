@@ -1030,7 +1030,8 @@ E int NDECL(lminion);
 #ifdef USE_TRAMPOLI
 E int FDECL(do_comp, (genericptr_t,genericptr_t));
 #endif
-E void NDECL(sort_rooms);
+//E void NDECL(sort_rooms);
+E void FDECL(sort_rooms, (int));
 E void FDECL(add_room, (int,int,int,int,BOOLEAN_P,SCHAR_P,BOOLEAN_P));
 E void FDECL(add_subroom, (struct mkroom *,int,int,int,int,
 			   BOOLEAN_P,SCHAR_P,BOOLEAN_P));

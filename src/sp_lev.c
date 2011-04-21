@@ -469,7 +469,7 @@ flip_level(int flp)
     struct trap *ttmp;
     struct obj *otmp;
     struct monst *mtmp;
-    struct engr *etmp;
+//    struct engr *etmp;
     struct mkroom *sroom;
 
     /* stairs and ladders */
@@ -5172,7 +5172,7 @@ sp_lev *lvl;
 	case SPO_SEL_FILTER: /* sorta like logical and */
 	    {
 		struct opvar *filtertype;
-		int x,y;
+		//int x,y;
 		if (!OV_pop_i(filtertype)) panic("no sel filter type");
 		switch (OV_i(filtertype)) {
 		case 0: /* percentage */

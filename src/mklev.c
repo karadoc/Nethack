@@ -13,6 +13,16 @@
 # endif
 #endif
 
+// K-Mod level styles (idea taken from sporkhack, but certainly not the code!)
+enum
+{
+	LEVSTYLE_STANDARD = 0,
+	LEVSTYLE_RING,
+	LEVSTYLE_HUB,
+	// more to come
+	LEVSTYLE_TYPES // total number of different styles
+};
+
 /* for UNIX, Rand #def'd to (long)lrand48() or (long)random() */
 /* croom->lx etc are schar (width <= int), so % arith ensures that */
 /* conversion of result to int is reasonable */
@@ -37,7 +47,10 @@ STATIC_DCL boolean FDECL(place_niche,(struct mkroom *,int*,int*,int*));
 STATIC_DCL void FDECL(makeniche,(int));
 STATIC_DCL void NDECL(make_niches);
 
-STATIC_PTR int FDECL( CFDECLSPEC do_comp,(const genericptr,const genericptr));
+//STATIC_PTR int FDECL( CFDECLSPEC do_comp,(const genericptr,const genericptr));
+// K-Mod, I've implemented a couple of different sorting functions for use with different level styles
+STATIC_PTR int FDECL( CFDECLSPEC lx_comp,(const genericptr,const genericptr));
+STATIC_PTR int FDECL( CFDECLSPEC angle_comp,(const genericptr,const genericptr));
 
 STATIC_DCL void FDECL(dosdoor,(XCHAR_P,XCHAR_P,struct mkroom *,int));
 STATIC_DCL void FDECL(join,(int,int,BOOLEAN_P));
@@ -57,7 +70,7 @@ static boolean made_branch;	/* used only during level creation */
 /* Args must be (const genericptr) so that qsort will always be happy. */
 
 STATIC_PTR int CFDECLSPEC
-do_comp(vx,vy)
+lx_comp(vx,vy) // K-Mod, this use to be called "do_comp"
 const genericptr vx;
 const genericptr vy;
 {
@@ -77,13 +90,89 @@ const genericptr vy;
 #endif /* LINT */
 }
 
+STATIC_PTR int CFDECLSPEC
+angle_comp(vx,vy) // K-Mod, compare the angle of the rooms relative to the centre of the map
+const genericptr vx;
+const genericptr vy;
+{
+/*
+** K-Mod comment: I don't care if "lint" doesn't like this. I don't even know what lint is.
+** But I do know that the map is going to be completely bork if we don't sort these rooms properly.
+** So if lint can't handle it, then lint can get stuffed.
+*/
+	register const struct mkroom *a, *b;
+	int ax, ay, bx, by; // x and y, relative the the map centre (COLNO/2, ROWNO/2)
+	// double ra, rb, ta, tb; // radius and angle
+	int aquad, bquad; // circle quadrants
+
+	a = (const struct mkroom *)vx;
+	b = (const struct mkroom *)vy;
+
+	ax = (a->lx + a->hx - COLNO)/2;
+	bx = (b->lx + b->hx - COLNO)/2;
+	ay = (a->ly + a->hy - ROWNO)/2;
+	by = (b->ly + b->hy - ROWNO)/2;
+
+	// normalize
+	ay*=COLNO;
+	ay/=ROWNO;
+	by*=COLNO;
+	by/=ROWNO;
+
+
+	// I've decided (for various reasons) that it would be good
+	// to swap the x and y for sorting purposes.
+	/*ax^=ay;
+	ay^=ax;
+	ax^=ay;
+
+	bx^=by;
+	by^=bx;
+	bx^=by;
+	// While we're at it, we might as well flip the x axis.
+	// This way, the angle we will be comparing is measured clockwise from the top of the screen.
+	ax*=-1;
+	bx*=-1;*/
+
+	// ar = sqrt(ax*ax + ay*ay);
+	// at = atan2(ay, ax);
+	// ...
+	// But rather than use those expensive functions, we can compare quadrants and the tangent directly.
+
+	// First, the quadrant check.
+	aquad = (ax >= 0)? ((ay >= 0) ? 0 : 3) :((ay >= 0)? 1 : 2);
+	bquad = (bx >= 0)? ((by >= 0) ? 0 : 3) :((by >= 0)? 1 : 2);
+
+	if (aquad != bquad)
+	{
+		return (aquad < bquad) ? -1 : 1;
+	}
+	else
+	{
+		// same quadrant. Compare tan value. ay/ax vs by/bx
+		if (ax == 0)
+			return (bx == 0) ? 0 : -1;
+		if (bx == 0)
+			return 1;
+
+		// I've slapped an arbitrary factor of 20 on it just to reduce rounding errors
+		if ((20*ay) / ax == (20*by) / bx)
+			return 0;
+		else
+			return ((20*ay) / ax < (20*by) / bx) ? -1 : 1;
+	}
+}
+
 STATIC_OVL void
 finddpos(cc, xl,yl,xh,yh)
 coord *cc;
 xchar xl,yl,xh,yh;
 {
 	register xchar x, y;
-
+// K-Mod: I'm going to make this a bit more random.
+	register xchar rx = rn2(xh-xl+1);
+	register xchar ry = rn2(yh-yl+1);
+	/* original code
 	x = (xl == xh) ? xl : (xl + rn2(xh-xl+1));
 	y = (yl == yh) ? yl : (yl + rn2(yh-yl+1));
 	if(okdoor(x, y))
@@ -91,7 +180,16 @@ xchar xl,yl,xh,yh;
 
 	for(x = xl; x <= xh; x++) for(y = yl; y <= yh; y++)
 		if(okdoor(x, y))
-			goto gotit;
+			goto gotit;*/
+	for (x = 0; x <= xh-xl; x++)
+		for (y = 0; y <= yh-yl; y++)
+			if (okdoor(xl+(x+rx)%(xh-xl+1) , yl+(y+ry)%(yh-yl+1)))
+			{
+				cc->x = xl+(x+rx)%(xh-xl+1);
+				cc->y = yl+(y+ry)%(yh-yl+1);
+				return; // "goto" can get stuffed
+			}
+// K-Mod end
 
 	for(x = xl; x <= xh; x++) for(y = yl; y <= yh; y++)
 		if(IS_DOOR(levl[x][y].typ) || levl[x][y].typ == SDOOR)
@@ -106,12 +204,27 @@ gotit:
 }
 
 void
-sort_rooms()
+sort_rooms(style)
+int style;
 {
+	int (*comp_func)(const void *, const void *);
+
+	switch (style)
+	{
+	default: // standard
+		comp_func = lx_comp;
+		break;
+	case LEVSTYLE_RING:
+		comp_func = angle_comp;
+		break;
+	case LEVSTYLE_HUB:
+		// no sorting
+		return;
+	}
 #if defined(SYSV) || defined(DGUX)
-	qsort((genericptr_t) rooms, (unsigned)nroom, sizeof(struct mkroom), do_comp);
+	qsort((genericptr_t) rooms, (unsigned)nroom, sizeof(struct mkroom), comp_func);
 #else
-	qsort((genericptr_t) rooms, nroom, sizeof(struct mkroom), do_comp);
+	qsort((genericptr_t) rooms, nroom, sizeof(struct mkroom), comp_func);
 #endif
 }
 
@@ -181,9 +294,8 @@ do_room_or_subroom(croom, lowx, lowy, hix, hiy, lit, rtype, special, is_room)
 		levl[hix+1][lowy-1].typ = TRCORNER;
 		levl[lowx-1][hiy+1].typ = BLCORNER;
 		levl[hix+1][hiy+1].typ = BRCORNER;
-		wallification(lowx-1, lowy-1, hix+1, hiy+1);
 	    } else {	/* a subroom */
-		wallification(lowx, lowy, hix, hiy); /* this is bugs */
+		wallification(lowx-1, lowy-1, hix+1, hiy+1);
 	    }
 	}
 }
@@ -233,7 +345,7 @@ mk_split_room()
     int area;
     xchar hx, hy, lx, ly, wid, hei;
     xchar rlit;
-    struct mkroom *troom;
+    //struct mkroom *troom;
 
     if (!r1) return;
 
@@ -256,33 +368,89 @@ mk_split_room()
     r2.hy = ly + hei;
     split_rects(r1, &r2);
     smeq[nroom] = nroom;
-    if ((wid > hei) || (wid == hei && rn2(2))) {
-	int adj = (wid/2);
+
 	rlit = (rnd(1+abs(depth(&u.uz))) < 11 && rn2(77)) ? TRUE : FALSE;
-	add_room(lx,     ly, lx+adj-1,     ly+hei, rlit, OROOM, FALSE);
-	smeq[nroom] = nroom;
-	rlit = (rnd(1+abs(depth(&u.uz))) < 11 && rn2(77)) ? TRUE : FALSE;
-	troom = &rooms[nroom];
+	add_room(lx, ly, lx+wid, ly+hei, rlit, OROOM, FALSE);
+	rlit = (rnd(1+abs(depth(&u.uz))) < 11 && rn2(77)) ? TRUE : FALSE; // reroll for subroom
+	if ((wid > hei) || (wid == hei && rn2(2)))
+	{
+		int div = wid/2+rn2(1+(wid+1)%2)-1;
+		coord door;
+		add_subroom(&rooms[nroom-1], lx, ly, lx+div, ly+hei, rlit, OROOM, FALSE);
+		finddpos(&door, lx+div+1, ly+1, lx+div+1, ly+hei-1);
+		dodoor(door.x, door.y, &rooms[nroom-1]);
+		// second door
+		if (!rn2(3))
+		{
+			finddpos(&door, lx+div+1, ly+1, lx+div+1, ly+hei-1);
+			if (okdoor(door.x, door.y))
+				dodoor(door.x, door.y, &rooms[nroom-1]);
+		}
+		// third door
+		if (!rn2(4))
+		{
+			finddpos(&door, lx+div+1, ly+1, lx+div+1, ly+hei-1);
+			if (okdoor(door.x, door.y))
+				dodoor(door.x, door.y, &rooms[nroom-1]);
+		}
+	}
+	else
+	{
+		int div = hei/2+rn2(1+(hei+1)%2)-1;
+		coord door;
+		add_subroom(&rooms[nroom-1], lx, ly, lx+wid, ly+div, rlit, OROOM, FALSE);
+		finddpos(&door, lx+1, ly+div+1, lx+wid-1, ly+div+1);
+		dodoor(door.x, door.y, &rooms[nroom-1]);
+		// second door
+		if (!rn2(3))
+		{
+			finddpos(&door, lx+1, ly+div+1, lx+wid-1, ly+div+1);
+			if (okdoor(door.x, door.y))
+				dodoor(door.x, door.y, &rooms[nroom-1]);
+		}
+		// third door
+		if (!rn2(4))
+		{
+			finddpos(&door, lx+1, ly+div+1, lx+wid-1, ly+div+1);
+			if (okdoor(door.x, door.y))
+				dodoor(door.x, door.y, &rooms[nroom-1]);
+		}
+	}
+	topologize(&rooms[nroom-1]);
+	wallification(lx-1, ly-1, lx+wid+1, ly+hei+1); // to fix up the joining tiles
+
+#ifdef DUAL_ROOM_SPLIT_METHOD
+	if ((wid > hei) || (wid == hei && rn2(2)))
+	{
+		int adj = (wid/2);
+		rlit = (rnd(1+abs(depth(&u.uz))) < 11 && rn2(77)) ? TRUE : FALSE;
+		add_room(lx,     ly, lx+adj-1,     ly+hei, rlit, OROOM, FALSE);
+		smeq[nroom] = nroom;
+		rlit = (rnd(1+abs(depth(&u.uz))) < 11 && rn2(77)) ? TRUE : FALSE;
+		troom = &rooms[nroom];
 #ifdef SPECIALIZATION
-	topologize(troom,FALSE);              /* set roomno */
+		topologize(troom,FALSE);              /* set roomno */
 #else
-	topologize(troom);                    /* set roomno */
+		topologize(troom);                    /* set roomno */
 #endif
-	add_room(lx+adj+1, ly, lx+adj+adj, ly+hei, rlit, OROOM, FALSE);
-    } else {
-	int adj = (hei/2);
-	rlit = (rnd(1+abs(depth(&u.uz))) < 11 && rn2(77)) ? TRUE : FALSE;
-	add_room(lx, ly,     lx+wid, ly+adj-1,     rlit, OROOM, FALSE);
-	smeq[nroom] = nroom;
-	rlit = (rnd(1+abs(depth(&u.uz))) < 11 && rn2(77)) ? TRUE : FALSE;
-	troom = &rooms[nroom];
+		add_room(lx+adj+1, ly, lx+adj+adj, ly+hei, rlit, OROOM, FALSE);
+	}
+	else
+	{
+		int adj = (hei/2);
+		rlit = (rnd(1+abs(depth(&u.uz))) < 11 && rn2(77)) ? TRUE : FALSE;
+		add_room(lx, ly,     lx+wid, ly+adj-1,     rlit, OROOM, FALSE);
+		smeq[nroom] = nroom;
+		rlit = (rnd(1+abs(depth(&u.uz))) < 11 && rn2(77)) ? TRUE : FALSE;
+		troom = &rooms[nroom];
 #ifdef SPECIALIZATION
-	topologize(troom,FALSE);              /* set roomno */
+		topologize(troom,FALSE);              /* set roomno */
 #else
-	topologize(troom);                    /* set roomno */
+		topologize(troom);                    /* set roomno */
 #endif
-	add_room(lx, ly+adj+1, lx+wid, ly+adj+adj, rlit, OROOM, FALSE);
-    }
+		add_room(lx, ly+adj+1, lx+wid, ly+adj+adj, rlit, OROOM, FALSE);
+	}
+#endif // end old code
 }
 
 STATIC_OVL void
@@ -328,30 +496,37 @@ boolean nxcor;
 
 	/* find positions cc and tt for doors in croom and troom
 	   and direction for a corridor between them */
-
-	if(troom->hx < 0 || croom->hx < 0 || doorindex >= DOORMAX) return;
-	if(troom->lx > croom->hx) {
+	if(troom->hx < 0 || croom->hx < 0 || doorindex >= DOORMAX)
+		return;
+	if(troom->lx > croom->hx)
+	{
 		dx = 1;
 		dy = 0;
 		xx = croom->hx+1;
 		tx = troom->lx-1;
 		finddpos(&cc, xx, croom->ly, xx, croom->hy);
 		finddpos(&tt, tx, troom->ly, tx, troom->hy);
-	} else if(troom->hy < croom->ly) {
+	}
+	else if(troom->hy < croom->ly)
+	{
 		dy = -1;
 		dx = 0;
 		yy = croom->ly-1;
 		finddpos(&cc, croom->lx, yy, croom->hx, yy);
 		ty = troom->hy+1;
 		finddpos(&tt, troom->lx, ty, troom->hx, ty);
-	} else if(troom->hx < croom->lx) {
+	}
+	else if(troom->hx < croom->lx)
+	{
 		dx = -1;
 		dy = 0;
 		xx = croom->lx-1;
 		tx = troom->hx+1;
 		finddpos(&cc, xx, croom->ly, xx, croom->hy);
 		finddpos(&tt, tx, troom->ly, tx, troom->hy);
-	} else {
+	}
+	else
+	{
 		dy = 1;
 		dx = 0;
 		yy = croom->hy+1;
@@ -361,6 +536,42 @@ boolean nxcor;
 	}
 	xx = cc.x;
 	yy = cc.y;
+/*
+** K-Mod
+** when rooms were put next to each other, I was using this. but now this isn't required.
+*/
+/*
+	if (0 && (levl[xx][yy].roomno == SHARED || levl[tt.x][tt.y].roomno==SHARED))
+	{
+		// This could be done using lx, hx etc. but that might fail for irregular rooms.
+		boolean in_c = FALSE, in_t = FALSE;
+		char *r_list = in_rooms(xx, yy, 0);
+
+		while (*r_list)
+		{
+			if (&rooms[*r_list-ROOMOFFSET] == croom)
+				in_c = TRUE;
+			if (&rooms[*r_list-ROOMOFFSET] == troom)
+				in_t = TRUE;
+		}
+		if (in_c && in_t)
+		{
+			// the rooms are connected
+			if (okdoor(xx,yy) || !nxcor)
+			{
+				dodoor(xx,yy,croom);
+				add_door(xx, yy, troom); // dodoor only adds the door to one of the rooms.
+				if(smeq[a] < smeq[b])
+					smeq[b] = smeq[a];
+				else
+					smeq[a] = smeq[b];
+				// join complete
+				return;
+			}
+		}
+	}
+	*/
+
 	tx = tt.x - dx;
 	ty = tt.y - dy;
 	if(nxcor && levl[xx+dx][yy+dy].typ)
@@ -392,13 +603,12 @@ int style;
 	int a, b, i;
 	boolean any = TRUE;
 
-	// if (style == -1) style = rn2(4);
-	// K-Mod: all the 'styles' sporkhack added are broken, so I've disabled them until I get around to fixing them.
-	style = 0;
+	// K-Mod: the implementation of 'styles' in sporkhack is completely broken
+	// but I liked the idea, so I've been working to try to fix the system.
 
-	switch (style) {
-
-	default: /* vanilla style */
+	switch (style)
+	{
+	default: /* standard style (using unmodified code) */
 	for(a = 0; a < nroom-1; a++) {
 		join(a, a+1, FALSE);
 		if(!rn2(50)) break; /* allow some randomness */
@@ -422,56 +632,30 @@ int style;
 		join(a, b, TRUE);
 	    }
 	break;
-	case 1: /* at least one corridor leaves from each room and goes to random room */
-// K-Mod: The original (sporkhack) code for this was completely bork.
-// In fact, I think this whole idea is poorly thought out. So I've replaced it.
-		/* original code
-	    if (nroom > 1) {
-		int cnt = 0;
-		for (a = 0; a < nroom; a++) {
-		    do {
-			b = rn2(nroom-1);
-		    } while (((a == b) || (rooms[b].doorct)) && cnt++ < 100);
-		    if (cnt >= 100) {
-			for (b = 0; b < nroom-1; b++)
-			    if (!rooms[b].doorct && (a != b)) break;
-		    }
-		    if (a == b) b++;
-		    join(a, b, FALSE);
-		}
-	    }
-	    break;*/
 
+	case LEVSTYLE_RING:
+		// rooms should be ordered by their angle to the center
 		if (nroom > 1)
 		{
 			for (a = 0; a < nroom; a++)
 			{
-				b = ((rnd(4)-2 + a)+nroom)%nroom;
-				while (1)
-					break; // Fuck it. all of these 'styles' are bork. I'm disabling this and going to bed.
+				b = (a + 1) % nroom;
+				join(a, b, FALSE);
 			}
 		}
 		break;
-	case 2: /* circular path: room1 -> room2 -> room3 -> ... -> room1  */
-// K-Mod: this could be good, except that the rooms aren't ordered in a circular fashion.
-// The result of this will be a zig-zag, and then a really long corridor back to the start.
-	    if (nroom > 1) {
-		for (a = 0; a < nroom; a++) {
-		    b = (a + 1) % nroom;
-		    join(a, b, FALSE);
-		}
-	    }
-	    break;
-	case 3: /* all roads lead to rome. or to the first room. */
-// K-Mod: leading to the first room is a bad idea, because the rooms are sorted.
-// I've changed it to lead to the center room instead.
-		b = nroom/2;
-		for (a = 0; a < nroom; a++)
+
+	case LEVSTYLE_HUB:
+		// central room should have been already chosen and put first in the list
+		if (nroom > 1)
 		{
-			if (a != b)
-				join(a, b, FALSE);
+			for (a = 1; a < nroom; a++)
+			{
+				join(a, 0, FALSE);
+			}
 		}
-	    break;
+		break;
+	// More styles to come
 	}
 }
 
@@ -552,6 +736,24 @@ register int type;
 	}
 
 	add_door(x,y,aroom);
+/*
+** K-Mod: The door tile might shared between two rooms.
+** Maybe it should be added to all the rooms, but I'm not really sure how
+** the doors lists are actually used, so I'm not going to change it.
+** (the following code is how I'd do it if I changed my mind)
+*/
+	/*
+	if (levl[x][y].roomno >= ROOMOFFSET)
+	{
+		add_door(x,y,&rooms[levl[x][y].roomno-ROOMOFFSET]);
+	}
+	else
+	{
+		char *r_list = in_rooms(x, y, 0);
+		while (*r_list)
+			add_door(x, y, &rooms[*r_list-ROOMOFFSET]);
+	}
+	*/
 }
 
 STATIC_OVL boolean
@@ -784,6 +986,7 @@ makelevel()
 	struct monst *tmonst;	/* always put a web with a spider */
 	branch *branchp;
 	int room_threshold, boxtype;
+	int style = (!rn2(8))? rn2(LEVSTYLE_TYPES) : LEVSTYLE_STANDARD; // K-Mod
 
 	if(wiz1_level.dlevel == 0) init_dungeons();
 	oinit();	/* assign level dependent obj probabilities */
@@ -842,8 +1045,29 @@ makelevel()
 		makerogueghost();
 	} else
 #endif
+	{
+		if (style == LEVSTYLE_HUB)
+		{
+			// create the central room.
+			// for some strange reason, create_room() takes its (x,y) coords in units of 1/5 of the map...
+			if (!create_room(3, rn1(3,1), rn1(5, 9), rn1(4, 5), 3 /* xmiddle */, -1, OROOM, -1))
+				style = LEVSTYLE_STANDARD; // failed
+			else
+			{
+				if (!rn2(10))
+				{
+					struct mkroom* croom = &rooms[nroom-1];
+					int x = croom->lx + (croom->hx - croom->lx)/2 - 2 + rn2(5);
+					int y = croom->ly + (croom->hy - croom->ly)/2 - 1 + rn2(3);
+				    struct obj* otmp = mksobj_at(STATUE, x, y, TRUE, FALSE);
+					if (otmp)
+						otmp->corpsenm = PM_WIZARD_OF_YENDOR;
+				}
+			}
+		}
 		makerooms();
-	sort_rooms();
+	}
+	sort_rooms(style);
 
 	/* construct stairs (up and down in different rooms if possible) */
 	croom = &rooms[rn2(nroom)];
@@ -870,7 +1094,7 @@ makelevel()
 #ifdef REINCARNATION
 	if (Is_rogue_level(&u.uz)) goto skip0;
 #endif
-	makecorridors(rn2(10) ? 0 : -1);
+	makecorridors(style);
 	make_niches();
 
 	if (!rn2(5)) make_ironbarwalls(rn2(20) ? rn2(20) : rn2(50));
@@ -1032,20 +1256,23 @@ skip0:
 		}
 
 #ifdef REINCARNATION
-	skip_nonrogue:
+skip_nonrogue:
 #endif
-		// Some extra loot. K-Mod sets these probabilies somewhere between vanilla and sporkhack.
-		if(rn2(2)) {
-		    (void) mkobj_at(0, somex(croom), somey(croom), TRUE);
-		    tryct = 0;
-		    while(!rn2(5)) {
-			if(++tryct > 100) {
-			    //impossible("tryct overflow4");
-				// This isn't impossible. I see no reason to pretend that it is.
-			    break;
-			}
+		// Some extra loot. K-Mod sets these probabilies higher than vanilla, but much lower than sporkhack.
+		if(!rn2(3))
+		{
 			(void) mkobj_at(0, somex(croom), somey(croom), TRUE);
-		    }
+			tryct = 0;
+			while(!rn2(4))
+			{
+				if(++tryct > 100)
+				{
+					//impossible("tryct overflow4");
+					// This isn't impossible. I see no reason to pretend that it is.
+					break;
+				}
+				(void) mkobj_at(0, somex(croom), somey(croom), TRUE);
+			}
 		}
 	}
 }
@@ -1144,7 +1371,7 @@ wallwalk_right(x,y,fgtyp,fglit,bgtyp,chance)
 {
     int sx,sy, nx,ny, dir, cnt;
     schar tmptyp;
-    struct rm *lev;
+    // struct rm *lev;
     sx = x;
     sy = y;
     dir = 1;

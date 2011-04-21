@@ -765,9 +765,10 @@ STATIC_PTR int
 wiz_check(VOID_ARGS)
 {
 	char *r = in_rooms(u.ux, u.uy, 0);
+	pline("(%d,%d) %s", u.ux, u.uy, (levl[u.ux][u.uy].roomno == SHARED)?"[shared] " :"");
 	while (*r)
 	{
-		pline("(room %d, doorcnt = %d)", *r-ROOMOFFSET, rooms[*r-ROOMOFFSET].doorct);
+		pline("room %d, doorcnt = %d", *r-ROOMOFFSET, rooms[*r-ROOMOFFSET].doorct);
 		r++;
 	}
 	return 0;
@@ -1938,6 +1939,7 @@ struct ext_func_tab extcmdlist[] = {
 	{(char *)0, (char *)0, donull, TRUE},
 #endif
 	{(char *)0, (char *)0, donull, TRUE},
+	{(char *)0, (char *)0, donull, TRUE}, // K-Mod check function
 #endif
 	{(char *)0, (char *)0, donull, TRUE}	/* sentinel */
 };

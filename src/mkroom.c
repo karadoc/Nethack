@@ -510,7 +510,7 @@ void
 mktraproom()
 {
     struct mkroom *sroom;
-    struct rm *lev;
+    //struct rm *lev;
     int area, ttyp, ntraps;
     int idx = (level_difficulty() + ((long)u.ubirthday)) % 9;
 
@@ -607,14 +607,45 @@ int
 somex(croom)
 register struct mkroom *croom;
 {
-	return rn2(croom->hx-croom->lx+1) + croom->lx;
+	//return rn2(croom->hx-croom->lx+1) + croom->lx;
+
+	// K-Mod kludge.
+	// Don't let it select the middle wall of a split-room.
+	// We'll avoid the wall by checking for a joint at the room edge
+	int x = rn2(croom->hx-croom->lx+1) + croom->lx;
+	if (levl[x][croom->ly-1].typ == TDWALL)
+	{
+		// found a joint. Lets move away from it by one step, and assume that fixes the problem.
+		if (x == croom->lx || rn2(1))
+		{
+			// go right
+			x++;
+		}
+		else
+			x--;
+	}
+	return x;
 }
 
 int
 somey(croom)
 register struct mkroom *croom;
 {
-	return rn2(croom->hy-croom->ly+1) + croom->ly;
+	//return rn2(croom->hy-croom->ly+1) + croom->ly;
+
+	// K-Mod kludge, same as above.
+	int y = rn2(croom->hy-croom->ly+1) + croom->ly;
+	if (levl[y][croom->lx-1].typ == TRWALL)
+	{
+		if (y == croom->ly || rn2(1))
+		{
+			// go right
+			y++;
+		}
+		else
+			y--;
+	}
+	return y;
 }
 
 boolean
