@@ -1129,9 +1129,11 @@ xchar	rtype, rlit;
 				htmp = rn1(8, 2);
 			}
 			if (xaltmp == -1) /* Horizontal alignment is RANDOM */
-			    xaltmp = rnd(3);
+			    //xaltmp = rnd(3); // K-Mod, bugfix
+				xaltmp = 1 + 2*rn2(3);
 			if (yaltmp == -1) /* Vertical alignment is RANDOM */
-			    yaltmp = rnd(3);
+			    //yaltmp = rnd(3); // K-Mod, bugfix
+				yaltmp = 1 + 2*rn2(3);
 
 			/* Try to generate real (absolute) coordinates here! */
 
@@ -2364,9 +2366,9 @@ boolean prefilled;
 		    for (x=croom->lx;x<=croom->hx;x++)
 			for (y=croom->ly;y<=croom->hy;y++)
 			    (void) mkgold((long)rn1(abs(depth(&u.uz))*100, 51), x, y);
-			if (rn2(2)) {
-				/* it's an aquarium!  :) */
-				level.flags.vault_is_aquarium = TRUE;
+			if (rnd(1+abs(depth(&u.uz))) >= 11 || !rn2(77))
+			{
+				// it's flooded. (same probability as being dark)
 				create_feature(0,0,croom,POOL);
 				create_feature(1,1,croom,POOL);
 				if (!rn2(3)) {

@@ -1,9 +1,9 @@
 #Set all of these or none of them
-YACC   = yacc.exe
-LEX	= flex.exe
-YTABC   = y.tab.c
-YTABH   = y.tab.h
-LEXYYC  = lex.yy.c
+#YACC   = yacc.exe
+#LEX	= flex.exe
+#YTABC   = y.tab.c
+#YTABH   = y.tab.h
+#LEXYYC  = lex.yy.c
 
 !IF "$(YACC)"!=""
 #@echo Yacc-alike set to $(YACC)

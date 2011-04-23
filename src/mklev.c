@@ -19,6 +19,7 @@ enum
 	LEVSTYLE_STANDARD = 0,
 	LEVSTYLE_RING,
 	LEVSTYLE_HUB,
+	LEVSTYLE_GRID,
 	// more to come
 	LEVSTYLE_TYPES // total number of different styles
 };
@@ -56,7 +57,7 @@ STATIC_DCL void FDECL(dosdoor,(XCHAR_P,XCHAR_P,struct mkroom *,int));
 STATIC_DCL void FDECL(join,(int,int,BOOLEAN_P));
 STATIC_DCL void FDECL(do_room_or_subroom, (struct mkroom *,int,int,int,int,
 				       BOOLEAN_P,SCHAR_P,BOOLEAN_P,BOOLEAN_P));
-STATIC_DCL void NDECL(makerooms);
+STATIC_DCL int FDECL(makerooms, (int));
 STATIC_DCL void FDECL(finddpos,(coord *,XCHAR_P,XCHAR_P,XCHAR_P,XCHAR_P));
 STATIC_DCL void FDECL(mkinvpos, (XCHAR_P,XCHAR_P,int));
 STATIC_DCL void FDECL(mk_knox_portal, (XCHAR_P,XCHAR_P));
@@ -218,6 +219,7 @@ int style;
 		comp_func = angle_comp;
 		break;
 	case LEVSTYLE_HUB:
+	case LEVSTYLE_GRID:
 		// no sorting
 		return;
 	}
@@ -417,7 +419,7 @@ mk_split_room()
 		}
 	}
 	topologize(&rooms[nroom-1]);
-	wallification(lx-1, ly-1, lx+wid+1, ly+hei+1); // to fix up the joining tiles
+	//wallification(lx-1, ly-1, lx+wid+1, ly+hei+1); // to fix up the joining tiles
 
 #ifdef DUAL_ROOM_SPLIT_METHOD
 	if ((wid > hei) || (wid == hei && rn2(2)))
@@ -453,10 +455,67 @@ mk_split_room()
 #endif // end old code
 }
 
-STATIC_OVL void
-makerooms()
+STATIC_OVL int
+makerooms(style)
+int style;
 {
 	boolean tried_vault = FALSE;
+
+/*
+** K-Mod, karadoc, comment
+** It's worth noting that some level styles have particular weaknesses.
+** For example, _RING cannot have any shops, because all rooms will have 2 doors.
+** and _GRID doesn't leave room for a vault.
+*/
+
+	if (style == LEVSTYLE_HUB)
+	{
+		// create the central room.
+		// for some strange reason, create_room() takes its (x,y) coords in units of 1/5 of the map...
+		if (!create_room(3, rn1(3,1), rn1(5, 9), rn1(4, 5), 3 /* xmiddle */, -1, OROOM, -1))
+			style = LEVSTYLE_STANDARD; // failed
+		else
+		{
+			if (!rn2(20))
+			{
+				struct mkroom* croom = &rooms[nroom-1];
+				int x = croom->lx + (croom->hx - croom->lx)/2 - 2 + rn2(5);
+				int y = croom->ly + (croom->hy - croom->ly)/2 - 1 + rn2(3);
+			    struct obj* otmp = mksobj_at(STATUE, x, y, TRUE, FALSE);
+				if (otmp)
+					otmp->corpsenm = PM_WIZARD_OF_YENDOR;
+			}
+		}
+	}
+	else if (style == LEVSTYLE_GRID)
+	{
+		int grid_width = rn1(3, 4);
+		int grid_height = (!rn2(4)) ? 3 : 2;
+		int room_width = COLNO / ((grid_width+1)*2);
+		int room_height = (grid_height == 2)?4 :2;
+		int x, y;
+
+		for (x = 0; x < grid_width; x++)
+		{
+			// create_room does not handle the regular grid patern well. The room position parameter is not precise enough
+			// So we'll do it the old fashion way
+			for (y = 0; y < grid_height; y++)
+			{
+				smeq[nroom] = nroom;
+				add_room((2*x+1)*room_width + 2*x, (2*y+1)*room_height + 2*y, (2*x+2)*room_width + 2*x, (2*y+2)*room_height + 2*y,
+					1, OROOM, FALSE);
+			}
+
+		}
+		if (nroom < grid_width * grid_height)
+		{
+			// grid failed
+			impossible("failed to create grid level");
+			style = LEVSTYLE_STANDARD;
+		}
+		// No room for a vault. Don't bother trying.
+		return style;
+	}
 
 	/* make rooms until satisfied */
 	/* rnd_rect() will returns 0 if no more rects are available... */
@@ -472,13 +531,13 @@ makerooms()
 		    switch (rn2(8)) {
 		    default:
 		    if (!create_room(-1, -1, -1, -1, -1, -1, OROOM, -1))
-			return;
+			return style;
 			break;
 		    case 0: mk_split_room(); break;
 		    }
 		}
 	}
-	return;
+	return style;
 }
 
 STATIC_OVL void
@@ -538,7 +597,7 @@ boolean nxcor;
 	yy = cc.y;
 /*
 ** K-Mod
-** when rooms were put next to each other, I was using this. but now this isn't required.
+** when rooms were put next to each other, I was using this. but now it isn't required.
 */
 /*
 	if (0 && (levl[xx][yy].roomno == SHARED || levl[tt.x][tt.y].roomno==SHARED))
@@ -653,6 +712,77 @@ int style;
 			{
 				join(a, 0, FALSE);
 			}
+		}
+		break;
+
+	case LEVSTYLE_GRID:
+		// rooms should be ordered top to bottom and left to right
+		{
+			// First, we need to establish whether the grid height is 2 or 3.
+			int grid_height = (rooms[0].lx == rooms[2].lx)? 3 : 2;
+			int r;
+
+			// Make random horizontal joins, at least one per column
+			for (a = 0; a < nroom-grid_height; a+= grid_height)
+			{
+				r = rn2(grid_height);
+				join(a+r, a+r+grid_height, FALSE);
+				for (b = 1; b < grid_height; b++)
+				{
+					if (!rn2(4))
+					{
+						r = (r+1)%grid_height;
+						join(a+r, a+r+grid_height, FALSE);
+					}
+				}
+			}
+
+			// Make vertical joins, at least one per row
+			for (b = 0; b < grid_height-1; b++)
+			{
+				r = rn2(nroom/grid_height);
+				join(b + grid_height*r, b + grid_height*r + 1, FALSE);
+				for (a = 1; a < nroom/grid_height; a++)
+				{
+					if (!rn2(4))
+					{
+						// pick a random column
+						r = (r+rn2(nroom/grid_height-a))%(nroom/grid_height);
+						// move along to one that isn't already joined.
+						while (smeq[b + grid_height*r] == smeq[b + grid_height*r + 1] && r < 2*nroom/grid_height)
+						{
+							r++;
+						}
+						r = r%(nroom/grid_height);
+						// join it.
+						join(b + grid_height*r, b + grid_height*r + 1, FALSE);
+					}
+				}
+			}
+
+			// Finally, just make sure that all the rooms are connected.
+			for (a = 0; a < nroom; a++)
+			{
+				b = a;
+				while (smeq[b] > smeq[smeq[b]])
+				{
+					smeq[b] = smeq[smeq[b]]; // just to speed up later checks
+					b = smeq[b];
+				}
+				if (smeq[b] != 0)
+				{
+					// well, we know that the rooms before this one are connected to room 0...
+					if ((a % grid_height) == 0)
+					{
+						join(a, a - grid_height, FALSE);
+					}
+					else
+					{
+						join(a, a-1, FALSE);
+					}
+				}
+			}
+			// done;
 		}
 		break;
 	// More styles to come
@@ -817,11 +947,7 @@ int trap_type;
 		    if (ttmp) {
 			if (trap_type != ROCKTRAP) ttmp->once = 1;
 			if (trap_engravings[trap_type]) {
-				if (level.flags.vault_is_aquarium) {
-					make_engr_at(xx, yy-dy,"ad aquarium",0L, DUST);
-				} else {
 			    make_engr_at(xx, yy-dy, trap_engravings[trap_type], 0L, DUST);
-				}
 			    wipe_engr_at(xx, yy-dy, 5); /* age it a little */
 			}
 		    }
@@ -986,7 +1112,7 @@ makelevel()
 	struct monst *tmonst;	/* always put a web with a spider */
 	branch *branchp;
 	int room_threshold, boxtype;
-	int style = (!rn2(8))? rn2(LEVSTYLE_TYPES) : LEVSTYLE_STANDARD; // K-Mod
+	int style = (!rn2(5))? rn2(LEVSTYLE_TYPES) : LEVSTYLE_STANDARD; // K-Mod
 
 	if(wiz1_level.dlevel == 0) init_dungeons();
 	oinit();	/* assign level dependent obj probabilities */
@@ -1022,19 +1148,29 @@ makelevel()
 			   (u.uz.dlevel < loc_lev->dlevel.dlevel) ? "a" : "b");
 		    makemaz(fillname);
 		    return;
-	    } else if(In_hell(&u.uz) ||
-		  (rn2(5) && u.uz.dnum == medusa_level.dnum
-			  && depth(&u.uz) > depth(&medusa_level))) {
-			 /* The vibrating square code is hardcoded into mkmaze --
-			  * rather than fiddle around trying to port it to a 'generalist'
-			  * sort of level, just go ahead and let the VS level be a maze */
-			 if (!Invocation_lev(&u.uz)) {
-				makemaz("hellfill");
-			 } else {
-		    makemaz("");
-			 }
-		    return;
-	    }
+		}
+		else if(In_hell(&u.uz) ||
+			(rn2(5) && u.uz.dnum == medusa_level.dnum
+			&& depth(&u.uz) > depth(&medusa_level)))
+		{
+			/* The vibrating square code is hardcoded into mkmaze --
+			* rather than fiddle around trying to port it to a 'generalist'
+			* sort of level, just go ahead and let the VS level be a maze */
+			if (!Invocation_lev(&u.uz))
+			{
+				// K-Mod kludge: hellfill isn't meant for pre-gehennom.
+				// So if we want something like that, use the water version.
+				if (In_hell(&u.uz))
+					makemaz("hellfill");					
+				else
+					makemaz("prehell");
+			}
+			else
+			{
+				makemaz("");
+			}
+			return;
+		}
 	}
 
 	/* otherwise, fall through - it's a "regular" level. */
@@ -1046,26 +1182,7 @@ makelevel()
 	} else
 #endif
 	{
-		if (style == LEVSTYLE_HUB)
-		{
-			// create the central room.
-			// for some strange reason, create_room() takes its (x,y) coords in units of 1/5 of the map...
-			if (!create_room(3, rn1(3,1), rn1(5, 9), rn1(4, 5), 3 /* xmiddle */, -1, OROOM, -1))
-				style = LEVSTYLE_STANDARD; // failed
-			else
-			{
-				if (!rn2(10))
-				{
-					struct mkroom* croom = &rooms[nroom-1];
-					int x = croom->lx + (croom->hx - croom->lx)/2 - 2 + rn2(5);
-					int y = croom->ly + (croom->hy - croom->ly)/2 - 1 + rn2(3);
-				    struct obj* otmp = mksobj_at(STATUE, x, y, TRUE, FALSE);
-					if (otmp)
-						otmp->corpsenm = PM_WIZARD_OF_YENDOR;
-				}
-			}
-		}
-		makerooms();
+		style = makerooms(style);
 	}
 	sort_rooms(style);
 

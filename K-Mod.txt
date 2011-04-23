@@ -54,3 +54,6 @@
 + Added a damage multiplier for thrown spears / javelins when above basic skill level.
 + Added additional conflict resistance for all monsters: r(dlvl + mlvl) >= clvl means conflict is resisted.
 + Increased the bonus damage from strength, and doubled the bonus for 2-handed weapons.
++ Added new level styles for random dungeons of doom levels.
++ Added new sokoban levels (in addition to reflections of the original levels
++ Reduced the loot in sokoban. There's now only a 50% chance of getting both a ring and a wand on each level. (always at least one though)
