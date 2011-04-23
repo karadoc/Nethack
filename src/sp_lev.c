@@ -469,7 +469,7 @@ flip_level(int flp)
     struct trap *ttmp;
     struct obj *otmp;
     struct monst *mtmp;
-//    struct engr *etmp;
+    struct engr *etmp;
     struct mkroom *sroom;
 
     /* stairs and ladders */
@@ -547,12 +547,12 @@ flip_level(int flp)
     }
 
     /* engravings */
-    /*for (etmp = head_engr; etmp; etmp = etmp->nxt_engr) {
+    for (etmp = head_engr; etmp; etmp = etmp->nxt_engr) {
 	if (flp & 1)
 	    etmp->engr_y = y2 - etmp->engr_y;
 	if (flp & 2)
 	    etmp->engr_x = x2 - etmp->engr_x;
-    }*/
+    }
 
     /* regions */
     for (i = 0; i < num_lregions; i++) {
@@ -906,7 +906,17 @@ register int humidity;
 	    typ = levl[x][y].typ;
 	    if (typ == ROOM || typ == AIR ||
 		    typ == CLOUD || typ == ICE || typ == CORR)
-		return TRUE;
+		{
+/*
+** K-Mod, 23/apr/2011, karadoc
+** I don't think objects or monsters should be allowed to spawn on holes. (pits / trapdoors are ok)
+*/
+			struct trap* t = t_at(x, y);
+			if (t && t->ttyp == HOLE)
+				return FALSE;
+// K-Mod end
+			return TRUE;
+		}
 	}
 	if (humidity & WET) {
 	    if (is_pool(x,y) || is_lava(x,y))
@@ -1693,6 +1703,7 @@ struct mkroom	*croom;
 	named = o->name.str ? TRUE : FALSE;
 
 	x = o->x; y = o->y;
+
 	get_location(&x, &y, DRY, croom);
 
 	if (o->class >= 0)
@@ -1846,20 +1857,6 @@ struct mkroom	*croom;
 	    otmp->owt = weight(otmp);
 	    mongone(was);
 	}
-
-#ifdef RECORD_ACHIEVE
-        /* Nasty hack here: try to determine if this is the Mines or Sokoban
-         * "prize" and then set record_achieve_special (maps to corpsenm)
-         * for the object.  That field will later be checked to find out if
-         * the player obtained the prize. */
-        if(otmp->otyp == LUCKSTONE && Is_mineend_level(&u.uz)) {
-                otmp->record_achieve_special = 1;
-        } else if((otmp->otyp == AMULET_OF_REFLECTION ||
-                   otmp->otyp == BAG_OF_HOLDING) &&
-                  Is_sokoend_level(&u.uz)) {
-                otmp->record_achieve_special = 1;
-        }
-#endif
 
 	stackobj(otmp);
 

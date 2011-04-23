@@ -116,9 +116,10 @@ fightm(mtmp)		/* have monsters fight each other */
 ** K-Mod, 20/apr/2011, karadoc
 ** I dislike this method of resistance, but I'm a bit worried about subtle side effects if I remove it.
 ** So rather than just replace it, I'm just going to add an additional check.
+** (Tame monsters are not emboldened by the dungeon level, and thus are not subject to this additional check)
 ** Note: all this assumes that fightm() has been called because of a ring of conflict.
 */
-	if (rn2((int)mtmp->m_lev + level_difficulty()) >= u.ulevel || // K-Mod
+	if ((!mtmp->mtame && rn2((int)mtmp->m_lev + level_difficulty()) >= u.ulevel) || // K-Mod
 		resist(mtmp, RING_CLASS, 0, 0)) // original
 	{
 	    return(0);

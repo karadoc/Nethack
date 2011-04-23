@@ -1093,9 +1093,9 @@ int enhance_skill(boolean want_dump)
 			sklnambuf[0] = '#';
 			(void) skill_level_name(i, sklnambuf+1);
 		}
-		else if (slots_required(i) <= 0 && P_SKILL(i) >= P_MAX_SKILL(i))
+		else if (slots_required(i) <= 0 && P_SKILL(i) < P_MAX_SKILL(i))
 		{
-			sklnambuf[0] = '^'; // would advance for free, with more practice
+			sklnambuf[0] = '^'; // would advance for free with more practice
 			(void) skill_level_name(i, sklnambuf+1);
 		}
 		else if (could_advance(i))

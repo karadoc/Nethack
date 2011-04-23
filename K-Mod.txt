@@ -57,3 +57,4 @@
 + Added new level styles for random dungeons of doom levels.
 + Added new sokoban levels (in addition to reflections of the original levels
 + Reduced the loot in sokoban. There's now only a 50% chance of getting both a ring and a wand on each level. (always at least one though)
+

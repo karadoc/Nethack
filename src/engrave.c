@@ -6,7 +6,8 @@
 #include "lev.h"
 #include <ctype.h>
 
-STATIC_VAR NEARDATA struct engr *head_engr;
+// This has been moved to decl.c (so it can be used to flip levels)
+//STATIC_VAR NEARDATA struct engr *head_engr;
 
 #ifdef OVLB
 /* random engravings */
