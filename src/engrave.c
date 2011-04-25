@@ -371,7 +371,9 @@ register xchar e_type;
 	ep->engr_txt = (char *)(ep + 1);
 	Strcpy(ep->engr_txt, s);
 	/* engraving Elbereth shows wisdom */
-	if (!in_mklev && !strcmp(s, "Elbereth")) exercise(A_WIS, TRUE);
+	// K-Mod: I disagree.
+	// I don't think we need to reward this kind of cowardly action more than we already do.
+	//if (!in_mklev && !strcmp(s, "Elbereth")) exercise(A_WIS, TRUE);
 	ep->engr_time = e_time;
 	ep->engr_type = e_type > 0 ? e_type : rnd(N_ENGRAVE-1);
 	ep->engr_lth = strlen(s) + 1;

@@ -8,8 +8,10 @@
 int main(int argc, char *argv[])
 {
 	FILE* in = stdin;
-	int bx[MAX_OBJECTS], by[MAX_OBJECTS], hx[MAX_OBJECTS], hy[MAX_OBJECTS];
-	int b_count, h_count;
+	int bx[MAX_OBJECTS], by[MAX_OBJECTS]; // boulders
+	int hx[MAX_OBJECTS], hy[MAX_OBJECTS]; // holes
+	int dx[MAX_OBJECTS], dy[MAX_OBJECTS]; // doors
+	int b_count, h_count, d_count;
 	int upx, upy, downx, downy;
 	int c, x, y;
 	int max_x = 0, max_y = 0;
@@ -26,7 +28,7 @@ int main(int argc, char *argv[])
 	}
 	
 	// initialize
-	b_count = h_count = 0;
+	b_count = h_count = d_count = 0;
 	upx = upy = downx = downy = -1;
 	x = y = 0;
 	
@@ -54,18 +56,25 @@ int main(int argc, char *argv[])
 			// Don't count the line break
 			c = fgetc(in);
 		}
-		if (c == 'o') // boulder
+		if (c == 'o' && b_count < MAX_OBJECTS) // boulder
 		{
 			bx[b_count] = x;
 			by[b_count] = y;
 			b_count++;
 			c = '.';
 		}
-		if (c == '^') // hole
+		if (c == '^' && h_count < MAX_OBJECTS) // hole
 		{
 			hx[h_count] = x;
 			hy[h_count] = y;
 			h_count++;
+			c = '.';
+		}
+		if (c == '+' && d_count < MAX_OBJECTS) // door
+		{
+			dx[d_count] = x;
+			dy[d_count] = y;
+			d_count++;
 			c = '.';
 		}
 		if (c == '>') // down
@@ -86,6 +95,11 @@ int main(int argc, char *argv[])
 			max_y = y;
 			if (x > max_x)
 				max_x = x;
+			while (x < max_x)
+			{
+				fputc(' ', stdout);
+				x++;
+			}
 			x = 0;
 		}
 		else if (c != '\r')
@@ -101,7 +115,11 @@ int main(int argc, char *argv[])
 		printf("STAIR:(%02d,%02d),down\n", downx, downy);
 	if (upx >= 0 && upy >= 0)
 		printf("STAIR:(%02d,%02d),up\n", upx, upy);
-	// Note. the door isn't done yet. do it manually.
+	// print the doors list
+	for (c = 0; c < d_count; c++)
+	{
+		printf("DOOR:locked,(%02d,%02d)\n",dx[c], dy[c]); // door must be manually set to 'closed' if you don't want it locked
+	}
 	printf("REGION:(00,00,%02d,%02d),lit,\"ordinary\"\n", max_x, max_y);
 	printf("NON_DIGGABLE:(00,00,%02d,%02d)\n", max_x, max_y);
 	printf("NON_PASSWALL:(00,00,%02d,%02d)\n", max_x, max_y);
