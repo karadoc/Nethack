@@ -1237,7 +1237,7 @@ rndmonst()
 1) I want to reduce the disincentive to leveling up the character.
 In the original system, deliberating having a low level is adventagious. I think this is counter intuitive.
 2) I want to discourage dilly-dallying (farming, long periods of polypiling, etc). I want the game to pick up pace. */
-		maxmlev = (2*zlevel + u.ulevel+1 + moves/1000) / 4; // zlevel/2 + ulevel/4 + moves/4000, +1 just to get > 0
+		maxmlev = (2*zlevel + u.ulevel+1 + moves/1200) / 4; // zlevel/2 + ulevel/4 + moves/4800, +1 just to get > 0
 /* I figure that a typical ascension time is around 30k-40k turns.
    So I expect this system to make the early game easier, and the late game a little harder. */
 /*

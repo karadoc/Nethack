@@ -1116,7 +1116,7 @@ register struct obj *otmp;
 			if (Antimagic) {
 			    shieldeff(u.ux, u.uy);
 			    pline("Boing!");
-			} else if (rnd(20) < 10 + u.uac) {
+			} else if (rnd(20) < 10 + AC_VALUE(u.uac)) {
 			    pline_The("wand hits you!");
 			    tmp = d(2,12);
 			    if(Half_spell_damage) tmp = (tmp+1) / 2;
@@ -1127,7 +1127,7 @@ register struct obj *otmp;
 		} else if (resists_magm(mtmp)) {
 			shieldeff(mtmp->mx, mtmp->my);
 			pline("Boing!");
-		} else if (rnd(20) < 10+find_mac(mtmp)) {
+		} else if (rnd(20) < 10+AC_VALUE(find_mac(mtmp))) {
 			tmp = d(2,12);
 			hit("wand", mtmp, exclam(tmp));
 			(void) resist(mtmp, otmp->oclass, tmp, TELL);

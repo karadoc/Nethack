@@ -19,8 +19,8 @@ int lev;
 	if (lev < 10) return (10L * (1L << lev));
 	if (lev < 20) return (10000L * (1L << (lev - 10)));
 	return (10000000L * ((long)(lev - 19))); */
-	if (lev < 12) return (10L * (1L << lev));
-	return 6800L * (lev - 10)*(lev - 9);
+	if (lev < 11) return (10L * (1L << lev));
+	return 3400L * (lev - 9)*(lev - 8);
 // K-Mod end
 }
 

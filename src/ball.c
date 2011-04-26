@@ -582,7 +582,8 @@ drag:
 		if ((victim = m_at(uchain->ox, uchain->oy)) != 0) {
 		    int tmp;
 
-		    tmp = -2 + Luck + find_mac(victim);
+		    //tmp = -2 + Luck + find_mac(victim);
+			tmp = -2 + Luck + AC_VALUE(find_mac(victim)); // K-Mod
 		    tmp += omon_adj(victim, uball, TRUE);
 		    if (tmp >= rnd(20))
 			(void) hmon(victim,uball,1);

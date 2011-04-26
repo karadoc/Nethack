@@ -61,7 +61,7 @@ const char *name;	/* if null, then format `obj' */
 			    (obj && obj->quan > 1L) ? name : an(name);
 	is_acid = (obj && obj->otyp == ACID_VENOM);
 
-	if(u.uac + tlev <= rnd(20)) {
+	if(AC_VALUE(u.uac) + tlev <= rnd(20)) {
 		if(Blind || !flags.verbose) pline("It misses.");
 		else You("are almost hit by %s.", onm);
 		return(0);
@@ -153,7 +153,8 @@ boolean verbose;  /* give message(s) even when you can't see what happened */
 	ismimic = mtmp->m_ap_type && mtmp->m_ap_type != M_AP_MONSTER;
 	vis = cansee(bhitpos.x, bhitpos.y);
 
-	tmp = 5 + find_mac(mtmp) + omon_adj(mtmp, otmp, FALSE);
+	//tmp = 5 + find_mac(mtmp) + omon_adj(mtmp, otmp, FALSE);
+	tmp = 5 + AC_VALUE(find_mac(mtmp)) + omon_adj(mtmp, otmp, FALSE); // K-Mod
 	if (tmp < rnd(20)) {
 	    if (!ismimic) {
 		if (vis) miss(distant_name(otmp, mshot_xname), mtmp);

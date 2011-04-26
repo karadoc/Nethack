@@ -233,7 +233,8 @@ register struct monst *mtmp;
 	schar tmp;
 	int tmp2;
 
-	tmp = 1 + Luck + abon() + find_mac(mtmp) + u.uhitinc +
+	//tmp = 1 + Luck + abon() + find_mac(mtmp) + u.uhitinc +
+	tmp = 1 + Luck + abon() + AC_VALUE(find_mac(mtmp)) + u.uhitinc +
 		maybe_polyd(youmonst.data->mlevel, u.ulevel);
 
 	check_caitiff(mtmp);
@@ -266,7 +267,7 @@ register struct monst *mtmp;
 	    tmp++;
 	if(Role_if(PM_MONK) && !Upolyd) {
 	    if (uarm) {
-		//Your("armor is rather cumbersome..."); // K-Mod, moved this message elsewhere.
+		//Your("armor is rather cumbersome..."); // K-Mod, I moved this message elsewhere.
 		tmp -= urole.spelarmr;
 	    } else if (!uwep && !uarms) {
 		tmp += (u.ulevel / 3) + 2;
@@ -940,6 +941,18 @@ int thrown;
 	    /* [this assumes that `!thrown' implies wielded...] */
 	    use_skill(wtype, 1);
 	}
+
+/*
+** K-Mod, 25/apr/2011, karadoc
+** Monsters now get the same damage reduction from negetiave AC that the player gets
+*/
+	if (tmp > 0)
+	{
+		tmp -= AC_DMGREDUCT(find_mac(mon));
+		if (tmp < 1)
+			tmp = 1;
+	}
+// K-Mod end
 
 	if (ispoisoned) {
 	    int nopoison = (10 - (obj->owt/10));            

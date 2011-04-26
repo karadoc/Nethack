@@ -167,6 +167,13 @@
  *	compression.
  */
 
+/*
+** K-Mod note: I'm not sure, but I suspect my implementation of the
+** bones queue might confuse the compression functions. They might not
+** know the correct filename to compression. I haven't checked this.
+*/
+
+
 #ifdef UNIX
 /* path and file name extension for compression program */
 #define COMPRESS "/usr/bin/compress"	/* Lempel-Ziv compression */

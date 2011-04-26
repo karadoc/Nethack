@@ -58,3 +58,6 @@
 + Added new sokoban levels (in addition to reflections of the original levels
 + Reduced the loot in sokoban. There's now only a 50% chance of getting both a ring and a wand on each level. (always at least one though)
 
++ Orange dragon scales now give free action instead of only sleep resistance.
++ implemented a bones file queue, so that each level can store up to 11 bones files.
+

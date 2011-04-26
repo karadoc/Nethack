@@ -119,7 +119,7 @@ fightm(mtmp)		/* have monsters fight each other */
 ** (Tame monsters are not emboldened by the dungeon level, and thus are not subject to this additional check)
 ** Note: all this assumes that fightm() has been called because of a ring of conflict.
 */
-	if ((!mtmp->mtame && rn2((int)mtmp->m_lev + level_difficulty()) >= u.ulevel) || // K-Mod
+	if ((!mtmp->mtame && rn2(level_difficulty()) >= u.ulevel-(int)mtmp->m_lev/2) || // K-Mod
 		resist(mtmp, RING_CLASS, 0, 0)) // original
 	{
 	    return(0);
@@ -225,7 +225,7 @@ mattackm(magr, mdef)
 	return(MM_MISS);
 
     /* Calculate the armour class differential. */
-    tmp = find_mac(mdef) + magr->m_lev;
+    tmp = AC_VALUE(find_mac(mdef)) + magr->m_lev;
     if (mdef->mconf || !mdef->mcanmove || mdef->msleeping) {
 	tmp += 4;
 	mdef->msleeping = 0;
@@ -604,6 +604,12 @@ mdamagem(magr, mdef, mattk)
 	struct permonst *pa = magr->data, *pd = mdef->data;
 	int armpro, num, tmp = d((int)mattk->damn, (int)mattk->damd);
 	boolean cancelled;
+	int dmgreduct = AC_DMGREDUCT(find_mac(mdef)); // K-Mod, same as mhitu
+	if (tmp - dmgreduct < 1)
+		dmgreduct = tmp - 1;
+	if (tmp < 1)
+		dmgreduct = 0;
+
 
 	if (touch_petrifies(pd) && !resists_ston(magr)) {
 	    long protector = attk_protection((int)mattk->aatyp),
@@ -724,6 +730,7 @@ mdamagem(magr, mdef, mattk)
 		}
 		break;
 	    case AD_FIRE:
+		dmgreduct = 0; // K-Mod: armour doesn't protect against this attack
 		if (cancelled) {
 		    tmp = 0;
 		    break;
@@ -755,6 +762,7 @@ mdamagem(magr, mdef, mattk)
 		tmp += destroy_mitem(mdef, POTION_CLASS, AD_FIRE);
 		break;
 	    case AD_COLD:
+		dmgreduct = 0; // K-Mod: armour doesn't protect against this attack
 		if (cancelled) {
 		    tmp = 0;
 		    break;
@@ -771,6 +779,7 @@ mdamagem(magr, mdef, mattk)
 		tmp += destroy_mitem(mdef, POTION_CLASS, AD_COLD);
 		break;
 	    case AD_ELEC:
+		dmgreduct = 0; // K-Mod: armour doesn't protect against this attack
 		if (cancelled) {
 		    tmp = 0;
 		    break;
@@ -787,6 +796,7 @@ mdamagem(magr, mdef, mattk)
 		tmp += destroy_mitem(mdef, RING_CLASS, AD_ELEC);
 		break;
 	    case AD_ACID:
+		dmgreduct = 0; // K-Mod: armour doesn't protect against this attack
 		if (magr->mcan) {
 		    tmp = 0;
 		    break;
@@ -1002,6 +1012,7 @@ mdamagem(magr, mdef, mattk)
 		}
 		break;
 	    case AD_DRLI:
+		dmgreduct = 0; // K-Mod: armour doesn't protect against this attack
 		if (!cancelled && !rn2(3) && !resists_drli(mdef)) {
 			tmp = d(2,6);
 			if (vis)
@@ -1139,6 +1150,14 @@ mdamagem(magr, mdef, mattk)
 		/* there's no msomearmor() function, so just do damage */
 	     /* if (cancelled) break; */
 		break;
+// K-Mod, let the riders do damage to other monsters (if they want to...)
+		case AD_DETH:
+		case AD_PEST:
+		case AD_FAMN:
+			dmgreduct = 0;
+			break;
+// K-Mod end
+
 	    default:	tmp = 0;
 			break;
 	}

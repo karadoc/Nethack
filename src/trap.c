@@ -4145,8 +4145,8 @@ boolean nocorpse;
 	boolean trapkilled = FALSE;
 
 	if (d_override) strike = 1;
-	else if (obj) strike = (find_mac(mon) + tlev + obj->spe <= rnd(20));
-	else strike = (find_mac(mon) + tlev <= rnd(20));
+	else if (obj) strike = (AC_VALUE(find_mac(mon)) + tlev + obj->spe <= rnd(20));
+	else strike = (AC_VALUE(find_mac(mon)) + tlev <= rnd(20));
 
 	/* Actually more accurate than thitu, which doesn't take
 	 * obj->spe into account.

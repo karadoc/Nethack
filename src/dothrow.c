@@ -1196,7 +1196,8 @@ register struct obj   *obj;
 	 * Certain items which don't in themselves do damage ignore tmp.
 	 * Distance and monster size affect chance to hit.
 	 */
-	tmp = -1 + Luck + find_mac(mon) + u.uhitinc +
+	//tmp = -1 + Luck + find_mac(mon) + u.uhitinc +
+	tmp = -1 + Luck + AC_VALUE(find_mac(mon)) + u.uhitinc + // K-Mod
 			maybe_polyd(youmonst.data->mlevel, u.ulevel);
 	if (ACURR(A_DEX) < 4) tmp -= 3;
 	else if (ACURR(A_DEX) < 6) tmp -= 2;

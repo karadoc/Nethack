@@ -383,7 +383,7 @@ mattacku(mtmp)
 			Your("blow glances off %s helmet.",
 			               s_suffix(mon_nam(mtmp)));
 		    } else {
-			if (3 + find_mac(mtmp) <= rnd(20)) {
+			if (3 + AC_VALUE(find_mac(mtmp)) <= rnd(20)) {
 			    pline("%s is hit by a falling piercer (you)!",
 								Monnam(mtmp));
 			    if ((mtmp->mhp -= d(3,6)) < 1)
@@ -911,14 +911,8 @@ register struct attack  *mattk;
 ** K-Mod, 10/apr/2011, karadoc
 ** I've made a variable to store the AC based damage reduction, so that it can be altered case-by-case
 */
-	if (u.uac < 0)
-	{
-		//dmgreduct = min(dmg-1, rnd(-u.uac));
-		dmgreduct = rnd(-u.uac);
-		dmgreduct = min(dmgreduct, dmg-1);
-	}
-	else
-		dmgreduct = 0;
+	dmgreduct = AC_DMGREDUCT(u.uac);
+	dmgreduct = min(dmgreduct, dmg-1);
 // K-Mod end
 
 	/*	Next a cancellation factor	*/
@@ -1736,7 +1730,8 @@ gulpmu(mtmp, mattk)	/* monster swallows you, or damage if u.uswallow */
 		tim_tmp = 25 - (int)mtmp->m_lev;
 		if (tim_tmp > 0) tim_tmp = rnd(tim_tmp) / 2;
 		else if (tim_tmp < 0) tim_tmp = -(rnd(-tim_tmp) / 2);
-		tim_tmp += -u.uac + 10;
+		//tim_tmp += -u.uac + 10;
+		tim_tmp += -AC_VALUE(u.uac) + 10; // K-Mod
 		u.uswldtim = (unsigned)((tim_tmp < 2) ? 2 : tim_tmp);
 		swallowed(1);
 		for (otmp2 = invent; otmp2; otmp2 = otmp2->nobj)

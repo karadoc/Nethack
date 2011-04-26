@@ -69,7 +69,8 @@ char bones[] = "bonesnn.xxx;1";
 char lock[PL_NSIZ+17] = "1lock"; /* long enough for _uid+name+.99;1 */
 # endif
 # if defined(WIN32)
-char bones[] = "bonesnn.xxx";
+//char bones[] = "bonesnn.xxx";
+char bones[] = "bonXX-nn.xxx";
 char lock[PL_NSIZ+25];		/* long enough for username+-+name+.99 */
 # endif
 #endif
@@ -290,7 +291,7 @@ int whichprefix, buffnum;
 								buffnum);
 		buffnum = 0;
 	}
-	if (strlen(fqn_prefix[whichprefix]) + strlen(basename) >=
+	if (strlen(fqn_prefix[whichprefix]) + strlen(basename) + 3 >= // K-Mod, +3 for final extension
 						    FQN_MAX_FILENAME) {
 		impossible("fqname too long: %s + %s", fqn_prefix[whichprefix],
 						basename);
@@ -617,10 +618,16 @@ d_level *lev;
 	Sprintf(file, "bon%c%s", dungeons[lev->dnum].boneid,
 			In_quest(lev) ? urole.filecode : "0");
 	dptr = eos(file);
+/*
+** K-Mod, 26/apr/2011, karadoc
+** changed bones name format. It's now bonXX-lv.xx instead of bonXX.lv
+*/
 	if ((sptr = Is_special(lev)) != 0)
-	    Sprintf(dptr, ".%c", sptr->boneid);
+	    Sprintf(dptr, "-%c", sptr->boneid);
 	else
-	    Sprintf(dptr, ".%d", lev->dlevel);
+	    Sprintf(dptr, "-%d", lev->dlevel);
+	// bones number suffix will be added when the file is committed
+// K-Mod end
 #ifdef VMS
 	Strcat(dptr, ";1");
 #endif
@@ -727,7 +734,29 @@ d_level *lev;
 	ret = link(tempname, fq_bones);
 	ret += unlink(tempname);
 #else
+/*
+** K-Mod, 26/apr/2011, karadoc
+** a bones file queue
+*/
+	// first try the standard bones name
 	ret = rename(tempname, fq_bones);
+
+	if (ret != 0)
+	{
+		// We need to place the file at the end of the queue
+		int i;
+		char *suffix;
+
+		suffix = eos(fq_bones);
+		for (i = 0; i < MAX_BONES_IN_QUEUE; i++)
+		{
+			Sprintf(suffix, ".%d", i);
+			ret = rename(tempname, fq_bones);
+			if (ret == 0)
+				break; // success
+		}
+	}
+// K-Mod end
 #endif
 #ifdef WIZARD
 	if (wizard && ret != 0)
@@ -760,8 +789,53 @@ int
 delete_bonesfile(lev)
 d_level *lev;
 {
+	char *fq_bones, *tempname;
+	char old_bones[] = "bonXX-nn.xxx";
+	int ret;
+
 	(void) set_bonesfile_name(bones, lev);
-	return !(unlink(fqname(bones, BONESPREFIX, 0)) < 0);
+/*
+** K-Mod, 26/apr/2011, karadoc
+** a bones file queue
+*/
+	/* original code
+	return !(unlink(fqname(bones, BONESPREFIX, 0)) < 0); */
+
+	fq_bones = fqname(bones, BONESPREFIX, 0);	
+
+	// unlink the file at the front of the queue
+	ret = !(unlink(fqname(bones, BONESPREFIX, 0)) < 0);
+	if (ret == 0)
+		return ret; // unlink failed
+	else
+	{
+		// shift all of the queue forward
+		int i;
+		char *suffix1, *suffix2;
+
+		(void)set_bonesfile_name(old_bones, lev);
+		tempname = fqname(old_bones, BONESPREFIX, 1);
+
+		suffix1 = eos(fq_bones);
+		suffix2 = eos(tempname);
+
+		Sprintf(suffix2, ".%d", 0);
+		ret = rename(tempname, fq_bones);
+
+		if (ret == 0) // we moved something, so lets keep going
+		{
+			for (i = 1; i < MAX_BONES_IN_QUEUE; i++)
+			{
+				Sprintf(suffix1, ".%d", i-1);
+				Sprintf(suffix2, ".%d", i);				
+				ret = rename(tempname, fq_bones);
+				if (ret != 0)
+					break; // no more files to move
+			}
+		}
+		return 1;
+	}
+// K-Mod end
 }
 
 

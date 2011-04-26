@@ -1545,7 +1545,7 @@ stillinwater:;
 			    ;
 			else if(uarmh && is_metallic(uarmh))
 			    pline("Its blow glances off your helmet.");
-			else if (u.uac + 3 <= rnd(20))
+			else if (AC_VALUE(u.uac) + 3 <= rnd(20))
 			    You("are almost hit by %s!",
 				x_monnam(mtmp, ARTICLE_A, "falling", 0, TRUE));
 			else {

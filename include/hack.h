@@ -302,6 +302,9 @@ NEARDATA extern coord bhitpos;	/* place where throw or zap hits or stops */
 #define AC_VALUE(AC)	((AC) >= 0 ? (AC) : (-rnd((rnd(-(AC))-(AC))/2)))
 // That's roughly rnd(AC/2 + rnd(AC/2))
 
+// A damage reduction magnitude macro, so that it is easier to do things consistantly
+#define AC_DMGREDUCT(AC)  (((AC)<0) ? rnd(-(AC)) : 0)
+
 
 #if defined(MICRO) && !defined(__DJGPP__)
 #define getuid() 1

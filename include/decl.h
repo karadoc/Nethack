@@ -371,6 +371,9 @@ E const char * const monexplain[], invisexplain[], * const objexplain[], * const
 #define FQN_MAX_FILENAME 512
 # endif
 
+// K-Mod, the bones queue.
+#define MAX_BONES_IN_QUEUE 10 // <= 100
+
 #if defined(NOCWD_ASSUMPTIONS) || defined(VAR_PLAYGROUND)
 /* the bare-bones stuff is unconditional above to simplify coding; for
  * ports that actually use prefixes, add some more localized things

@@ -218,6 +218,11 @@ struct obj *corpse;
 	/* caller has already checked `can_make_bones()' */
 
 	clear_bypasses();
+/*
+** K-Mod, 26/apr/2011, karadoc
+** Since we now have a bones queue, we don't need this check.
+*/
+	/* original code
 	fd = open_bonesfile(&u.uz, &bonesid);
 	if (fd >= 0) {
 		(void) close(fd);
@@ -235,7 +240,8 @@ struct obj *corpse;
 
 #ifdef WIZARD
  make_bones:
-#endif
+#endif */
+// K-Mod end
 	unleash_all();
 	/* in case these characters are not in their home bases */
 	for (mtmp = fmon; mtmp; mtmp = mtmp->nmon) {
