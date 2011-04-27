@@ -1187,7 +1187,7 @@ boolean at_stairs, falling, portal;
 			dismount_steed(DISMOUNT_FELL);
 		    else
 #endif
-			losehp(rnd(3), "falling downstairs", KILLED_BY);
+			losehp(d(2,3), "falling downstairs", KILLED_BY);
 		    selftouch("Falling, you");
 		} else if (u.dz && at_ladder)
 		    You("climb down the ladder.");

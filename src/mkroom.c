@@ -635,11 +635,11 @@ register struct mkroom *croom;
 
 	// K-Mod kludge, same as above.
 	int y = rn2(croom->hy-croom->ly+1) + croom->ly;
-	if (levl[y][croom->lx-1].typ == TRWALL)
+	if (levl[croom->lx-1][y].typ == TRWALL)
 	{
 		if (y == croom->ly || rn2(1))
 		{
-			// go right
+			// go down
 			y++;
 		}
 		else

@@ -60,4 +60,5 @@
 
 + Orange dragon scales now give free action instead of only sleep resistance.
 + implemented a bones file queue, so that each level can store up to 11 bones files.
++ mixing potions no longer clears BUC knowledge (but still sets to uncursed)
 

@@ -1254,7 +1254,8 @@ register struct obj *obj;
 	case POT_BOOZE:
 		if(!Confusion)
 			You_feel("somewhat dizzy.");
-		make_confused(itimeout_incr(HConfusion, rnd(5)), FALSE);
+		//make_confused(itimeout_incr(HConfusion, rnd(5)), FALSE);
+		make_confused(itimeout_incr(HConfusion, d((obj->otyp == POT_CONFUSION)?3 :1, 4)), FALSE);
 		break;
 	case POT_INVISIBILITY:
 		if (!Blind && !Invis) {
@@ -1268,7 +1269,8 @@ register struct obj *obj;
 		kn++;
 		if (!Free_action) {
 		    pline("%s seems to be holding you.", Something);
-		    nomul(-rnd(5));
+		    //nomul(-rnd(5));
+			nomul(-d(2,3));
 		    nomovemsg = You_can_move_again;
 		    exercise(A_DEX, FALSE);
 		} else You("stiffen momentarily.");
@@ -1277,7 +1279,8 @@ register struct obj *obj;
 		kn++;
 		if (!Free_action && !Sleep_resistance) {
 		    You_feel("rather tired.");
-		    nomul(-rnd(5));
+		    //nomul(-rnd(5));
+			nomul(-d(2,3));
 		    nomovemsg = You_can_move_again;
 		    exercise(A_DEX, FALSE);
 		} else You("yawn.");
@@ -1292,7 +1295,8 @@ register struct obj *obj;
 		    kn++;
 		    pline("It suddenly gets dark.");
 		}
-		make_blinded(itimeout_incr(Blinded, rnd(5)), FALSE);
+		//make_blinded(itimeout_incr(Blinded, rnd(5)), FALSE);
+		make_blinded(itimeout_incr(Blinded, d(3,4)), FALSE);
 		if (!Blind && !u.usleep) Your(vision_clears);
 		break;
 	case POT_WATER:
@@ -1690,7 +1694,8 @@ dodip()
 			return(1);
 		}
 
-		obj->blessed = obj->cursed = obj->bknown = 0;
+		//obj->blessed = obj->cursed = obj->bknown = 0;
+		obj->blessed = obj->cursed = 0; //  K-Mod, for consistancy with dilution
 		if (Blind || Hallucination) obj->dknown = 0;
 
 		if ((mixture = mixtype(obj, potion)) != 0) {

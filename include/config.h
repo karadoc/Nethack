@@ -360,7 +360,7 @@ typedef unsigned char	uchar;
 #define DUMP_LOG        /* Dump game end information to a file */
 /* #define DUMP_FN "/tmp/%n.nh" */      /* Fixed dumpfile name, if you want
                                          * to prevent definition by users */
-#define DUMPMSGS 20     /* Number of latest messages in the dump file  */
+#define DUMPMSGS 40     /* Number of latest messages in the dump file  */
 
 #define SORTLOOT
 

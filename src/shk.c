@@ -2633,6 +2633,8 @@ xchar x, y;
 			eshkp->loan = 0L;
 			Your("debt is paid off.");
 		    }
+			// K-Mod idea: only add the credit if the total gold inside the shop is >= your current credit.
+			// otherwise "I was wondering where that gold got to. Thanks."
 		    pline("%ld %s %s added to your credit.",
 				delta, currency(delta), delta > 1L ? "are" : "is");
 		}
