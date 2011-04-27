@@ -1,4 +1,4 @@
-// dalder: extracts the boulders, holes, and stairs from sokoban maps to create nethack data.
+// balder: extracts the boulders, holes, and stairs from sokoban maps to create nethack data.
 
 #include <stdio.h>
 #include <stdlib.h>

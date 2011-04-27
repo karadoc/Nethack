@@ -1,0 +1,64 @@
+
++ decreased prob of seeing bones from 1/3 to 1/5
++ increased prob of saving bones from 1-(1 / (1 + dlvl/4)) to 1-(1 / (1 + dlvl/3))
++ rebalanced max lvl of random monsters from (dlvl + clvl)/2 to (2*dlvl + clvl+1 + turns/1000)/4 (experimental)
++ made it possible to refresh knowledge of spells sooner (changed from 1000 remaining turns to 5000 remaining turns)
++ decreased the power of protection bought from priests. The probability of being granted protection decreases with each point. Max is 15.
++ decreased xp required for lv 12 and above. (use to have exp growth up to lv20, then linear. Now it is exp to lv12, then quadratic)
++ "Harmonic Scoring" patch, http://bilious.homelinux.org/?358 decreases the end-of-games points awarded for kills.
++ "pickup_thrown" patch, http://bilious.homelinux.org/?98
++ increased allowed highscores per name from 3 to 10 (because I play by myself...)
++ dumpfile option
++ weight of carried items is now displayed in the inventory menus
++ rebalanced magic negation effect of armour, failure to block use to be 0:100%, 1:67%, 2:35%, 3:2%. Now is 0:100%, 1:50%, 2:25%, 3:17%
++ diluted extra/full healing potions now only increase max hp by half of their usual amount
++ unicorn horns no longer restore lost attribute points
++ levitation no longer prevents drowning on the plane of water level
++ resistances now come in two flavours 'resistance' (intrinsic resistance) and 'immunity' (extrinsic resistance) This effects fire, cold, shock, and poison. Some poison resistance effects now use Luck.
++ magic res only blocks half of magic missile damage
++ fixed a bunch of bugs related to lava. (potions not exploding. sinking when no actions are actually being taken, etc)
++ Slowed down the speed of engraving. Things that use to be (len/10) are now ((len+2)/5)
++ eating corpses now abuses con (if it 'tastes terrible')
++ "sortloot" patch
++ "msgtype" patch
++ AC no longer reduces damage from elemental attacks, or from some other special attacks (eg life draining attacks)
++ Slightly weakened the evasion effect of very strong armour. [was -rnd(-AC), now -rnd((1-AC)/2 + rnd((1-AC)/2)) ]
++ Added toggle for "pickup all", in addtion to the usual auto-pickup toggle. The command is meta+@.
++ Added meta+x hotkey for #twoweapon
++ Added meta+y hotkey for #ride (better than nothing?)
+
++ shortswords are lighter
++ implemented a skill grouping system. Related skills share their skill-points but not their practice.
+
++ reduced the weight of spear, javelin, short sword, broadsword, ...
++ tweaked the probabilies of some weapons.
+
++ went to great lenghts to merge the changes I've made so far with the map changes from sporkhack. (only the map changes for now)
++ replaced 'sparkle' boolean option with 'sparkle_speed' integer option.
+
++ knights now start with a short sword instead of a long sword
++ knights can now reach expert in short sword, but only basic in attack spells.
++ Valkyries start with a spear instead of a long sword
+
++ Valkyries can now reach expert in spear, and skilled in javelin, but only skilled in longsword
++ New spear artifact 'Gungnir'
++ throwing attacks no longer get rogue backstab bonus
+
++ adjusted some monster stats (freezing/flaming/shocking spheres do more damage, krakens are faster, engulfing monsts to more damage)
++ ducking damage from exploding spheres is now much less likely
+
++ increased probably that good ring / amulets / boots will be cursed, and in some cases decreased the probably that bad will will be cursed. The point of this is to make it harder to guess what's good and what's bad.
+
++ Completely reworked the player hp regen system. Max regen is now lower than before. Regen scales smoothly with character level. Magical regeneration is more powerful in the late-game.
+
++ Added a damage multiplier for thrown spears / javelins when above basic skill level.
++ Added additional conflict resistance for all monsters: r(dlvl + mlvl) >= clvl means conflict is resisted.
++ Increased the bonus damage from strength, and doubled the bonus for 2-handed weapons.
++ Added new level styles for random dungeons of doom levels.
++ Added new sokoban levels (in addition to reflections of the original levels
++ Reduced the loot in sokoban. There's now only a 50% chance of getting both a ring and a wand on each level. (always at least one though)
+
++ Orange dragon scales now give free action instead of only sleep resistance.
++ implemented a bones file queue, so that each level can store up to 11 bones files.
++ mixing potions no longer clears BUC knowledge (but still sets to uncursed)
+
