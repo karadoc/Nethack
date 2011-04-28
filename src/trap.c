@@ -2847,99 +2847,135 @@ domagictrap()
  *
  * Return number of objects destroyed. --ALI
  */
+/*
+** K-Mod, 28/apr/2011, karadoc
+** I've hijacked the 'force' argument to basically mean "totally destroy".
+** As far as I can tell, it hasn't been used anywhere yet, other than for lava effects, by me.
+** If 'force' is later required to do something less harsh, then this will need to be changed.
+*/
 int
 fire_damage(chain, force, here, x, y)
 struct obj *chain;
 boolean force, here;
 xchar x, y;
 {
-    int chance;
-    struct obj *obj, *otmp, *nobj, *ncobj;
-    int retval = 0;
-    int in_sight = !Blind && couldsee(x, y);	/* Don't care if it's lit */
-    int dindx;
+	int chance;
+	struct obj *obj, *otmp, *nobj, *ncobj;
+	int retval = 0;
+	int in_sight = !Blind && couldsee(x, y);	/* Don't care if it's lit */
+	int dindx;
 
-    for (obj = chain; obj; obj = nobj) {
-	nobj = here ? obj->nexthere : obj->nobj;
+	for (obj = chain; obj; obj = nobj)
+	{
+		nobj = here ? obj->nexthere : obj->nobj;
 
-	/* object might light in a controlled manner */
-	if (catch_lit(obj))
-	    continue;
+		/* object might light in a controlled manner */
+		if (catch_lit(obj))
+			 continue;
+			; // K-Mod: Why continue? We can just check if the thing itself will burn.			
 
-	if (Is_container(obj)) {
-	    switch (obj->otyp) {
-	    case ICE_BOX:
-		 //case IRON_SAFE:
-		continue;		/* Immune */
-		/*NOTREACHED*/
-		break;
-	    case CHEST:
-		chance = 40;
-		break;
-	    case LARGE_BOX:
-		chance = 30;
-		break;
-	    default:
-		chance = 20;
-		break;
-	    }
-	    if (!force && (Luck + 5) > rn2(chance))
-		continue;
-	    /* Container is burnt up - dump contents out */
-	    if (in_sight) pline("%s catches fire and burns.", Yname2(obj));
-	    if (Has_contents(obj)) {
-		if (in_sight) pline("Its contents fall out.");
-		for (otmp = obj->cobj; otmp; otmp = ncobj) {
-		    ncobj = otmp->nobj;
-		    obj_extract_self(otmp);
-		    if (!flooreffects(otmp, x, y, ""))
-			place_object(otmp, x, y);
+		if (is_flammable(obj) && !obj->oerodeproof)
+		{
+			if (Is_container(obj))
+			{
+				switch (obj->otyp)
+				{
+				case ICE_BOX:
+					//case IRON_SAFE:
+					continue;		/* Immune */
+					/*NOTREACHED*/
+					break;
+				case CHEST:
+					chance = 40;
+					break;
+				case LARGE_BOX:
+					chance = 30;
+					break;
+				default:
+					chance = 20;
+					break;
+				}
+				if (!force && (Luck + 5) > rn2(chance))
+					continue;
+				/* Container is burnt up - dump contents out */
+				if (in_sight) pline("%s catches fire and burns.", Yname2(obj));
+				if (Has_contents(obj))
+				{
+					if (in_sight) pline("Its contents fall out.");
+					for (otmp = obj->cobj; otmp; otmp = ncobj)
+					{
+						ncobj = otmp->nobj;
+						obj_extract_self(otmp);
+						if (!flooreffects(otmp, x, y, ""))
+							place_object(otmp, x, y);
+					}
+				}
+				delobj(obj);
+				retval++;
+			}
+			else if (!force && (Luck + 5) > rn2(20))
+			{
+				/*  chance per item of sustaining damage:
+				*	max luck (full moon):	 5%
+				*	max luck (elsewhen):	10%
+				*	avg luck (Luck==0):	75%
+				*	awful luck (Luck<-4):  100%
+				*/
+				continue;
+			}
+			else if (obj->oclass == SCROLL_CLASS || obj->oclass == SPBOOK_CLASS)
+			{
+				/* karadoc: now checked in is_flamable() 
+				if (obj->otyp == SCR_FIRE || obj->otyp == SPE_FIREBALL)
+				continue; */
+				dindx = (obj->oclass == SCROLL_CLASS) ? 2 : 3;
+				if (in_sight)
+					pline("%s %s.", Yname2(obj), (obj->quan > 1) ?
+					destroy_strings[dindx*3 + 1] : destroy_strings[dindx*3]);
+				delobj(obj);
+				retval++;
+			}
+			else
+			{
+				if (force)
+				{
+					// destroy it.
+					if (in_sight)
+						Your("%s into flame.", aobjnam(obj, "burst"));
+					delobj(obj);
+					retval++;
+				}
+				else if(obj->oeroded < MAX_ERODE && !(obj->blessed && !rnl(4)))
+				{
+					if (in_sight)
+					{
+						pline("%s %s%s.", Yname2(obj), otense(obj, "burn"),
+							obj->oeroded+1 == MAX_ERODE ? " completely" :
+							obj->oeroded ? " further" : "");
+					}
+					obj->oeroded++;
+				}
+			}
+		} // end burnable
+		else if (obj->oclass == POTION_CLASS)
+		{
+			dindx = 1;
+			if (in_sight)
+				pline("%s %s.", Yname2(obj), (obj->quan > 1) ?
+				destroy_strings[dindx*3 + 1] : destroy_strings[dindx*3]);
+			delobj(obj);
+			retval++;
 		}
-	    }
-	    delobj(obj);
-	    retval++;
-	} else if (!force && (Luck + 5) > rn2(20)) {
-	    /*  chance per item of sustaining damage:
-	     *	max luck (full moon):	 5%
-	     *	max luck (elsewhen):	10%
-	     *	avg luck (Luck==0):	75%
-	     *	awful luck (Luck<-4):  100%
-	     */
-	    continue;
-	} else if (obj->oclass == SCROLL_CLASS || obj->oclass == SPBOOK_CLASS) {
-	    if (obj->otyp == SCR_FIRE || obj->otyp == SPE_FIREBALL)
-		continue;
-	    if (obj->otyp == SPE_BOOK_OF_THE_DEAD) {
-		if (in_sight) pline("Smoke rises from %s.", the(xname(obj)));
-		continue;
-	    }
-	    dindx = (obj->oclass == SCROLL_CLASS) ? 2 : 3;
-	    if (in_sight)
-		pline("%s %s.", Yname2(obj), (obj->quan > 1) ?
-		      destroy_strings[dindx*3 + 1] : destroy_strings[dindx*3]);
-	    delobj(obj);
-	    retval++;
-	} else if (obj->oclass == POTION_CLASS) {
-	    dindx = 1;
-	    if (in_sight)
-		pline("%s %s.", Yname2(obj), (obj->quan > 1) ?
-		      destroy_strings[dindx*3 + 1] : destroy_strings[dindx*3]);
-	    delobj(obj);
-	    retval++;
-	} else if (is_flammable(obj) && obj->oeroded < MAX_ERODE &&
-		   !(obj->oerodeproof || (obj->blessed && !rnl(4)))) {
-	    if (in_sight) {
-		pline("%s %s%s.", Yname2(obj), otense(obj, "burn"),
-		      obj->oeroded+1 == MAX_ERODE ? " completely" :
-		      obj->oeroded ? " further" : "");
-	    }
-	    obj->oeroded++;
+		else if (obj->otyp == SPE_BOOK_OF_THE_DEAD)
+		{
+			if (in_sight) pline("Smoke rises from %s.", the(xname(obj)));
+			continue;
+		}
 	}
-    }
 
-    if (retval && !in_sight)
-	You("smell smoke.");
-    return retval;
+	if (retval && !in_sight)
+		You("smell smoke.");
+	return retval;
 }
 
 void
@@ -4194,118 +4230,6 @@ unconscious()
 
 static const char lava_killer[] = "molten lava";
 
-#ifdef SPORKHACK_LAVA_EFFECTS
-boolean
-lava_effects()
-{
-    register struct obj *obj, *obj2;
-    int dmg;
-    boolean usurvive;
-
-    burn_away_slime();
-    if (likes_lava(youmonst.data)) return FALSE;
-
-    if (how_resistant(FIRE_RES) < 100) {
-	if(Wwalking) {
-			if (!Levitation && !Flying && uarm && 
-					(uarm->otyp == WHITE_DRAGON_SCALE_MAIL || uarm->otyp == WHITE_DRAGON_SCALES)) {
-				levl[u.ux][u.uy].typ = ROOM;
-				if (!rn2(4)) {
-					pline_The("lava cools and solidifies under your feet.");
-				}
-				bury_objs(u.ux,u.uy);
-				return FALSE;
-			}
-			dmg = resist_reduce(d(6,6),FIRE_RES);
-	    pline_The("lava here burns you!");
-	    if(dmg < u.uhp) {
-		losehp(dmg, lava_killer, KILLED_BY);
-		goto burn_stuff;
-	    }
-	} else
-	    You("fall into the lava!");
-
-	usurvive = Lifesaved || discover;
-#ifdef WIZARD
-	if (wizard) usurvive = TRUE;
-#endif
-	for(obj = invent; obj; obj = obj2) {
-	    obj2 = obj->nobj;
-	    if(is_organic(obj) && !obj->oerodeproof) {
-		if(obj->owornmask) {
-		    if (usurvive)
-			Your("%s into flame!", aobjnam(obj, "burst"));
-
-		    if(obj == uarm) (void) Armor_gone();
-		    else if(obj == uarmc) (void) Cloak_off();
-		    else if(obj == uarmh) (void) Helmet_off();
-		    else if(obj == uarms) (void) Shield_off();
-		    else if(obj == uarmg) (void) Gloves_off();
-		    else if(obj == uarmf) (void) Boots_off();
-#ifdef TOURIST
-		    else if(obj == uarmu) setnotworn(obj);
-#endif
-		    else if(obj == uleft) Ring_gone(obj);
-		    else if(obj == uright) Ring_gone(obj);
-		    else if(obj == ublindf) Blindf_off(obj);
-		    else if(obj == uamul) Amulet_off();
-		    else if(obj == uwep) uwepgone();
-		    else if (obj == uquiver) uqwepgone();
-					else if (obj == ulauncher) ulwepgone();
-		    else if (obj == uswapwep) uswapwepgone();
-		}
-		useupall(obj);
-	    }
-	}
-
-	/* s/he died... */
-	u.uhp = -1;
-	killer_format = KILLED_BY;
-	killer = lava_killer;
-	You("burn to a crisp...");
-	done(BURNING);
-	while (!safe_teleds(TRUE)) {
-		pline("You're still burning.");
-		done(BURNING);
-	}
-	You("find yourself back on solid %s.", surface(u.ux, u.uy));
-	return(TRUE);
-    }
-
-    if (!Wwalking) {
-	u.utrap = rn1(4, 4) + (rn1(4, 12) << 8);
-	u.utraptype = TT_LAVA;
-	You("sink into the lava, but it only burns slightly!");
-		monstseesu(M_SEEN_FIRE);
-	if (u.uhp > 1)
-	    losehp(1, lava_killer, KILLED_BY);
-    } else {
-		if (!Levitation && !Flying && uarm && 
-				(uarm->otyp == WHITE_DRAGON_SCALE_MAIL || uarm->otyp == WHITE_DRAGON_SCALES)) {
-			levl[u.ux][u.uy].typ = ROOM;
-			if (!rn2(4)) {
-				pline_The("lava cools and solidifies under your feet.");
-			}
-			bury_objs(u.ux,u.uy);
-			return FALSE;
-		}
-    }
-    /* just want to burn boots, not all armor; destroy_item doesn't work on
-       armor anyway */
-burn_stuff:
-    if(uarmf && !uarmf->oerodeproof && is_organic(uarmf)) {
-	/* save uarmf value because Boots_off() sets uarmf to null */
-	obj = uarmf;
-	Your("%s bursts into flame!", xname(obj));
-	(void) Boots_off();
-	useup(obj);
-    }
-    destroy_item(SCROLL_CLASS, AD_FIRE);
-    destroy_item(SPBOOK_CLASS, AD_FIRE);
-    destroy_item(POTION_CLASS, AD_FIRE);
-    return(FALSE);
-}
-#else // K-Mod lava
 /*
 ** K-Mod, 5/apr/2011, karadoc
 ** There were a bunch of (what I consider to be) bugs in this function
@@ -4332,15 +4256,21 @@ lava_effects()
 			(void) Boots_off();
 			useup(obj);
 		}
-		destroy_item(SCROLL_CLASS, AD_FIRE);
-		destroy_item(SPBOOK_CLASS, AD_FIRE);
-		destroy_item(POTION_CLASS, AD_FIRE);
+		else // if you lost your boots, you're about to fall into the lava. Burn the stuff then instead.
+		{
+			destroy_item(SCROLL_CLASS, AD_FIRE);
+			destroy_item(SPBOOK_CLASS, AD_FIRE);
+			destroy_item(POTION_CLASS, AD_FIRE);
+		}
 
 		// That's the end of the effects for lava liking monsters.
 		if (likes_lava(youmonst.data))
 			return FALSE;
+	}
 
-		// Otherwise, some damage.
+	if (Wwalking) // check again, to see if the boots are still there!
+	{
+		// it burns your feet a bit.
 		if (!Fire_immunity)
 		{
 			dmg = (Fire_resistance? d(3,4) : d(6,4));
@@ -4373,6 +4303,9 @@ lava_effects()
 		}
 
 		// You might be fire resistant, but your equipment probably isn't
+		fire_damage(invent, TRUE, FALSE, u.ux, u.uy);
+		/* The old code, now obsolete, which I took from the old do_lava function.
+		** I didn't know about the fire_damage formula; apparently the original author didn't either.
 		for(obj = invent; obj; obj = obj2)
 		{
 			obj2 = obj->nobj;
@@ -4406,6 +4339,7 @@ lava_effects()
 		}
 		if (general_destruction)
 			pline("Some of your equipment is destroyed.");
+		*/
 	}
 
 	if(dmg < u.uhp)
@@ -4431,7 +4365,6 @@ lava_effects()
 
 	return(FALSE);
 }
-#endif // end K-Mod lava
 
 #endif /* OVLB */
 

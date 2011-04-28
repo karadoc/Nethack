@@ -3268,6 +3268,13 @@ boolean u_caused;
 	return cnt;
 }
 
+/*
+** K-Mod, 28/apr/2011, karadoc
+** Changed zap_hit to depend on player dex / monster level instead of ac. 
+** I want to make ac less useful against magical attacks.
+** Also, I don't want wands vs. the player to be useless in the late-game.
+*/
+#if 0 // original code
 /* will zap/spell/breath attack score a hit against armor class `ac'? */
 STATIC_OVL int
 zap_hit(ac, type)
@@ -3285,6 +3292,27 @@ int type;	/* either hero cast spell type or 0 */
 
     return (3 - chance) < ac+spell_bonus;
 }
+#endif
+/* will zap/spell/breath attack score a hit against dexterity `dex'? */
+STATIC_OVL int
+zap_hit(dex, type)
+int dex;
+int type;	/* either hero cast spell type or 0 */
+{
+    int spell_bonus = type ? spell_hit_bonus(type) : 0;
+
+	return rn2(25+spell_bonus) > rn2(dex);
+	// With spell_bonus == 0
+	// 74% @ dex=14, (early game dex)
+	// 66% @ dex=18, (max natural dex)
+	// 56% @ dex=23, (w/ +5 gauntlets of dex)
+	// 43% @ dex=30, (level of arch-lich)
+
+	// I think this is fair, compared to the previous system which was basically just
+	// 100% in the early game, 25% in the late game.
+	// dex 18 in this system is roughly the same as ac -4 in the old, which is not a really low ac.
+}
+// K-Mod end
 
 /* type ==   0 to   9 : you shooting a wand */
 /* type ==  10 to  19 : you casting a spell */
@@ -3366,7 +3394,7 @@ register int dx,dy;
 #ifdef STEED
 	    buzzmonst:
 #endif
-	    if (zap_hit(find_mac(mon), spell_type)) {
+		if (zap_hit(mon->m_lev, spell_type)) {
 		if (mon_reflects(mon, (char *)0)) {
 		    if(cansee(mon->mx,mon->my)) {
 			hit(fltxt, mon, exclam(0));
@@ -3467,7 +3495,7 @@ register int dx,dy;
 		    goto buzzmonst;
 	    } else
 #endif
-	    if (zap_hit((int) u.uac, 0)) {
+	    if (zap_hit(ACURR(A_DEX), 0)) {
 		range -= 2;
 		pline("%s hits you!", The(fltxt));
 		if (Reflecting) {

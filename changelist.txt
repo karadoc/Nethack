@@ -52,13 +52,19 @@
 + Completely reworked the player hp regen system. Max regen is now lower than before. Regen scales smoothly with character level. Magical regeneration is more powerful in the late-game.
 
 + Added a damage multiplier for thrown spears / javelins when above basic skill level.
-+ Added additional conflict resistance for all monsters: r(dlvl + mlvl) >= clvl means conflict is resisted.
++ Added additional conflict resistance for all monsters: r(dlvl) >= clvl - mlvl/2 means conflict is resisted.
 + Increased the bonus damage from strength, and doubled the bonus for 2-handed weapons.
 + Added new level styles for random dungeons of doom levels.
 + Added new sokoban levels (in addition to reflections of the original levels
 + Reduced the loot in sokoban. There's now only a 50% chance of getting both a ring and a wand on each level. (always at least one though)
++ Items and monsters will not spawn on top of holes at the time of level creation. (yay for sokoban). Trapdoors and pits are still allowed, and holes are allowed after level creation.
 
 + Orange dragon scales now give free action instead of only sleep resistance.
 + implemented a bones file queue, so that each level can store up to 11 bones files.
-+ mixing potions no longer clears BUC knowledge (but still sets to uncursed)
-
++ mixing potions no longer clears BUC knowledge
++ clearing with unicorn horn no longer clears BUC knowledge (but still sets to uncursed for water)
++ +1 to-hit for all shortswords
++ covetous monsters will not try to harrass you if they are peaceful
++ beam hit probabilities now depends on dex rather than ac. Compared to the old system, wands will miss more in the early game and hit more in the late game.
++ fixed some problems with lava. It now does not burn the book of the dead, book of fireball, scroll of fire etc. Bag contents are no longer unconditionally lost; and if your Wwalking boots burn, you fall in.
++ 'enchant weapon' can now be used to fooproof bags (and some other stuff) as well as weapons

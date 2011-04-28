@@ -215,7 +215,7 @@ moveloop()
 				if (Regeneration)
 				{
 					regen_rate*=3;  // triple natural regen
-					regen_rate+=30; // +1 hp per turn
+					regen_rate+=15; // +0.5 hp per turn
 					// I expect this to amount to around 4 hp/turn in the late game
 					// (which is close to what it would have been in the orgininal system)
 				}

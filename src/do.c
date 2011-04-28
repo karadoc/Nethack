@@ -191,7 +191,7 @@ const char *verb;
 		newsym(x,y);
 		return TRUE;
 	} else if (is_lava(x, y)) {
-		return fire_damage(obj, FALSE, FALSE, x, y);
+		return fire_damage(obj, TRUE, FALSE, x, y);
 	} else if (is_pool(x, y)) {
 		/* Reasonably bulky objects (arbitrary) splash when dropped.
 		 * If you're floating above the water even small things make noise.

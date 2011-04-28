@@ -324,8 +324,8 @@ tactics(mtmp)
 		    }
 		/* fall through :-) */
 
-	    case STRAT_NONE:	/* harrass */
-		if (!rn2(!mtmp->mflee ? 5 : 33)) mnexto(mtmp);
+	    case STRAT_NONE:	/* harrass */ // K-Mod: not if peaceful
+		if (!mtmp->mpeaceful && !rn2(!mtmp->mflee ? 5 : 33)) mnexto(mtmp);
 		return(0);
 
 	    default:		/* kill, maim, pillage! */

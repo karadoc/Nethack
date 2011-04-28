@@ -1908,7 +1908,7 @@ dodip()
 		    singlepotion->cursed = singlepotion->odiluted = 0;
 		else
 		    singlepotion->cursed = obj->cursed;  /* odiluted left as-is */
-		singlepotion->bknown = FALSE;
+		//singlepotion->bknown = FALSE; // K-Mod, disabled for consistancy with dilution
 		if (Blind) {
 		    singlepotion->dknown = FALSE;
 		} else {

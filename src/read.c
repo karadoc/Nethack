@@ -958,9 +958,13 @@ register struct obj	*sobj;
 	     */
 	    break;
 	case SCR_ENCHANT_WEAPON:
-		if(uwep && (uwep->oclass == WEAPON_CLASS || is_weptool(uwep))
-			&& confused) {
+		/*if(uwep && (uwep->oclass == WEAPON_CLASS || is_weptool(uwep))
+			&& confused) {*/
+		if (uwep && confused && (uwep->oclass == WEAPON_CLASS || (!objects[uwep->otyp].oc_merge && uwep->oclass != ARMOR_CLASS)))
+		{
 		/* oclass check added 10/25/86 GAN */
+		// oclass check weakened 28/apr/2011, karadoc
+		// (includes most items, including bags and rings. excludes candles, food, scrolls)
 			uwep->oerodeproof = !(sobj->cursed);
 			if (Blind) {
 			    uwep->rknown = FALSE;

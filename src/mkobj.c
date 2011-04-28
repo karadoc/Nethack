@@ -1073,10 +1073,13 @@ register struct obj *otmp;
 	int otyp = otmp->otyp;
 	int omat = objects[otyp].oc_material;
 
-	if (objects[otyp].oc_oprop == FIRE_RES || otyp == WAN_FIRE)
+	if (objects[otyp].oc_oprop == FIRE_RES
+		|| otyp == WAN_FIRE || otyp == SCR_FIRE || otyp == SPE_FIREBALL
+		|| otyp == SPE_BOOK_OF_THE_DEAD) // K-Mod, added books and scroll.
 		return FALSE;
 
-	return((boolean)((omat <= WOOD && omat != LIQUID) || omat == PLASTIC));
+	//return((boolean)((omat <= WOOD && omat != LIQUID) || omat == PLASTIC));
+	return((boolean)((omat <= BONE && omat != LIQUID) || omat == PLASTIC)); // K-Mod
 }
 
 boolean

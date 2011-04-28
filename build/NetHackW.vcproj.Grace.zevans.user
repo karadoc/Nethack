@@ -9,9 +9,9 @@
 			Name="Release|Win32"
 			>
 			<DebugSettings
-				Command="$(TargetPath)"
+				Command="$(SolutionDir)\binary\$(TargetFileName)"
 				WorkingDirectory=""
-				CommandArguments=""
+				CommandArguments="-D -u &quot;wizard&quot;"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
@@ -22,7 +22,7 @@
 				SQLDebugging=""
 				Environment=""
 				EnvironmentMerge="true"
-				DebuggerFlavor=""
+				DebuggerFlavor="0"
 				MPIRunCommand=""
 				MPIRunArguments=""
 				MPIRunWorkingDirectory=""
@@ -37,9 +37,9 @@
 			Name="Debug|Win32"
 			>
 			<DebugSettings
-				Command="$(TargetPath)"
+				Command="$(SolutionDir)\binary\$(TargetFileName)"
 				WorkingDirectory=""
-				CommandArguments=""
+				CommandArguments="-D -u &quot;wizard&quot;"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
@@ -50,7 +50,7 @@
 				SQLDebugging=""
 				Environment=""
 				EnvironmentMerge="true"
-				DebuggerFlavor=""
+				DebuggerFlavor="0"
 				MPIRunCommand=""
 				MPIRunArguments=""
 				MPIRunWorkingDirectory=""

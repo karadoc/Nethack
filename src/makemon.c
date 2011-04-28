@@ -549,8 +549,10 @@ register struct	monst	*mtmp;
 		    if(ptr != &mons[PM_GUARD] &&
 			ptr != &mons[PM_WATCHMAN] &&
 			ptr != &mons[PM_WATCH_CAPTAIN]) {
-			if (!rn2(3)) (void) mongets(mtmp, K_RATION);
-			else if (!rn2(2)) (void) mongets(mtmp, C_RATION); // K-Mod, added 'else'
+			//if (!rn2(3)) (void) mongets(mtmp, K_RATION);
+			//if (!rn2(2)) (void) mongets(mtmp, C_RATION);
+			if (!rn2(6)) (void) mongets(mtmp, K_RATION);
+			else if (!rn2(5)) (void) mongets(mtmp, C_RATION); // K-Mod
 			if (ptr != &mons[PM_SOLDIER] && !rn2(3))
 				(void) mongets(mtmp, BUGLE);
 		    } else

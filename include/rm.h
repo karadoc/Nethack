@@ -547,7 +547,7 @@ extern dlevel_t level;	/* structure describing the current level */
 #define fmon		level.monlist
 
 /*
- * Covert a trap number into the defsym graphics array.
+ * Convert a trap number into the defsym graphics array.
  * Convert a defsym number into a trap number.
  * Assumes that arrow trap will always be the first trap.
  */

@@ -1455,7 +1455,8 @@ xchar
 level_difficulty()
 {
 	if (In_endgame(&u.uz))
-		return((xchar)(depth(&sanctum_level) + u.ulevel/2));
+		//return((xchar)(depth(&sanctum_level) + u.ulevel/2));
+		return((xchar)(depth(&sanctum_level) + 10)); // K-Mod.
 	else
 		if (u.uhave.amulet)
 			return(deepest_lev_reached(FALSE));
