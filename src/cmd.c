@@ -764,13 +764,7 @@ wiz_show_wmodes(VOID_ARGS)
 STATIC_PTR int
 wiz_check(VOID_ARGS)
 {
-	char *r = in_rooms(u.ux, u.uy, 0);
-	pline("(%d,%d) %s", u.ux, u.uy, (levl[u.ux][u.uy].roomno == SHARED)?"[shared] " :"");
-	while (*r)
-	{
-		pline("room %d, doorcnt = %d", *r-ROOMOFFSET, rooms[*r-ROOMOFFSET].doorct);
-		r++;
-	}
+	pline("vc = %d", version_converter);
 	return 0;
 }
 

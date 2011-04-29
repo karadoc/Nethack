@@ -312,13 +312,16 @@ HELM("dented pot", (char *)0,
 		1, 0,  0,	2, 0, 10,   8, 9, 0, IRON, CLR_BLACK),
 /* With shuffled appearances... */
 HELM("helmet", "plumed helmet",
-		0, 0,  0,      10, 1, 30,  10, 9, 0, IRON, HI_METAL),
+		0, 0,  0,   9, 1, 30,  10, 9, 0, IRON, HI_METAL),
 HELM("helm of brilliance", "etched helmet",
 		0, 1,  0,	6, 1, 50,  50, 9, 0, IRON, CLR_GREEN),
 HELM("helm of opposite alignment", "crested helmet",
 		0, 1,  0,	6, 1, 50,  50, 9, 0, IRON, HI_METAL),
 HELM("helm of telepathy", "visored helmet",
 		0, 1,  TELEPAT, 2, 1, 50,  50, 9, 0, IRON, HI_METAL),
+HELM("helm of anti-magic", "horned helmet", // Also drains energy when casting, and stuns when resisting.
+		0, 1, ANTIMAGIC, 1, 1, 50, 50, 9, 0, IRON, CLR_BLACK),
+//#define HELM(name,desc,kn,mgc,power,prob,delay,wt,cost,ac,can,metal,c) \
 
 /* suits of armor */
 /*

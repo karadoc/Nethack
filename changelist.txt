@@ -16,7 +16,7 @@
 + levitation no longer prevents drowning on the plane of water level
 + resistances now come in two flavours 'resistance' (intrinsic resistance) and 'immunity' (extrinsic resistance) This effects fire, cold, shock, and poison. Some poison resistance effects now use Luck.
 + magic res only blocks half of magic missile damage
-+ fixed a bunch of bugs related to lava. (potions not exploding. sinking when no actions are actually being taken, etc)
++ fixed a bunch of bugs related to lava. (wrong items being destroyed. sinking when no actions are actually being taken, etc)
 + Slowed down the speed of engraving. Things that use to be (len/10) are now ((len+2)/5)
 + eating corpses now abuses con (if it 'tastes terrible')
 + "sortloot" patch
@@ -66,5 +66,9 @@
 + +1 to-hit for all shortswords
 + covetous monsters will not try to harrass you if they are peaceful
 + beam hit probabilities now depends on dex rather than ac. Compared to the old system, wands will miss more in the early game and hit more in the late game.
-+ fixed some problems with lava. It now does not burn the book of the dead, book of fireball, scroll of fire etc. Bag contents are no longer unconditionally lost; and if your Wwalking boots burn, you fall in.
 + 'enchant weapon' can now be used to fooproof bags (and some other stuff) as well as weapons
+
++ added K-Mod version info to patchlevel.h
++ implemented some rudimentary version conversion routines for save / bone files.
++ now moves broken files rather than deleting them.
++ Added the basics for helm of anti-magic / horned helmet (it isn't quite finished)

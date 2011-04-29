@@ -57,7 +57,7 @@ static char fqn_filename_buffer[FQN_NUMBUF][FQN_MAX_FILENAME];
 #endif
 
 #if !defined(MFLOPPY) && !defined(VMS) && !defined(WIN32)
-char bones[] = "bonesnn.xxx";
+char bones[] = "bonXX-nn.xxx";
 char lock[PL_NSIZ+14] = "1lock"; /* long enough for uid+name+.99 */
 #else
 # if defined(MFLOPPY)
@@ -65,12 +65,12 @@ char bones[FILENAME];		/* pathname of bones files */
 char lock[FILENAME];		/* pathname of level files */
 # endif
 # if defined(VMS)
-char bones[] = "bonesnn.xxx;1";
+char bones[] = "bonXX-nn.xxx;1";
 char lock[PL_NSIZ+17] = "1lock"; /* long enough for _uid+name+.99;1 */
 # endif
 # if defined(WIN32)
 //char bones[] = "bonesnn.xxx";
-char bones[] = "bonXX-nn.xxx";
+char bones[] = "bonXX-nn.xxx"; // and above
 char lock[PL_NSIZ+25];		/* long enough for username+-+name+.99 */
 # endif
 #endif
@@ -747,7 +747,7 @@ d_level *lev;
 		int i;
 		char *suffix;
 
-		suffix = eos(fq_bones);
+		suffix = eos((char*)fq_bones);
 		for (i = 0; i < MAX_BONES_IN_QUEUE; i++)
 		{
 			Sprintf(suffix, ".%d", i);
@@ -801,7 +801,7 @@ d_level *lev;
 	/* original code
 	return !(unlink(fqname(bones, BONESPREFIX, 0)) < 0); */
 
-	fq_bones = fqname(bones, BONESPREFIX, 0);	
+	fq_bones = (char*)fqname(bones, BONESPREFIX, 0);	
 
 	// unlink the file at the front of the queue
 	ret = !(unlink(fqname(bones, BONESPREFIX, 0)) < 0);
@@ -814,7 +814,7 @@ d_level *lev;
 		char *suffix1, *suffix2;
 
 		(void)set_bonesfile_name(old_bones, lev);
-		tempname = fqname(old_bones, BONESPREFIX, 1);
+		tempname = (char*)fqname(old_bones, BONESPREFIX, 1);
 
 		suffix1 = eos(fq_bones);
 		suffix2 = eos(tempname);
@@ -1005,9 +1005,13 @@ restore_saved_game()
 	uncompress(fq_save);
 	if ((fd = open_savefile()) < 0) return fd;
 
-	if (!uptodate(fd, fq_save)) {
+	if (!uptodate(fd, fq_save))
+	{
 	    (void) close(fd),  fd = -1;
-	    (void) delete_savefile();
+#ifdef KEEP_BROKEN_FILES // K-Mod
+		if (rename(fq_save, fqname(SAVEF, TROUBLEPREFIX, 1)) != 0)
+#endif
+			(void) delete_savefile();
 	}
 	return fd;
 }

@@ -4238,7 +4238,7 @@ static const char lava_killer[] = "molten lava";
 boolean
 lava_effects()
 {
-    register struct obj *obj, *obj2;
+    register struct obj *obj;
     int dmg = 0;
 	boolean general_destruction = FALSE;
 

@@ -413,15 +413,25 @@ getbones()
 	fd = open_bonesfile(&u.uz, &bonesid);
 	if (fd < 0) return(0);
 
-	if ((ok = uptodate(fd, bones)) == 0) {
-#ifdef WIZARD
-	    if (wizard)
-#endif
+	if ((ok = uptodate(fd, bones)) == 0)
+	{
 		pline("Discarding unuseable bones; no need to panic...");
-	} else {
+
+#ifdef KEEP_BROKEN_FILES // K-Mod
+	    (void) close(fd);
+		compress_bonesfile();
+		if (rename(fqname(bones, BONESPREFIX, 0), fqname(bones, TROUBLEPREFIX, 1)) != 0)
+#endif // end KEEP_BROKEN_FILES
+			delete_bonesfile(&u.uz);
+		return 0;
+	}
+	else
+	{
 #ifdef WIZARD
-		if(wizard)  {
-			if(yn("Get bones?") == 'n') {
+		if(wizard)
+		{
+			if(yn("Get bones?") == 'n')
+			{
 				(void) close(fd);
 				compress_bonesfile();
 				return(0);
@@ -436,35 +446,41 @@ getbones()
 			Sprintf(errbuf, "This is bones level '%s', not '%s'!",
 				oldbonesid, bonesid);
 #ifdef WIZARD
-			if (wizard) {
+			if (wizard)
+			{
 				pline("%s", errbuf);
 				ok = FALSE;	/* won't die of trickery */
 			}
 #endif
 			trickery(errbuf);
-		} else {
+		}
+		else
+		{
 			register struct monst *mtmp;
 
 			getlev(fd, 0, 0, TRUE);
 
 			/* Note that getlev() now keeps tabs on unique
-			 * monsters such as demon lords, and tracks the
-			 * birth counts of all species just as makemon()
-			 * does.  If a bones monster is extinct or has been
-			 * subject to genocide, their mhpmax will be
-			 * set to the magic DEFUNCT_MONSTER cookie value.
-			 */
-			for(mtmp = fmon; mtmp; mtmp = mtmp->nmon) {
-			    if (mtmp->mhpmax == DEFUNCT_MONSTER) {
+			* monsters such as demon lords, and tracks the
+			* birth counts of all species just as makemon()
+			* does.  If a bones monster is extinct or has been
+			* subject to genocide, their mhpmax will be
+			* set to the magic DEFUNCT_MONSTER cookie value.
+			*/
+			for(mtmp = fmon; mtmp; mtmp = mtmp->nmon)
+			{
+				if (mtmp->mhpmax == DEFUNCT_MONSTER)
+				{
 #if defined(DEBUG) && defined(WIZARD)
-				if (wizard)
-				    pline("Removing defunct monster %s from bones.",
-					mtmp->data->mname);
+					if (wizard)
+						pline("Removing defunct monster %s from bones.",
+						mtmp->data->mname);
 #endif
-				mongone(mtmp);
-			    } else
-				/* to correctly reset named artifacts on the level */
-				resetobjs(mtmp->minvent,TRUE);
+					mongone(mtmp);
+				}
+				else
+					/* to correctly reset named artifacts on the level */
+					resetobjs(mtmp->minvent,TRUE);
 			}
 			resetobjs(fobj,TRUE);
 			resetobjs(level.buriedobjlist,TRUE);
@@ -473,20 +489,23 @@ getbones()
 	(void) close(fd);
 
 #ifdef WIZARD
-	if(wizard) {
-		if(yn("Unlink bones?") == 'n') {
+	if(wizard)
+	{
+		if(yn("Unlink bones?") == 'n')
+		{
 			compress_bonesfile();
 			return(ok);
 		}
 	}
 #endif
-	if (!delete_bonesfile(&u.uz)) {
+	if (!delete_bonesfile(&u.uz))
+	{
 		/* When N games try to simultaneously restore the same
-		 * bones file, N-1 of them will fail to delete it
-		 * (the first N-1 under AmigaDOS, the last N-1 under UNIX).
-		 * So no point in a mysterious message for a normal event
-		 * -- just generate a new level for those N-1 games.
-		 */
+		* bones file, N-1 of them will fail to delete it
+		* (the first N-1 under AmigaDOS, the last N-1 under UNIX).
+		* So no point in a mysterious message for a normal event
+		* -- just generate a new level for those N-1 games.
+		*/
 		/* pline("Cannot unlink bones."); */
 		return(0);
 	}

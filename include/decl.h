@@ -407,6 +407,22 @@ E struct _plinemsg *pline_msg;
 #define MSGTYP_NOSHOW	2
 #define MSGTYP_STOP	3
 
+#ifdef VERSION_CONVERSION // K-Mod
+
+struct version_translator
+{
+	unsigned long	incarnation;	/* actual version number */
+	unsigned long	entity_count;	/* # of monsters and objects */
+	unsigned long	struct_sizes;	/* size of key structs */
+
+	int new_objects; // number of objects that have been added since this version
+};
+E struct version_translator version_conversion_table[];
+E int object_insert_offset[];
+E int version_converter; // converter currently in use. 0 == no converter
+
+#endif // VERSION_CONVERSION
+
 #undef E
 
 #endif /* DECL_H */

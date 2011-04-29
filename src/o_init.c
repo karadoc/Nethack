@@ -213,7 +213,7 @@ shuffle_all()
 	}
 
 	/* shuffle the helmets */
-	shuffle(HELMET, HELM_OF_TELEPATHY, FALSE);
+	shuffle(HELMET, HELM_OF_ANTI_MAGIC, FALSE);
 
 	/* shuffle the gloves */
 	shuffle(LEATHER_GLOVES, GAUNTLETS_OF_DEXTERITY, FALSE);
@@ -282,16 +282,88 @@ register int fd;
 {
 	register int i;
 	unsigned int len;
+#ifdef VERSION_CONVERSION
+	if (version_converter > 0)
+	{
+		// I think it's easiest if we just read them one at a time
+		// this isn't the most effecient solution, but it's at least easy to understand; sort of
+		// who am I kidding? This is a mess, but at least it works! ... or does it?
+		int j, offset, newo;
+		struct objclass tobj; 
 
-	mread(fd, (genericptr_t) bases, sizeof bases);
-	mread(fd, (genericptr_t) disco, sizeof disco);
-	mread(fd, (genericptr_t) objects, sizeof(struct objclass) * NUM_OBJECTS);
+		newo = version_conversion_table[version_converter].new_objects;
+
+		// extra bases not yet supported, but we need to load and adjust the base boundaries
+		mread(fd, (genericptr_t) bases, sizeof bases);
+		for (i = 0; i < MAXOCLASSES; i++)
+		{
+			for (j = newo-1; j >= 0; j--)
+			{
+				if (bases[i] >= object_insert_offset[j])
+					bases[i]++;
+			}
+		}
+
+		// disco
+		for (i = 0; i < NUM_OBJECTS-newo; i++)
+		{
+			for (offset = 0, j = newo-1; j >= 0; j--)
+			{
+				if (i+offset >= object_insert_offset[j])
+					offset++;
+			}
+			mread(fd, (genericptr_t) &disco[i+offset], sizeof(*disco));
+		}
+
+		// objclass
+		for (i = 0; i < NUM_OBJECTS-newo; i++)
+		{
+			mread(fd, (genericptr_t) &tobj, sizeof(tobj));
+
+			for (offset = 0, j = newo-1; j >= 0; j--)
+			{
+				if (i+offset >= object_insert_offset[j])
+					offset++;
+				if (tobj.oc_name_idx >= object_insert_offset[j])
+					tobj.oc_name_idx++;
+				if (tobj.oc_descr_idx >= object_insert_offset[j])
+					tobj.oc_descr_idx++;
+			}
+			memcpy((genericptr_t) &objects[i+offset], &tobj, sizeof(tobj));
+			//mread(fd, (genericptr_t) &objects[i+offset], sizeof(*objects));
+		}
+		// 'unshuffle' the new items. this isn't perfect, I'm struggling here.
+		// this will not recover the correct toughness, item colour, or material.
+		for (j = version_conversion_table[version_converter].new_objects-1; j >= 0; j--)
+		{
+			offset = 0;
+			for (i = j; i; i--)
+			{
+				if (object_insert_offset[j]+offset >= i)
+					offset++;
+			}
+			objects[object_insert_offset[j]+offset].oc_name_idx = object_insert_offset[j]+offset;
+			objects[object_insert_offset[j]+offset].oc_descr_idx = object_insert_offset[j]+offset;
+		}
+
+	}
+	else
+#endif
+	{
+		// original code
+		mread(fd, (genericptr_t) bases, sizeof bases);
+		mread(fd, (genericptr_t) disco, sizeof disco);
+		mread(fd, (genericptr_t) objects, sizeof(struct objclass) * NUM_OBJECTS);
+	}
+	// load the names
 	for (i = 0; i < NUM_OBJECTS; i++)
-	    if (objects[i].oc_uname) {
-		mread(fd, (genericptr_t) &len, sizeof len);
-		objects[i].oc_uname = (char *) alloc(len);
-		mread(fd, (genericptr_t)objects[i].oc_uname, len);
-	    }
+	    if (objects[i].oc_uname)
+		{
+			mread(fd, (genericptr_t) &len, sizeof len);
+			objects[i].oc_uname = (char *) alloc(len);
+			mread(fd, (genericptr_t)objects[i].oc_uname, len);
+		}
+
 #ifdef USE_TILES
 	shuffle_tiles();
 #endif

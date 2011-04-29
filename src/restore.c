@@ -207,6 +207,18 @@ boolean ghostly, frozen;
 		else otmp2->nobj = otmp;
 		mread(fd, (genericptr_t) otmp,
 					(unsigned) xl + sizeof(struct obj));
+#ifdef VERSION_CONVERSION // K-Mod
+		if (version_converter != 0)
+		{
+			int i;
+			// adjust the otyp number, to account for new items
+			for (i = version_conversion_table[version_converter].new_objects-1; i >= 0; i--)
+			{
+				if (otmp->otyp >= object_insert_offset[i])
+					otmp->otyp++;
+			}
+		}
+#endif
 		if (ghostly) {
 		    unsigned nid = flags.ident++;
 		    add_id_mapping(otmp->o_id, nid);
@@ -631,7 +643,7 @@ register int fd;
 #else
 	(void) lseek(fd, (off_t)0, 0);
 #endif
-	(void) uptodate(fd, (char *)0);		/* skip version info */
+	(void) uptodate(fd, (char *)0);		/* skip version info (and set version_converter, K-Mod) */
 #ifdef STORE_PLNAME_IN_FILE
 	mread(fd, (genericptr_t) plname, PL_NSIZ);
 #endif
@@ -762,6 +774,19 @@ boolean ghostly;
 			} else {
 			    mread(fd, (genericptr_t)&len, sizeof(uchar));
 			    mread(fd, (genericptr_t)&r, sizeof(struct rm));
+#ifdef VERSION_CONVERSION // K-Mod
+				if (version_converter > 0)
+				{
+					int k;
+					for (k = version_conversion_table[version_converter].new_objects-1; k >= 0; k--)
+					{
+						if (r.glyph >= objnum_to_glyph(object_insert_offset[k]))
+						{
+							r.glyph++;
+						}
+					}
+				}
+#endif
 			}
 		    }
 		    j = 0;

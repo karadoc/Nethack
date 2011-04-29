@@ -14,6 +14,34 @@
 #include "patchlevel.h"
 #endif
 
+// K-Mod's automatic save / bones file converter power
+#ifdef VERSION_CONVERSION
+
+struct version_translator version_conversion_table[] =
+{
+/*  {VERSION_NUMBER, VERSION_SANITY1, VERSION_SANITY2, new_objects}, */
+	{0x00060100UL, 0x221b217dUL, 0xac8195d8UL, 0}, //  this version
+	{0x00060000UL, 0x221b117dUL, 0xac8195d8UL, 1}, // v0.6.0, before helm of anti-magic
+};
+
+int object_insert_offset[] =
+{
+	// put newest objects at the _start_ of this list. leave the old entries unchanged
+	83, // HELM_OF_ANTI_MAGIC
+};
+// insert objects like this:
+/*
+for (i = new_objects-1; i >= 0; i--)
+{
+ if (otyp >= object_insert_offset[i])
+	otyp++;
+}
+*/
+
+int version_converter; // converter currently in use. 0 == no converter
+
+#endif
+
 /* #define BETA_INFO "" */	/* "[ beta n]" */
 
 /* fill buffer with short version (so caller can avoid including date.h) */
@@ -64,38 +92,70 @@ long filetime;
 }
 #endif
 
-boolean
+// Return 0 if the version matches,
+// otherwise return the version translator index, or -1 for incompatible versions.
+// (K-Mod)
+int
 check_version(version_data, filename, complain)
 struct version_info *version_data;
 const char *filename;
 boolean complain;
 {
+#ifndef IGNORE_VERSION_NUMBER
 	if (
 #ifdef VERSION_COMPATIBILITY
-	    version_data->incarnation < VERSION_COMPATIBILITY ||
-	    version_data->incarnation > VERSION_NUMBER
+		version_data->incarnation < VERSION_COMPATIBILITY ||
+		version_data->incarnation > VERSION_NUMBER
 #else
-	    version_data->incarnation != VERSION_NUMBER
+		version_data->incarnation != VERSION_NUMBER
 #endif
-	  ) {
-	    if (complain)
-		pline("Version mismatch for file \"%s\".", filename);
-	    return FALSE;
-	} else if (
-#ifndef IGNORED_FEATURES
-		   version_data->feature_set != VERSION_FEATURES ||
-#else
-		   (version_data->feature_set & ~IGNORED_FEATURES) !=
-			  (VERSION_FEATURES & ~IGNORED_FEATURES) ||
-#endif
-		   version_data->entity_count != VERSION_SANITY1 ||
-		   version_data->struct_sizes != VERSION_SANITY2) {
-	    if (complain)
-		pline("Configuration incompatibility for file \"%s\".",
-		      filename);
-	    return FALSE;
+		)
+	{
+		if (complain)
+			pline("Version mismatch for file \"%s\".", filename);
+		return -1;
 	}
-	return TRUE;
+	else
+#endif // end ignore
+		if
+			(
+#ifndef IGNORED_FEATURES
+			version_data->feature_set != VERSION_FEATURES)
+#else
+			(version_data->feature_set & ~IGNORED_FEATURES) !=
+			(VERSION_FEATURES & ~IGNORED_FEATURES))
+#endif
+		{
+			if (complain)
+				pline("Configuration incompatibility for file \"%s\".",
+				filename);
+			return -1;
+		}
+		else if (version_data->entity_count != VERSION_SANITY1 ||
+			version_data->struct_sizes != VERSION_SANITY2)
+		{
+#ifdef VERSION_CONVERSION
+			// check conversion rules
+			int i;
+			for (i = 1; i < sizeof(version_conversion_table)/sizeof(*version_conversion_table); i++)
+			{
+				if (version_data->entity_count == version_conversion_table[i].entity_count &&
+					version_data->struct_sizes == version_conversion_table[i].struct_sizes)
+				{
+					version_converter = i;
+					return version_converter;
+				}
+			}
+#endif
+			if (complain)
+				pline("Incompatible data in file \"%s\".",
+				filename);
+			return -1;
+		}
+#ifdef VERSION_CONVERSION
+		version_converter = 0;
+#endif
+		return 0;
 }
 
 /* this used to be based on file date and somewhat OS-dependant,
@@ -118,10 +178,12 @@ const char *name;
 	}
 	return FALSE;
     }
-    if (!check_version(&vers_info, name, verbose)) {
-	if (verbose) wait_synch();
-	return FALSE;
-    }
+	if (check_version(&vers_info, name, verbose) < 0)
+	{
+		if (verbose)
+			wait_synch();
+		return FALSE;
+	}
     return TRUE;
 }
 

@@ -2974,7 +2974,7 @@ spo_monster(coder)
 	case SP_M_V_APPEAR:
 	    if ((OV_typ(parm) == SPOVAR_INT) &&
 		!tmpmons.appear_as.str) {
-		tmpmons.appear = OV_i(parm);
+		tmpmons.appear = (xchar)OV_i(parm);
 		opvar_free(parm);
 		OV_pop(parm);
 		tmpmons.appear_as.str = strdup(OV_s(parm));
@@ -2982,55 +2982,55 @@ spo_monster(coder)
 	    break;
 	case SP_M_V_ASLEEP:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpmons.asleep = OV_i(parm);
+		tmpmons.asleep = (schar)OV_i(parm);
 	    break;
 	case SP_M_V_ALIGN:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpmons.align = OV_i(parm);
+		tmpmons.align = (aligntyp)OV_i(parm);
 	    break;
 	case SP_M_V_PEACEFUL:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpmons.peaceful = OV_i(parm);
+		tmpmons.peaceful = (schar)OV_i(parm);
 	    break;
 	case SP_M_V_FEMALE:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpmons.female = OV_i(parm);
+		tmpmons.female = (short)OV_i(parm);
 	    break;
 	case SP_M_V_INVIS:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpmons.invis = OV_i(parm);
+		tmpmons.invis = (short)OV_i(parm);
 	    break;
 	case SP_M_V_CANCELLED:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpmons.cancelled = OV_i(parm);
+		tmpmons.cancelled = (short)OV_i(parm);
 	    break;
 	case SP_M_V_REVIVED:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpmons.revived = OV_i(parm);
+		tmpmons.revived = (short)OV_i(parm);
 	    break;
 	case SP_M_V_AVENGE:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpmons.avenge = OV_i(parm);
+		tmpmons.avenge = (short)OV_i(parm);
 	    break;
 	case SP_M_V_FLEEING:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpmons.fleeing = OV_i(parm);
+		tmpmons.fleeing = (short)OV_i(parm);
 	    break;
 	case SP_M_V_BLINDED:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpmons.blinded = OV_i(parm);
+		tmpmons.blinded = (short)OV_i(parm);
 	    break;
 	case SP_M_V_PARALYZED:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpmons.paralyzed = OV_i(parm);
+		tmpmons.paralyzed = (short)OV_i(parm);
 	    break;
 	case SP_M_V_STUNNED:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpmons.stunned = OV_i(parm);
+		tmpmons.stunned = (short)OV_i(parm);
 	    break;
 	case SP_M_V_CONFUSED:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpmons.confused = OV_i(parm);
+		tmpmons.confused = (short)OV_i(parm);
 	    break;
 	case SP_M_V_SEENTRAPS:
 	    if (OV_typ(parm) == SPOVAR_INT)
@@ -3058,7 +3058,7 @@ spo_monster(coder)
     tmpmons.class = SP_MONST_CLASS(OV_i(id));
     tmpmons.x = SP_COORD_X(OV_i(coord));
     tmpmons.y = SP_COORD_Y(OV_i(coord));
-    tmpmons.has_invent = OV_i(has_inv);
+    tmpmons.has_invent = (short)OV_i(has_inv);
 
     create_monster(&tmpmons, coder->croom);
 
@@ -3136,11 +3136,11 @@ spo_object(coder)
 	    break;
 	case SP_O_V_CURSE:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpobj.curse_state = OV_i(parm);
+		tmpobj.curse_state = (schar)OV_i(parm);
 	    break;
 	case SP_O_V_SPE:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpobj.spe = OV_i(parm);
+		tmpobj.spe = (short)OV_i(parm);
 	    break;
 	case SP_O_V_QUAN:
 	    if (OV_typ(parm) == SPOVAR_INT)
@@ -3148,39 +3148,39 @@ spo_object(coder)
 	    break;
 	case SP_O_V_BURIED:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpobj.buried = OV_i(parm);
+		tmpobj.buried = (short)OV_i(parm);
 	    break;
 	case SP_O_V_LIT:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpobj.lit = OV_i(parm);
+		tmpobj.lit = (short)OV_i(parm);
 	    break;
 	case SP_O_V_ERODED:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpobj.eroded = OV_i(parm);
+		tmpobj.eroded = (short)OV_i(parm);
 	    break;
 	case SP_O_V_LOCKED:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpobj.locked = OV_i(parm);
+		tmpobj.locked = (short)OV_i(parm);
 	    break;
 	case SP_O_V_TRAPPED:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpobj.trapped = OV_i(parm);
+		tmpobj.trapped = (short)OV_i(parm);
 	    break;
 	case SP_O_V_RECHARGED:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpobj.recharged = OV_i(parm);
+		tmpobj.recharged = (short)OV_i(parm);
 	    break;
 	case SP_O_V_INVIS:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpobj.invis = OV_i(parm);
+		tmpobj.invis = (short)OV_i(parm);
 	    break;
 	case SP_O_V_GREASED:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpobj.greased = OV_i(parm);
+		tmpobj.greased = (short)OV_i(parm);
 	    break;
 	case SP_O_V_BROKEN:
 	    if (OV_typ(parm) == SPOVAR_INT)
-		tmpobj.broken = OV_i(parm);
+		tmpobj.broken = (short)OV_i(parm);
 	    break;
 	case SP_O_V_COORD:
 	    if (OV_typ(parm) != SPOVAR_COORD)
@@ -3206,7 +3206,7 @@ spo_object(coder)
 
     tmpobj.id = SP_OBJ_TYP(OV_i(id));
     tmpobj.class = SP_OBJ_CLASS(OV_i(id));
-    tmpobj.containment = OV_i(containment);
+    tmpobj.containment = (xchar)OV_i(containment);
 
     quancnt = (tmpobj.id > STRANGE_OBJECT) ? tmpobj.quan : 0;
 
@@ -5402,7 +5402,7 @@ const char *name;
 	if (!fd) return FALSE;
 
 	Fread((genericptr_t) &vers_info, sizeof vers_info, 1, fd);
-	if (!check_version(&vers_info, name, TRUE))
+	if (check_version(&vers_info, name, TRUE) != 0)
 	    goto give_up;
 
 	result = sp_level_loader(fd, &lvl);
