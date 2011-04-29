@@ -548,16 +548,17 @@ boolean artif;
 		blessorcurse(otmp, 17);
 		break;
 	case ARMOR_CLASS:
-		if(!rn2(10) || (rn2(10) && (otmp->otyp == FUMBLE_BOOTS ||
+		if(!rn2(10) || (rn2(8) && (otmp->otyp == FUMBLE_BOOTS ||
 		   otmp->otyp == LEVITATION_BOOTS ||
 		   otmp->otyp == HELM_OF_OPPOSITE_ALIGNMENT ||
-		   otmp->otyp == GAUNTLETS_OF_FUMBLING))) {
+		   otmp->otyp == GAUNTLETS_OF_FUMBLING)) ||
+		   (!rn2(4) && otmp->otyp == HELM_OF_ANTI_MAGIC)) {
 			curse(otmp);
 			otmp->spe = -rne(3);
 		} else if(!rn2(10)) {
 			otmp->blessed = rn2(2);
 			otmp->spe = rne(3);
-		} else	blessorcurse(otmp, 10);
+		} else	blessorcurse(otmp, 12);
 		if (artif && !rn2(40))                
 		    otmp = mk_artifact(otmp, (aligntyp)A_NONE);
 		/* simulate lacquered armor for samurai */

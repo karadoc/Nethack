@@ -1527,7 +1527,13 @@ do_stone:
 			done(DIED);
 			dmg = 0;
 			break;
-		} /* else FALLTHRU */
+		}
+		if (uarmh && uarmh->otyp == HELM_OF_ANTI_MAGIC && (uarmh->cursed || !rn2(2+uarmh->blessed)))
+		{
+			Your("%s throbs.", body_part(HEAD));
+			make_stunned(d(2,4), FALSE);
+		}
+		/* else FALLTHRU */
 	default: /* case 16: ... case 5: */
 		You_feel("your life force draining away...");
 		permdmg = 1;	/* actual damage done below */

@@ -607,7 +607,7 @@ aligntyp resp_god;
 			} /* else fall thru */
 	    case 4:
 	    case 5:	gods_angry(resp_god);
-			if (!Blind && !Antimagic)
+			if (!Blind)// && !Antimagic)
 			    pline("%s glow surrounds you.",
 				  An(hcolor(NH_BLACK)));
 			rndcurse();

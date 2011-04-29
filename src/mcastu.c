@@ -290,6 +290,11 @@ castmu(mtmp, mattk, thinks_it_foundyou, foundyou)
 			shieldeff(u.ux, u.uy);
 			pline_The("missiles bounce off!");
 			dmg = (dmg+1)/2; // K-Mod (while I'm doing the immunity stuff)
+			if (uarmh && uarmh->otyp == HELM_OF_ANTI_MAGIC && (uarmh->cursed || !rn2(2+uarmh->blessed)))
+			{
+				Your("%s throbs.", body_part(HEAD));
+				make_stunned(d(2,4), FALSE);
+			}
 		} else dmg = d((int)mtmp->m_lev/2 + 1,6);
 		break;
 	    case AD_SPEL:	/* wizard spell */
@@ -342,7 +347,15 @@ int spellnum;
 		done(DIED);
 	    }
 	} else {
-	    if (Antimagic) shieldeff(u.ux, u.uy);
+		if (Antimagic)
+		{
+			shieldeff(u.ux, u.uy);
+			if (uarmh && uarmh->otyp == HELM_OF_ANTI_MAGIC && (uarmh->cursed || !rn2(2+uarmh->blessed)))
+			{
+				Your("%s throbs.", body_part(HEAD));
+				make_stunned(d(2,4), FALSE);
+			}
+		}
 	    pline("Lucky for you, it didn't work!");
 	}
 	dmg = 0;
@@ -393,6 +406,11 @@ int spellnum;
 	if (Antimagic) {
 	    shieldeff(u.ux, u.uy);
 	    pline("A field of force surrounds you!");
+		if (uarmh && uarmh->otyp == HELM_OF_ANTI_MAGIC && (uarmh->cursed || !rn2(2+uarmh->blessed)))
+		{
+			Your("%s throbs.", body_part(HEAD));
+			make_stunned(d(2,4), FALSE);
+		}
 	} else if (!destroy_arm(some_armor(&youmonst))) {
 	    Your("skin itches.");
 	}
@@ -402,6 +420,11 @@ int spellnum;
 	if (Antimagic) {
 	    shieldeff(u.ux, u.uy);
 	    You_feel("momentarily weakened.");
+		if (uarmh && uarmh->otyp == HELM_OF_ANTI_MAGIC && (uarmh->cursed || !rn2(2+uarmh->blessed)))
+		{
+			Your("%s throbs.", body_part(HEAD));
+			make_stunned(d(2,4), FALSE);
+		}
 	} else {
 	    You("suddenly feel weaker!");
 	    dmg = mtmp->m_lev - 6;
@@ -601,6 +624,11 @@ int spellnum;
 	    if (multi >= 0)
 		You("stiffen briefly.");
 	    nomul(-1);
+		if (uarmh && uarmh->otyp == HELM_OF_ANTI_MAGIC && (uarmh->cursed || !rn2(2+uarmh->blessed)))
+		{
+			Your("%s throbs.", body_part(HEAD));
+			make_stunned(d(2,4), FALSE);
+		}
 	} else {
 	    if (multi >= 0)
 		You("are frozen in place!");
@@ -613,7 +641,13 @@ int spellnum;
     case CLC_CONFUSE_YOU:
 	if (Antimagic) {
 	    shieldeff(u.ux, u.uy);
-	    You_feel("momentarily dizzy.");
+		if (uarmh && uarmh->otyp == HELM_OF_ANTI_MAGIC && (uarmh->cursed || !rn2(2+uarmh->blessed)))
+		{
+			Your("%s throbs.", body_part(HEAD));
+			make_stunned(d(2,4), FALSE);
+		}
+		else
+			You_feel("momentarily dizzy.");
 	} else {
 	    boolean oldprop = !!Confusion;
 

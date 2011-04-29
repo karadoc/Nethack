@@ -1270,7 +1270,7 @@ register struct obj *obj;
 		if (!Free_action) {
 		    pline("%s seems to be holding you.", Something);
 		    //nomul(-rnd(5));
-			nomul(-d(2,3));
+			nomul(-d(2,4));
 		    nomovemsg = You_can_move_again;
 		    exercise(A_DEX, FALSE);
 		} else You("stiffen momentarily.");
@@ -1280,7 +1280,7 @@ register struct obj *obj;
 		if (!Free_action && !Sleep_resistance) {
 		    You_feel("rather tired.");
 		    //nomul(-rnd(5));
-			nomul(-d(2,3));
+			nomul(-d(2,4));
 		    nomovemsg = You_can_move_again;
 		    exercise(A_DEX, FALSE);
 		} else You("yawn.");

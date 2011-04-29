@@ -338,7 +338,8 @@ rndcurse()			/* curse a few inventory items at random! */
 	    nobj++;
 	}
 	if (nobj) {
-	    for (cnt = rnd(6/((!!Antimagic) + (!!Half_spell_damage) + 1));
+	    //for (cnt = rnd(6/((!!Antimagic) + (!!Half_spell_damage) + 1));
+		for (cnt = rnd(12/((!!Antimagic) + (!!Half_spell_damage) + 2)); // K-Mod
 		 cnt > 0; cnt--)  {
 		onum = rnd(nobj);
 		for (otmp = invent; otmp; otmp = otmp->nobj) {

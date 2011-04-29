@@ -3165,7 +3165,13 @@ xchar sx, sy;
 		break;
 	    } else if (Antimagic) {
 		shieldeff(sx, sy);
-		You("aren't affected.");
+		if (uarmh && uarmh->otyp == HELM_OF_ANTI_MAGIC && (uarmh->cursed || !rn2(2+uarmh->blessed)))
+		{
+			Your("%s throbs.", body_part(HEAD));
+			make_stunned(d(2,4), FALSE);
+		}
+		else
+			You("aren't affected.");
 		break;
 	    }
 	    killer_format = KILLED_BY_AN;

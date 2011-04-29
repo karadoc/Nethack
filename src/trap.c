@@ -1176,7 +1176,12 @@ glovecheck:		(void) rust_dmg(uarmg, "gauntlets", 1, TRUE, &youmonst);
 		You("%s onto a polymorph trap!", verbbuf);
 		if(Antimagic || Unchanging) {
 		    shieldeff(u.ux, u.uy);
-		    You_feel("momentarily different.");
+			You_feel("momentarily different.");
+			if (uarmh && uarmh->otyp == HELM_OF_ANTI_MAGIC && (uarmh->cursed || !rn2(2+uarmh->blessed)))
+			{
+				Your("%s throbs.", body_part(HEAD));
+				make_stunned(d(2,4), FALSE);
+			}
 		    /* Trap did nothing; don't remove it --KAA */
 		} else {
 #ifdef STEED
