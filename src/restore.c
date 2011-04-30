@@ -440,6 +440,19 @@ unsigned int *stuckid, *steedid;	/* STEED */
 	mread(fd, (genericptr_t) &quest_status, sizeof(struct q_score));
 	mread(fd, (genericptr_t) spl_book,
 				sizeof(struct spell) * (MAXSPELL + 1));
+#ifdef VERSION_CONVERSION
+	// spell id (== object.otyp), therefore we need to make adjustments.
+	if (version_converter > 0)
+	{
+		int i, j;
+		for (i = 0; i < MAXSPELL; i++)
+		for (j = version_conversion_table[version_converter].new_objects-1; j >= 0; j--)
+		{
+			if (spl_book[i].sp_id >= object_insert_offset[j])
+				spl_book[i].sp_id++;
+		}
+	}
+#endif
 	restore_artifacts(fd);
 	restore_oracles(fd);
 	if (u.ustuck)
