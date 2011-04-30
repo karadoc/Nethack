@@ -274,7 +274,8 @@ int curse_bless;
 	    boolean is_on = (obj == uleft || obj == uright);
 
 	    /* destruction depends on current state, not adjustment */
-	    if (obj->spe > rn2(7) || obj->spe <= -5) {
+	    //if (obj->spe > rn2(7) || obj->spe <= -5) {
+		if (obj->spe >= d(2,4) || obj->spe <= -5) { // K-Mod
 		Your("%s %s momentarily, then %s!",
 		     xname(obj), otense(obj,"pulsate"), otense(obj,"explode"));
 		if (is_on) Ring_gone(obj);

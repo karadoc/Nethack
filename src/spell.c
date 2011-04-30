@@ -819,6 +819,7 @@ boolean atme;
 	if (uarmh && uarmh->otyp == HELM_OF_ANTI_MAGIC && (rn2(5+uarmh->cursed-uarmh->blessed) > 2)) // c:3/6, u:2/5, b:1/4
 	{
 		Your("%s %s the spell!", xname(uarmh), otense(uarmh, "absorb"));
+		makeknown(uarmh->otyp);
 		return(1);
 	}
 

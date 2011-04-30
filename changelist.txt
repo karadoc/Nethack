@@ -69,6 +69,7 @@
 + 'enchant weapon' can now be used to fooproof bags (and some other stuff) as well as weapons
 
 + added K-Mod version info to patchlevel.h
-+ implemented some rudimentary version conversion routines for save / bone files.
++ implemented some rudimentary version conversion routines for save / bone files. It is now possible to add new items without breaking bones / save compatibility.
 + now moves broken files rather than deleting them.
-+ Added the basics for helm of anti-magic / horned helmet (it isn't quite finished)
++ New item: helm of anti-magic / horned helmet. It gives magic resistance, but also has some negative side effects.
+

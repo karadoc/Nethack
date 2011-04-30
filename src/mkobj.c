@@ -529,7 +529,7 @@ boolean artif;
 		   otmp->otyp == AMULET_OF_CHANGE ||
 		   otmp->otyp == AMULET_OF_RESTFUL_SLEEP)) {
 			curse(otmp);
-		} else	blessorcurse(otmp, 5);
+		} else	blessorcurse(otmp, 10);
 	case VENOM_CLASS:
 	case CHAIN_CLASS:
 	case BALL_CLASS:
@@ -552,13 +552,18 @@ boolean artif;
 		   otmp->otyp == LEVITATION_BOOTS ||
 		   otmp->otyp == HELM_OF_OPPOSITE_ALIGNMENT ||
 		   otmp->otyp == GAUNTLETS_OF_FUMBLING)) ||
-		   (!rn2(4) && otmp->otyp == HELM_OF_ANTI_MAGIC)) {
+		   (!rn2(4) && otmp->otyp == HELM_OF_ANTI_MAGIC))
+		{
 			curse(otmp);
 			otmp->spe = -rne(3);
-		} else if(!rn2(10)) {
+		}
+		else if(!rn2(10))
+		{
 			otmp->blessed = rn2(2);
 			otmp->spe = rne(3);
-		} else	blessorcurse(otmp, 12);
+		}
+		else
+			blessorcurse(otmp, 10+10*objects[otmp->otyp].oc_magic);
 		if (artif && !rn2(40))                
 		    otmp = mk_artifact(otmp, (aligntyp)A_NONE);
 		/* simulate lacquered armor for samurai */
