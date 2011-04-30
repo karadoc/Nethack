@@ -3307,7 +3307,7 @@ int type;	/* either hero cast spell type or 0 */
 {
     int spell_bonus = type ? spell_hit_bonus(type) : 0;
 
-	return rn2(25+spell_bonus) > rn2(dex);
+	return rn2(25+spell_bonus) > rn2(min(dex, 1));
 	// With spell_bonus == 0
 	// 74% @ dex=14, (early game dex)
 	// 66% @ dex=18, (max natural dex)
