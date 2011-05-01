@@ -675,7 +675,7 @@ peffects(otmp)
 			    poisontell(typ);
 			    (void) adjattrib(typ,
 			    		//Poison_resistance ? -1 : -rn1(4,3),
-						Poison_immunity? -1 : (Poison_resistance? -d(1,2) : -rn1(4,3)),
+						Poison_immunity? -1 : (Poison_resistance? -d(1,3) : -rn1(4,3)),
 			    		TRUE);
 			}
 			if(!Poison_immunity) {

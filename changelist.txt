@@ -73,3 +73,12 @@
 + now moves broken files rather than deleting them.
 + New item: helm of anti-magic / horned helmet. It gives magic resistance, but also has some negative side effects.
 
++ fixed peaceful covetous monsters so that they move around rather than just standing still.
++ big buff to balrogs; they are now faster, higher level, and have a fire attack.
++ dragons now have a special bite attack to match their breath attack. They will be more dangerous now.
++ some minor changes to other monsters
++ reduced the spawn difficulty increase rate. (it is now moves / 1500)
++ split rooms may now be lopsided. (actually they were already sometimes lopsided, but that was due to a bug!)
++ fixed a version conversion bug which sometimes allowed old bones files to corrupt the game in progress
++ restored functionality to the 'dark room' glyph - so that explored dark rooms no longer look the same as walls.
++ changed graphics for dark rooms, and for dark corridors.

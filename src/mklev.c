@@ -376,7 +376,8 @@ mk_split_room()
 	rlit = (rnd(1+abs(depth(&u.uz))) < 11 && rn2(77)) ? TRUE : FALSE; // reroll for subroom
 	if ((wid > hei) || (wid == hei && rn2(2)))
 	{
-		int div = wid/2+rn2(1+(wid+1)%2)-1;
+		// int div = wid/2+rn2(1+wid%2)-1; // equal rooms
+		int div = wid/2+rn2(3+wid%2)-2; // possibly lopsided
 		coord door;
 		add_subroom(&rooms[nroom-1], lx, ly, lx+div, ly+hei, rlit, OROOM, FALSE);
 		finddpos(&door, lx+div+1, ly+1, lx+div+1, ly+hei-1);
@@ -398,7 +399,8 @@ mk_split_room()
 	}
 	else
 	{
-		int div = hei/2+rn2(1+(hei+1)%2)-1;
+		//int div = hei/2+rn2(1+hei%2)-1; // equal rooms
+		int div = hei/2+rn2(3+hei%2)-2; // possibly lopsided
 		coord door;
 		add_subroom(&rooms[nroom-1], lx, ly, lx+wid, ly+div, rlit, OROOM, FALSE);
 		finddpos(&door, lx+1, ly+div+1, lx+wid-1, ly+div+1);

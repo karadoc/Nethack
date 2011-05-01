@@ -38,7 +38,7 @@ for (i = new_objects-1; i >= 0; i--)
 }
 */
 
-int version_converter; // converter currently in use. 0 == no converter
+int version_converter = 0; // converter currently in use. 0 == no converter
 
 #endif
 

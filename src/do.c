@@ -1099,6 +1099,9 @@ boolean at_stairs, falling, portal;
 		new = TRUE;	/* made the level */
 	} else {
 		/* returning to previously visited level; reload it */
+#ifdef VERSION_CONVERSION
+		version_converter = 0;
+#endif
 		fd = open_levelfile(new_ledger, whynot);
 		if (fd < 0) {
 			pline("%s", whynot);

@@ -676,8 +676,13 @@ register int after;
 		notonhead = (intruder->mx != tx || intruder->my != ty);
 		if(mattackm(mtmp, intruder) == 2) return(2);
 		mmoved = 1;
-	    } else mmoved = 0;
+//	    } else mmoved = 0;
 	    goto postmov;
+		} else if (!mtmp->mpeaceful) // K-Mod, (don't just stand there... do something!)
+		{
+			mmoved = 0; // non peaceful covertous monsters already have their orders. eg. stand on stairs.
+			goto postmov;
+		}
 	}
 
 	/* and for the priest */

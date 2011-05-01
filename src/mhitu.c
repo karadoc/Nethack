@@ -1076,7 +1076,6 @@ dopois:
 			Sprintf(buf, "%s %s",
 				s_suffix(Monnam(mtmp)), mpoisons_subj(mtmp, mattk));
 			poisoned(buf, ptmp, mdat->mname, 30);
-			// K-Mod comment: poison / physical?
 		}
 		break;
 	case AD_DRIN:
@@ -1497,7 +1496,12 @@ do_stone:
 	case AD_DREN:
 		hitmsg(mtmp, mattk);
 		if (uncancelled && !rn2(4))
-			drain_en(dmg);
+		{
+			if (u.uen < dmg) // K-Mod, just to be less harsh.
+				drain_en(dmg-u.uen + u.uen/2); // halve the overflow
+			else
+				drain_en(dmg);
+		}
 		dmg = 0;
 		break;
 	case AD_CONF:
