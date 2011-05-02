@@ -1553,16 +1553,16 @@ struct obj *obj;
 	// +1% per 20 moves
 	// +20% if sick, because sickness is potentially fatal. We don't want to be too harsh.
 	// the total probability is increased by a factor of 100/80 if the horn is blessed
-	val_limit = ((moves - obj->age)/20 + Sick?20 :0 > rn2(100-(obj->blessed?20:0)))? 1 : 0;
+	val_limit = ((moves - obj->age)/20 + (Sick?20 :0) > rn2(100-(obj->blessed?20:0)))? 1 : 0;
 	if (val_limit > 0)
 	{
 		// cap at the maximum age.
 		obj->age = max(moves - 2000, moves - obj->age);
 		// use up most of the age.
-		obj->age = moves + (moves - obj->age)/(obj->blessed?3 :4);
+		obj->age = moves - (moves - obj->age)/(obj->blessed?3 :4);
 
 		// check for a bonus cure
-		val_limit += ((moves - obj->age)/20 + Sick?20 :0 > rn2(100-(obj->blessed?20:0)))? 1 : 0;
+		val_limit += ((moves - obj->age)/20 + (Sick?20 :0) > rn2(100-(obj->blessed?20:0)))? 1 : 0;
 	}
 // K-Mod end
 
