@@ -764,7 +764,10 @@ wiz_show_wmodes(VOID_ARGS)
 STATIC_PTR int
 wiz_check(VOID_ARGS)
 {
-	pline("vc = %d", version_converter);
+	if (uwep)
+	{
+		pline("age: %ld", uwep->age);
+	}
 	return 0;
 }
 

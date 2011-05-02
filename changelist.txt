@@ -82,3 +82,5 @@
 + fixed a version conversion bug which sometimes allowed old bones files to corrupt the game in progress
 + restored functionality to the 'dark room' glyph - so that explored dark rooms no longer look the same as walls.
 + changed graphics for dark rooms, and for dark corridors.
+
+++ unicorn horns now need to rest (age, recharge) between uses to be reliable. So don't use your unicorn on a trivial conditions!

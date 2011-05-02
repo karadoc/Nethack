@@ -1531,13 +1531,41 @@ struct obj *obj;
 		}
 	}
 
+/*
+** K-Mod, 2/mar/2011, karadoc
+** The reliability of unicorn horns meant that conditions (stun, confusion, etc) played no
+** role whatsoever in the late game. I think this is a shame, so I've changed it.
+** I think it's important that the player doesn't have to apply the unicorn horn over and
+** over to get the result that they want; but I also don't want them to be able to cure
+** every problem instantly. So my solution is to give unicorn horns a 'recharge time'.
+** When they are used, their age is reset. As they get older again, their reliability returns.
+*/
+	// This was the old system.
 	/*
 	 *		Chances for number of troubles to be fixed
 	 *		 0	1      2      3      4	    5	   6	  7
 	 *   blessed:  22.7%  22.7%  19.5%  15.4%  10.7%   5.7%   2.6%	 0.8%
 	 *  uncursed:  35.4%  35.4%  22.9%   6.3%    0	    0	   0	  0
 	 */
-	val_limit = rn2( d(2, (obj && obj->blessed) ? 4 : 2) );
+	//val_limit = rn2( d(2, (obj && obj->blessed) ? 4 : 2) );
+
+	// The new system:
+	// +1% per 20 moves
+	// +20% if sick, because sickness is potentially fatal. We don't want to be too harsh.
+	// the total probability is increased by a factor of 100/80 if the horn is blessed
+	val_limit = ((moves - obj->age)/20 + Sick?20 :0 > rn2(100-(obj->blessed?20:0)))? 1 : 0;
+	if (val_limit > 0)
+	{
+		// cap at the maximum age.
+		obj->age = max(moves - 2000, moves - obj->age);
+		// use up most of the age.
+		obj->age = moves + (moves - obj->age)/(obj->blessed?3 :4);
+
+		// check for a bonus cure
+		val_limit += ((moves - obj->age)/20 + Sick?20 :0 > rn2(100-(obj->blessed?20:0)))? 1 : 0;
+	}
+// K-Mod end
+
 	if (val_limit > trouble_count) val_limit = trouble_count;
 
 	/* fix [some of] the troubles */
