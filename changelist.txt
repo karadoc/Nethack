@@ -85,6 +85,7 @@
 
 + unicorn horns now need to rest (age, recharge) between uses to be reliable. So don't use your unicorn on a trivial conditions!
 
-++ added missing space ' ' to the "Your covered in acid!It burns!"
-++ active acid attacks are no longer affected by cancelation, or the !rn2(3) check. (ie. the bites of yellow / black dragons)
-++ fixed a couple of bugs in the new unicorn horn code
++ added missing space ' ' to the "Your covered in acid!It burns!"
++ active acid attacks are no longer affected by cancelation, or the !rn2(3) check. (ie. the bites of yellow / black dragons)
++ fixed a minor bug in pickup_thrown
++ fedora now gives automatic searching
