@@ -1017,8 +1017,21 @@ register const char *let,*word;
 #endif
 		}
 		if(ilet == '?' || ilet == '*') {
-		    char *allowed_choices = (ilet == '?') ? lets : (char *)0;
+/*
+** K-Mod, 3/mar/2011, karadoc
+** Only list all items if the command is not strict about item usage.
+** No point listing all items when it's just going to say:
+** "you cannot <foo> that!"
+*/
+			//char *allowed_choices = (ilet == '?') ? lets : (char *)0;
+			char *allowed_choices;
 		    long ctmp = 0;
+
+			if (ilet == '?' || (strcmp(word, "wield") && strcmp(word, "write with") && strcmp(word, "throw")))
+				allowed_choices = lets;
+			else
+				allowed_choices = (char *)0; // all
+// K-Mod end
 
 		    if (ilet == '?' && !*lets && *altlets)
 			allowed_choices = altlets;

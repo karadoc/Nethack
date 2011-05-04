@@ -89,3 +89,10 @@
 + active acid attacks are no longer affected by cancelation, or the !rn2(3) check. (ie. the bites of yellow / black dragons)
 + fixed a minor bug in pickup_thrown
 + fedora now gives automatic searching
+
++ mhitm paralysing attacks now have the same 1/3 chance that mhitu and uhitm attacks have. (use to be 100%)
++ Restricted the item list for commands that are strict about item type. (eg, the "eat" command will now only list items that are edible.)
++ rebalanced the demands of demon princes. (demands are no longer based on how much gold you are carrying. How broken was that idea?)
++ reduced two-weapon damage by a percentage. unskilled: -40%, expert: -10%
++ reduced the practice rate for two-weaponing from 2 points per attack to 1 point per attack.
++ increased the practice rate for riding, from 1 point per 100 moves, to 1 per 50 moves. (more riding changes to come)

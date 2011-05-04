@@ -899,7 +899,8 @@ mdamagem(magr, mdef, mattk)
 		}
 		break;
 	    case AD_PLYS:
-		if(!cancelled && mdef->mcanmove) {
+		// K-Mod, added && !rn2(3), for consistancy with mhitu, and to nerf orange dragon pets.
+		if(!cancelled && mdef->mcanmove && !rn2(3)) {
 		    if (vis) {
 			Strcpy(buf, Monnam(mdef));
 			pline("%s is frozen by %s.", buf, mon_nam(magr));

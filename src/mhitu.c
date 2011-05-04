@@ -1478,7 +1478,7 @@ do_stone:
 		dmgreduct = 0; // K-Mod: armour doesn't protect against this attack
 		hitmsg(mtmp, mattk);
 		//if (!mtmp->mcan && !rn2(3))
-		if (1) // K-Mod. Currently the only monsters with an active acid attack are the dragons, and I want it to work!
+		// K-Mod. Currently the only monsters with an active acid attack are the dragons, and I want it to work!
 			if (Acid_resistance) {
 				pline("You're covered in acid, but it seems harmless.");
 				dmg = 0;
@@ -1486,7 +1486,7 @@ do_stone:
 				pline("You're covered in acid! It burns!");
 				exercise(A_STR, FALSE);
 			}
-		else		dmg = 0;
+		//else		dmg = 0;
 		break;
 	case AD_SLOW:
 		hitmsg(mtmp, mattk);

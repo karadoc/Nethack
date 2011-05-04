@@ -1342,8 +1342,10 @@ struct obj *weapon;
 	    case P_ISRESTRICTED:
 	    case P_UNSKILLED:   bonus = -9; break;
 	    case P_BASIC:	bonus = -7; break;
-	    case P_SKILLED:	bonus = -5; break;
-	    case P_EXPERT:	bonus = -3; break;
+	    case P_SKILLED:	bonus = -6; break;
+	    case P_EXPERT:	bonus = -5; break;
+		// K-Mod, note: this use to be {-9, -7, -5, -3}.
+		// I'm still not completely satisified with this system...
 	}
     } else if (type == P_BARE_HANDED_COMBAT) {
 	/*
@@ -1385,64 +1387,83 @@ int
 weapon_dam_bonus(weapon)
 struct obj *weapon;
 {
-    int type, wep_type, skill, bonus = 0;
+	int type, wep_type, skill, bonus = 0;
 
-    wep_type = weapon_type(weapon);
-    /* use two weapon skill only if attacking with one of the wielded weapons */
-    type = (u.twoweap && (weapon == uwep || weapon == uswapwep)) ?
-	    P_TWO_WEAPON_COMBAT : wep_type;
-    if (type == P_NONE) {
-	bonus = 0;
-    } else if (type <= P_LAST_WEAPON) {
-	switch (P_SKILL(type)) {
-	    default: impossible("weapon_dam_bonus: bad skill %d",P_SKILL(type));
-		     /* fall through */
-	    case P_ISRESTRICTED:
-	    case P_UNSKILLED:	bonus = -2; break;
-	    case P_BASIC:	bonus =  0; break;
-	    case P_SKILLED:	bonus =  1; break;
-	    case P_EXPERT:	bonus =  2; break;
+	wep_type = weapon_type(weapon);
+	/* use two weapon skill only if attacking with one of the wielded weapons */
+	type = (u.twoweap && (weapon == uwep || weapon == uswapwep)) ?
+P_TWO_WEAPON_COMBAT : wep_type;
+	if (type == P_NONE)
+	{
+		bonus = 0;
 	}
-    } else if (type == P_TWO_WEAPON_COMBAT) {
-	skill = P_SKILL(P_TWO_WEAPON_COMBAT);
-	if (P_SKILL(wep_type) < skill) skill = P_SKILL(wep_type);
-	switch (skill) {
-	    default:
-	    case P_ISRESTRICTED:
-	    case P_UNSKILLED:	bonus = -3; break;
-	    case P_BASIC:	bonus = -1; break;
-	    case P_SKILLED:	bonus = 0; break;
-	    case P_EXPERT:	bonus = 1; break;
+	else if (type <= P_LAST_WEAPON)
+	{
+		switch (P_SKILL(type))
+		{
+		default: impossible("weapon_dam_bonus: bad skill %d",P_SKILL(type));
+			/* fall through */
+		case P_ISRESTRICTED:
+		case P_UNSKILLED:	bonus = -2; break;
+		case P_BASIC:	bonus =  0; break;
+		case P_SKILLED:	bonus =  1; break;
+		case P_EXPERT:	bonus =  2; break;
+		}
 	}
-    } else if (type == P_BARE_HANDED_COMBAT) {
-	/*
-	 *	       b.h.  m.a.
-	 *	unskl:	 0   n/a
-	 *	basic:	+1    +3
-	 *	skild:	+1    +4
-	 *	exprt:	+2    +6
-	 *	mastr:	+2    +7
-	 *	grand:	+3    +9
-	 */
-	bonus = P_SKILL(type);
-	bonus = max(bonus,P_UNSKILLED) - 1;	/* unskilled => 0 */
-	bonus = ((bonus + 1) * (martial_bonus() ? 3 : 1)) / 2;
-    }
+	else if (type == P_TWO_WEAPON_COMBAT)
+	{
+		skill = P_SKILL(P_TWO_WEAPON_COMBAT);
+		if (P_SKILL(wep_type) < skill)
+			skill = P_SKILL(wep_type);
+		// K-Mod, note: two_weapon_combat also gets a %dmg penalty in hmon_hitmon()
+		switch (skill)
+		{
+		default:
+		case P_ISRESTRICTED:
+		case P_UNSKILLED:	bonus = -3; break;
+		case P_BASIC:	bonus = -1; break;
+		case P_SKILLED:	bonus = 0; break;
+		case P_EXPERT:	bonus = 1; break;
+		}
+	}
+	else if (type == P_BARE_HANDED_COMBAT)
+	{
+		/*
+		*	       b.h.  m.a.
+		*	unskl:	 0   n/a
+		*	basic:	+1    +3
+		*	skild:	+1    +4
+		*	exprt:	+2    +6
+		*	mastr:	+2    +7
+		*	grand:	+3    +9
+		*/
+		bonus = P_SKILL(type);
+		bonus = max(bonus,P_UNSKILLED) - 1;	/* unskilled => 0 */
+		bonus = ((bonus + 1) * (martial_bonus() ? 3 : 1)) / 2;
+	}
 
 #ifdef STEED
 	/* KMH -- Riding gives some thrusting damage */
-	if (u.usteed && type != P_TWO_WEAPON_COMBAT) {
-		switch (P_SKILL(P_RIDING)) {
-		    case P_ISRESTRICTED:
-		    case P_UNSKILLED:   break;
-		    case P_BASIC:       break;
-		    case P_SKILLED:     bonus += 1; break;
-		    case P_EXPERT:      bonus += 2; break;
+	if (u.usteed && type != P_TWO_WEAPON_COMBAT)
+	{
+		switch (P_SKILL(P_RIDING))
+		{
+		case P_ISRESTRICTED:
+		case P_UNSKILLED:
+			break;
+		case P_BASIC:
+			break;
+		case P_SKILLED:
+			bonus += 1;
+			break;
+		case P_EXPERT:
+			bonus += 2;
+			break;
 		}
 	}
 #endif
 
-    return bonus;
+	return bonus;
 }
 
 /*

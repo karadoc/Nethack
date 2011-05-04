@@ -169,8 +169,18 @@ register struct monst *mtmp;
 #else
 	cash = money_cnt(invent);
 #endif
+/*
+** K-Mod, 4/may/2011, karadoc
+** Demands should not be based on how much gold you happen to be carrying.
+** Surely the demon princes aren't that stupid...
+*/
+	/* original code
 	demand = (cash * (rnd(80) + 20 * Athome)) /
-	    (100 * (1 + (sgn(u.ualign.type) == sgn(mtmp->data->maligntyp))));
+	    (100 * (1 + (sgn(u.ualign.type) == sgn(mtmp->data->maligntyp))));*/
+	demand = 4 * level_difficulty()
+		* (rn1(50, 30) + 20*Athome - 20*(sgn(u.ualign.type) == sgn(mtmp->data->maligntyp)));
+	// Typical demand in hell: 4 * 35 * (25+30+20) = 10500 gold.
+// K-Mod end
 
 	if (!demand) {		/* you have no gold */
 	    mtmp->mpeaceful = 0;
@@ -181,7 +191,8 @@ register struct monst *mtmp;
 	       has the Amulet, preventing monster from being satisified
 	       and removed from the game (along with said Amulet...) */
 	    if (mon_has_amulet(mtmp))
-		demand = cash + (long)rn1(1000,40);
+			demand += cash;
+		//demand = cash + (long)rn1(1000,40);
 
 	    pline("%s demands %ld %s for safe passage.",
 		  Amonnam(mtmp), demand, currency(demand));
@@ -189,7 +200,8 @@ register struct monst *mtmp;
 	    if ((offer = bribe(mtmp)) >= demand) {
 		pline("%s vanishes, laughing about cowardly mortals.",
 		      Amonnam(mtmp));
-	    } else if (offer > 0L && (long)rnd(40) > (demand - offer)) {
+	    //} else if (offer > 0L && (long)rnd(40) > (demand - offer)) {
+		} else if (offer > 0L && 100 * offer >= rn1(50,50) * demand) { // potentially 50% leeway.
 		pline("%s scowls at you menacingly, then vanishes.",
 		      Amonnam(mtmp));
 	    } else {

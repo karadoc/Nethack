@@ -902,7 +902,8 @@ int thrown;
 		    tmp += dbon();
 	}
 
-	if (valid_weapon_attack) {
+	if (valid_weapon_attack)
+	{
 	    struct obj *wep;
 
 	    /* to be valid a projectile must have had the correct projector */
@@ -938,8 +939,23 @@ int thrown;
 			}
 		}
 // K-Mod end
+/*
+** K-Mod, 4/may/2011, karadoc
+** lower damage and practice point if two-weaponing
+*/
 	    /* [this assumes that `!thrown' implies wielded...] */
-	    use_skill(wtype, 1);
+		if (u.twoweap)
+		{
+			// unskilled: -30%
+			// skilled: -20%
+			// expert: -10%
+			tmp = ((10 + P_SKILL(P_TWO_WEAPON_COMBAT) - 5) * tmp) / 10;
+			if (obj == uwep) // only practice 2-wep for one of the weapons, to avoid double-speed practicing.
+				use_skill(wtype, 1);
+		}
+		else
+			use_skill(wtype, 1);
+// K-Mod end
 	}
 
 /*
