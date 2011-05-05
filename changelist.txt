@@ -96,3 +96,6 @@
 + reduced two-weapon damage by a percentage. unskilled: -40%, expert: -10%
 + reduced the practice rate for two-weaponing from 2 points per attack to 1 point per attack.
 + increased the practice rate for riding, from 1 point per 100 moves, to 1 per 50 moves. (more riding changes to come)
+
+++ adjusted the ac and speed of many monsters. Tweaked the max hp formula for monsters.
+++ reduced the weight of some underused items, such as large shields.

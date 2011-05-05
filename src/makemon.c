@@ -504,6 +504,11 @@ register struct	monst	*mtmp;
 		if(is_mercenary(ptr)) {
 		    register int mac;
 
+/*
+** K-Mod note: since I've changed various ac values of armour and monsters,
+** these ac values will not be accurate. But it doesn't really matter;
+** it's still a functional way of assigning random gear.
+*/
 		    switch(monsndx(ptr)) {
 			case PM_GUARD: mac = -1; break;
 			case PM_SOLDIER: mac = 3; break;
@@ -921,7 +926,8 @@ register int	mmflags;
 	    mtmp->mhpmax = mtmp->mhp = golemhp(mndx);
 	} else if (is_rider(ptr)) {
 	    /* We want low HP, but a high mlevel so they can attack well */
-	    mtmp->mhpmax = mtmp->mhp = d(10,8);
+	    //mtmp->mhpmax = mtmp->mhp = d(10,8);
+		mtmp->mhpmax = mtmp->mhp = 20 + d(10,8); // K-Mod, have a little respect!
 	} else if (ptr->mlevel > 49) {
 	    /* "special" fixed hp monster
 	     * the hit points are encoded in the mlevel in a somewhat strange
@@ -936,7 +942,8 @@ register int	mmflags;
 	} else if (!mtmp->m_lev) {
 	    mtmp->mhpmax = mtmp->mhp = rnd(4);
 	} else {
-	    mtmp->mhpmax = mtmp->mhp = d((int)mtmp->m_lev, 8);
+	    //mtmp->mhpmax = mtmp->mhp = d((int)mtmp->m_lev, 8);
+		mtmp->mhpmax = mtmp->mhp = 2 * mtmp->m_lev + d((int)mtmp->m_lev, 6);
 	    if (is_home_elemental(ptr))
 		mtmp->mhpmax = (mtmp->mhp *= 3);
 	}
