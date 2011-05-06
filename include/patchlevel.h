@@ -6,11 +6,11 @@
 
 /* K-Mod 0.6.0 */
 #define VERSION_MAJOR	0
-#define VERSION_MINOR	6
+#define VERSION_MINOR	7
 /*
  * PATCHLEVEL is updated for each release.
  */
-#define PATCHLEVEL	1
+#define PATCHLEVEL	0
 /*
  * Incrementing EDITLEVEL can be used to force invalidation of old bones
  * and save files.

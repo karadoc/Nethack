@@ -365,13 +365,14 @@ typedef unsigned char	uchar;
 #define SORTLOOT
 
 // if Nethack is to completely ignore the version number when checking save/bones compatibility, use this.
+// (it will still perform the 'sanity checks')
 #define IGNORE_VERSION_NUMBER
 
 // Attempt to move incompatible bones / save files to troubledir before deleting them.
 #define KEEP_BROKEN_FILES
 
-// if you want Nethack to auto-convert saves / bones when it is able to, use this.
-// (experimental)
+// if you want Nethack to auto-convert old K-Mod save / bone files when it is able to, use this.
+// (This is an experimental feature.)
 #define VERSION_CONVERSION
 
 

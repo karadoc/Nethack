@@ -440,7 +440,7 @@ getbones()
 #endif
 		mread(fd, (genericptr_t) &c, sizeof c);	/* length incl. '\0' */
 		mread(fd, (genericptr_t) oldbonesid, (unsigned) c); /* DD.nnn */
-		if (strcmp(bonesid, oldbonesid) != 0 && 0) { // K-Mod, temporarily disabled, because I changed the bones names.
+		if (strcmp(bonesid, oldbonesid) != 0) {
 			char errbuf[BUFSZ];
 
 			Sprintf(errbuf, "This is bones level '%s', not '%s'!",
