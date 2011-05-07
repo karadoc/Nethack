@@ -1776,6 +1776,9 @@ game ends. You may use the macro %n that will be replaced with the name
 of your player character. The game must have write permissions to the
 directory where the file is written. Normally /tmp may be used for unix
 systems.
+.lp sparkle_speed
+The speed of the sparkly effect when a monster (including yourself) is hit by an
+attack to which it is resistant (default 1, zero = no sparkles).
 .lp dungeon
 Set the graphics symbols for displaying the dungeon
 (default \&``\ |--------||.-|++##.##<><>_|\e\e#{}.}..##\ #}'').
@@ -2061,6 +2064,30 @@ compile time option AUTOPICKUP_EXCEPTIONS included, you may be able to use
 configuration file lines to further refine
 .op autopickup
 behavior.
+.lp sortloot
+Controls the sorting of items in lists for
+inventory and #loot commands and some others.
+The possible values are:
+.sd
+.si
+full - always sort the lists;
+loot - only sort the lists that don't use inventory
+       letters, like with the #loot and pickup commands;
+none - show lists the traditional way without sorting.
+.ei
+.ed
+.lp sortpack
+Sort the pack contents by type when displaying inventory (default on).
+.lp weight_system
+Specify the units used in inventory screen. The options are,
+.sd
+.si
+metric - metric units
+game - arbitrary game units
+avoirdupois - American units
+none - no weights displayed
+.ei
+.ed
 .lp prayconfirm
 Prompt for confirmation before praying (default on).
 .lp pushweapon
@@ -2110,28 +2137,11 @@ the appearance of the display, not the way the game treats you.
 Show your approximate accumulated score on bottom line (default off).
 .lp "silent  "
 Suppress terminal beeps (default on).
-.lp sortloot
-Controls the behavior of the sortloot patch that sorts pickup lists for
-inventory and #loot commands and some others.
-The possible values are:
-.sd
-.si
-full - always sort the lists;
-loot - only sort the lists that don't use inventory
-       letters, like with the #loot and pickup commands;
-none - show lists the traditional way without sorting.
-.ei
-.ed
-.lp sortpack
-Sort the pack contents by type when displaying inventory (default on).
 .lp sound
 Enable messages about what your character hears (default on).
 Note that this has nothing to do with your computer's audio capabilities.
 This option is only partly under player control.  The game toggles it
 off and on during and after sleep, for example.
-.lp sparkle
-Display a sparkly effect when a monster (including yourself) is hit by an
-attack to which it is resistant (default on).
 .lp standout
 Boldface monsters and ``\fB--More--\fP'' (default off).
 .lp suppress_alert

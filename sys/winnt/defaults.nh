@@ -48,9 +48,16 @@ autopickup_exception=">*>*"
 #OPTIONS=menustyle:traditional
 #OPTIONS=nomouse_support
 
-#remember up to 100 message, alphabetically sort items on the ground
+#remember up to 100 message
+OPTIONS=msghistory:100
+
+#alphabetically sort items on the ground
 #(sortloot options are 'none', 'all', 'loot')
-OPTIONS=msghistory:100,sortloot:loot
+OPTIONS=sortloot:loot
+
+# weight unit system:
+#(options are 'm' - metric, 'a' - avoirdupois / American, 'g' - game units, 'n' - none.
+OPTIONS=weight_system:metric
 
 OPTIONS=pickup_thrown,autoquiver
 

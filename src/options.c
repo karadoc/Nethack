@@ -294,6 +294,16 @@ static struct Comp_Opt
 						MAXOCLASSES, SET_IN_FILE },
 	{ "packorder", "the inventory order of the items in your pack",
 						MAXOCLASSES, SET_IN_GAME },
+
+	{"weight_system", "mass units used in inventory screen", 12, SET_IN_GAME},
+#ifdef SORTLOOT
+	{ "sortloot", "sort object selection lists by description", 4, SET_IN_GAME },
+#endif
+	{ "pickup_burden",  "maximum burden picked up before prompt",
+						20, SET_IN_GAME },
+	{ "pickup_types", "types of objects to pick up automatically",
+						MAXOCLASSES, SET_IN_GAME },
+
 #ifdef CHANGE_COLOR
 	{ "palette",  "palette (00c/880/-fff is blue/yellow/reverse white)",
 						15 , SET_IN_GAME },
@@ -303,10 +313,6 @@ static struct Comp_Opt
 # endif
 #endif
 	{ "pettype",  "your preferred initial pet type", 4, DISP_IN_GAME },
-	{ "pickup_burden",  "maximum burden picked up before prompt",
-						20, SET_IN_GAME },
-	{ "pickup_types", "types of objects to pick up automatically",
-						MAXOCLASSES, SET_IN_GAME },
 	{ "player_selection", "choose character via dialog or prompts",
 						12, DISP_IN_GAME },
 	{ "race",     "your starting race (e.g., Human, Elf)",
@@ -320,9 +326,6 @@ static struct Comp_Opt
 	{ "scroll_amount", "amount to scroll map when scroll_margin is reached",
 						20, DISP_IN_GAME }, /*WC*/
 	{ "scroll_margin", "scroll map when this far from the edge", 20, DISP_IN_GAME }, /*WC*/
-#ifdef SORTLOOT
-	{ "sortloot", "sort object selection lists by description", 4, SET_IN_GAME },
-#endif
 #ifdef MSDOS
 	{ "soundcard", "type of sound card to use", 20, SET_IN_FILE },
 #endif
@@ -558,8 +561,9 @@ initoptions()
 	flags.pickup_burden = MOD_ENCUMBER;
 
 #ifdef SORTLOOT
-	iflags.sortloot = 'n';
+	iflags.sortloot = 'l';
 #endif
+	iflags.weight_system = 'm';
 
 	for (i = 0; i < NUM_DISCLOSURE_OPTIONS; i++)
 		flags.end_disclose[i] = DISCLOSE_PROMPT_DEFAULT_NO;
@@ -1902,6 +1906,31 @@ goodfruit:
 	}
 #endif /* SORTLOOT */
 
+	fullname = "weight_system";
+	if (match_optname(opts, fullname, 1, TRUE))
+	{
+		op = string_for_env_opt(fullname, opts, FALSE);
+		if (op)
+		{
+			switch (tolower(*op))
+			{
+			case 'a':
+			case 'm':
+			case 'n':
+			case 'g':
+				iflags.weight_system = tolower(*op);
+				break;
+			case '0':
+				iflags.weight_system = 'n';
+				break;
+			default:
+				badoption(opts);
+				break;
+			};
+		}
+		return;
+	}
+
 	fullname = "suppress_alert";
 	if (match_optname(opts, fullname, 4, TRUE)) {
 		op = string_for_opt(opts, negated);
@@ -2331,6 +2360,11 @@ static NEARDATA const char *sortltype[] = {
 	"none", "loot", "full"
 };
 #endif
+
+static NEARDATA const char *weight_systems[] = {
+	"metric", "avoirdupois", "game", "none"
+};
+
 
 /*
  * Convert the given string of object classes to a string of default object
@@ -2963,6 +2997,25 @@ ape_again:
 	destroy_nhwindow(tmpwin);
 	retval = TRUE;
 #endif
+    } else if (!strcmp("weight_system", optname)) {
+	const char *name;
+	menu_item *pick = (menu_item *)0;
+	tmpwin = create_nhwindow(NHW_MENU);
+	start_menu(tmpwin);
+	for (i = 0; i < SIZE(weight_systems); i++) {
+	    name = weight_systems[i];
+	    any.a_char = *name;
+	    add_menu(tmpwin, NO_GLYPH, &any, *name, 0,
+		     ATR_NONE, name, MENU_UNSELECTED);
+	}
+	end_menu(tmpwin, "Select units to be used for weights");
+	if (select_menu(tmpwin, PICK_ONE, &pick) > 0) {
+	    iflags.weight_system = pick->item.a_char;
+	    free((genericptr_t)pick);
+	}
+	destroy_nhwindow(tmpwin);
+	retval = TRUE;
+
     }
     return retval;
 }
@@ -3178,6 +3231,15 @@ char *buf;
 		   Sprintf(buf, "%s", sortname);
 	}
 #endif
+	else if (!strcmp(optname, "weight_system")) {
+		char *name = (char *)NULL;
+		for (i=0; i < SIZE(weight_systems) && name==(char *)NULL; i++) {
+		   if (iflags.weight_system == weight_systems[i][0])
+		     name = (char *)weight_systems[i];
+		}
+		if (name != (char *)NULL)
+		   Sprintf(buf, "%s", name);
+	}
 	else if (!strcmp(optname, "player_selection"))
 		Sprintf(buf, "%s", iflags.wc_player_selection ? "prompts" : "dialog");
 #ifdef MSDOS

@@ -988,7 +988,7 @@ sp_lev *sp;
 	register char *s1, *s2;
 	long max_len = 0;
 	long max_hig = 0;
-	char msg[256];
+	//char msg[256];
 	char *tmpmap[ROWNO];
 	int dx,dy;
 	char *mbuf;
@@ -1089,7 +1089,7 @@ int fd;
 sp_lev *maze;
 {
         int i;
-        uchar len;
+        //uchar len;
 
         if (!write_common_data(fd, maze))
             return FALSE;
@@ -1159,7 +1159,7 @@ int fd;
 sp_lev *maze;
 {
         int i;
-	uchar len;
+	//uchar len;
 	char debuf[128];
 	const char *opcodestr[MAX_SP_OPCODES] = {
 	    "null",

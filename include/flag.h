@@ -231,6 +231,7 @@ struct instance_flags {
 #ifdef SORTLOOT
 	char sortloot;          /* sort items to loot alphabetically */
 #endif
+	char  weight_system;	// K-Mod. mass units used in inventory screen.
 /*
  * Window capability support.
  */

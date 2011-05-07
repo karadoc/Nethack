@@ -771,26 +771,22 @@ static const char *build_opts[] = {
 #ifdef WALLIFIED_MAZE
 		"walled mazes",
 #endif
+#ifdef SORTLOOT
+		"sort loot",
+#endif
 #ifdef ZEROCOMP
 		"zero-compressed save files",
 #endif
+#ifdef IGNORE_VERSION_NUMBER
+		"ignore version number",
+#else
 		save_bones_compat_buf,
-		"patch: patchable nethack 3.4.1-2",
-		/*
-		 * patch list patch point; see $top/README.patchable
-		 */
-		"patch: pickup_thrown 3.4.1-1",
-		/*
-		 * patch list patch point; see $top/README.patchable
-		 */
-		"patch: botl-held 3.4.1-1",
-		/*
-		 * patch list patch point; see $top/README.patchable
-		 */
-		/*
-		 * patch list patch point; see $top/README.patchable
-		 */
-		"basic NetHack features"
+#endif
+#ifdef VERSION_CONVERSION
+		"automatic version conversion",
+#endif
+		"basic NetHack features",
+		"basic K-Mod features"
 	};
 
 static const char *window_opts[] = {

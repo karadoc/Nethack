@@ -1885,14 +1885,33 @@ nextclass:
 			char *tmpbuf = doname(otmp);
 			if (otmp->owt > 0)
 			{
-
-				// 1 unit = 50g
-				if (otmp->owt < 20)
-					Sprintf(eos(tmpbuf), "\t%ldg", otmp->owt*50);
-				else if (otmp->owt < 200)
-					Sprintf(eos(tmpbuf), "\t%ld.%ldkg", (otmp->owt*50)/1000, ((otmp->owt*50)%1000)/100);
-				else
-					Sprintf(eos(tmpbuf), "\t%ldkg", (otmp->owt*50)/1000);
+				switch (iflags.weight_system)
+				{
+				case 'm': // metric
+					// 1 unit = 50g
+					if (otmp->owt < 20)
+						Sprintf(eos(tmpbuf), "\t%dg", otmp->owt*50);
+					else if (otmp->owt < 200)
+						Sprintf(eos(tmpbuf), "\t%d.%dkg", (otmp->owt*50)/1000, ((otmp->owt*50)%1000)/100);
+					else
+						Sprintf(eos(tmpbuf), "\t%dkg", (otmp->owt*50)/1000);
+					break;
+				case 'a': // avoirdupois / American
+					// 1 unit =  1.76 oz. (16 oz = 1 lb)
+					if (otmp->owt < 10) // 9 units are just under 1 lb
+						Sprintf(eos(tmpbuf), "\t%doz", (int)(otmp->owt * 1.76));
+					else if (otmp->owt < 500 && (int)(otmp->owt*1.76)%16 != 0)
+						Sprintf(eos(tmpbuf), "\t%dlb %doz", (int)(otmp->owt * 1.76)/16, (int)(otmp->owt*1.76)%16);
+					else
+						Sprintf(eos(tmpbuf), "\t%dlb", (int)(otmp->owt * (1.76/16)));
+					break;
+				case 'g': // game
+					Sprintf(eos(tmpbuf), "\t~%d", otmp->owt);
+					break;
+				case 'n': // none
+				default:
+					break;
+				};
 			}
 			add_menu(win, obj_to_glyph(otmp),
 				&any, ilet, 0, ATR_NONE, tmpbuf,
@@ -1946,14 +1965,33 @@ nextclass:
 					char *tmpbuf = doname(otmp);
 					if (otmp->owt > 0)
 					{
-
-						// 1 unit = 50g
-						if (otmp->owt < 20)
-							Sprintf(eos(tmpbuf), "\t%ldg", otmp->owt*50);
-						else if (otmp->owt < 200)
-							Sprintf(eos(tmpbuf), "\t%ld.%ldkg", (otmp->owt*50)/1000, ((otmp->owt*50)%1000)/100);
-						else
-							Sprintf(eos(tmpbuf), "\t%ldkg", (otmp->owt*50)/1000);
+						switch (iflags.weight_system)
+						{
+						case 'm': // metric
+							// 1 unit = 50g
+							if (otmp->owt < 20)
+								Sprintf(eos(tmpbuf), "\t%dg", otmp->owt*50);
+							else if (otmp->owt < 200)
+								Sprintf(eos(tmpbuf), "\t%d.%dkg", (otmp->owt*50)/1000, ((otmp->owt*50)%1000)/100);
+							else
+								Sprintf(eos(tmpbuf), "\t%dkg", (otmp->owt*50)/1000);
+							break;
+						case 'a': // avoirdupois / American
+							// 1 unit =  1.76 oz. (16 oz = 1 lb)
+							if (otmp->owt < 10) // 9 units are just under 1 lb
+								Sprintf(eos(tmpbuf), "\t%doz", (int)(otmp->owt * 1.76));
+							else if (otmp->owt < 500 && (int)(otmp->owt*1.76)%16 != 0)
+								Sprintf(eos(tmpbuf), "\t%dlb %doz", (int)(otmp->owt * 1.76)/16, (int)(otmp->owt*1.76)%16);
+							else
+								Sprintf(eos(tmpbuf), "\t%dlb", (int)(otmp->owt * (1.76/16)));
+							break;
+						case 'g': // game
+							Sprintf(eos(tmpbuf), "\t~%d", otmp->owt);
+							break;
+						case 'n': // none
+						default:
+							break;
+						};
 					}
 					add_menu(win, obj_to_glyph(otmp),
 						&any, ilet, 0, ATR_NONE, tmpbuf,

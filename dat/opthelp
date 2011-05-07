@@ -38,8 +38,6 @@ sortpack       group similar kinds of objects in inventory        [TRUE]
 sound          enable messages about what your character hears    [TRUE]
                (note: this has nothing to do with your computer's audio
                capabilities, and the game resets it periodically)
-sparkle        display sparkly effect for resisted magical        [TRUE]
-               attacks (e.g. fire attack on fire-resistant monster)
 standout       use standout mode for --More-- on messages         [FALSE]
 time           display elapsed game time, in moves                [FALSE]
 tombstone      print tombstone when you die                       [TRUE]
@@ -114,6 +112,16 @@ pickup_burden when you pick up an item that exceeds this encumberance
               or overLoaded), you will be asked if you want to continue. [S]
 pickup_types  a list of default symbols for kinds of objects to autopickup
               when that option is on  [all]
+weight_system mass units used in inventory screen:
+              metric      -- metric units
+			  game        -- arbitrary game units
+			  avoirdupois -- American units
+			  none        -- no weights displayed
+sortloot      controls the sorting of item lists:
+              full -- All pickup lists of items are sorted by item description
+              loot -- When inventory letters are shown, has no effect.
+                      Otherwise sorts by description
+              none -- Works the traditional way, like without the patch
 runmode       controls how often the map window is updated when performing
               multi-step movement (various running modes or travel command):
               teleport -- don't update map until movement stops;
@@ -124,11 +132,6 @@ runmode       controls how often the map window is updated when performing
 scores        the parts of the score list you wish to see when the game ends
               You choose a combination of top scores, scores around the top
               scores, and all of your own scores.  [!own/3 top/2 around]
-sortloot      controls the sortloot patch [none]:
-              full -- All pickup lists of items are sorted by item description
-              loot -- When inventory letters are shown, has no effect.
-                      Otherwise sorts by description
-              none -- Works the traditional way, like without the patch
 suppress_alert disable various version-specific warnings about changes
               in game play or the user interface, such as notification given
               for the 'Q' command that quitting is now done via #quit
@@ -141,6 +144,8 @@ align      Your starting alignment (align:lawful, align:neutral,
            or align:chaotic).  You may specify just the first letter.  [RANDOM]
 catname    the name of your first cat  [NONE]
 dogname    the name of your first dog  [NONE]
+sparkle_speed  the speed of sparkly effect for resisted magical attacks
+           (e.g. fire attack on fire-resistant monster)
 dungeon    a list of symbols to be used in place of the default ones for
            drawing the dungeon.
            The symbols are subjected to a fair amount of processing, so

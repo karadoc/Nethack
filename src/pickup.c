@@ -816,14 +816,33 @@ boolean FDECL((*allow), (OBJ_P));/* allow function */
 				char *tmpbuf = doname(curr);
 				if (show_weight && curr->owt > 0)
 				{
-
-					// 1 unit = 50g
-					if (curr->owt < 20)
-						Sprintf(eos(tmpbuf), "\t%ldg", curr->owt*50);
-					else if (curr->owt < 200)
-						Sprintf(eos(tmpbuf), "\t%ld.%ldkg", (curr->owt*50)/1000, ((curr->owt*50)%1000)/100);
-					else
-						Sprintf(eos(tmpbuf), "\t%ldkg", (curr->owt*50)/1000);
+					switch (iflags.weight_system)
+					{
+					case 'm': // metric
+						// 1 unit = 50g
+						if (curr->owt < 20)
+							Sprintf(eos(tmpbuf), "\t%dg", curr->owt*50);
+						else if (curr->owt < 200)
+							Sprintf(eos(tmpbuf), "\t%d.%dkg", (curr->owt*50)/1000, ((curr->owt*50)%1000)/100);
+						else
+							Sprintf(eos(tmpbuf), "\t%dkg", (curr->owt*50)/1000);
+						break;
+					case 'a': // avoirdupois / American
+						// 1 unit =  1.76 oz. (16 oz = 1 lb)
+						if (curr->owt < 10) // 9 units are just under 1 lb
+							Sprintf(eos(tmpbuf), "\t%doz", (int)(curr->owt * 1.76));
+						else if (curr->owt < 500 && (int)(curr->owt*1.76)%16 != 0)
+							Sprintf(eos(tmpbuf), "\t%dlb %doz", (int)(curr->owt * 1.76)/16, (int)(curr->owt*1.76)%16);
+						else
+							Sprintf(eos(tmpbuf), "\t%dlb", (int)(curr->owt * (1.76/16)));
+						break;
+					case 'g': // game
+						Sprintf(eos(tmpbuf), "\t~%d", curr->owt);
+						break;
+					case 'n': // none
+					default:
+						break;
+					};
 				}
 				any.a_obj = curr;
 				add_menu(win, obj_to_glyph(curr), &any,
@@ -833,7 +852,7 @@ boolean FDECL((*allow), (OBJ_P));/* allow function */
 			}
 // K-Mod end
 		}
-	    }
+		}
 	    pack++;
 	} while (qflags & INVORDER_SORT && *pack);
 

@@ -1,4 +1,4 @@
-This is K-Mod, version 0.6, a nethack mod that focuses on improving balance.
+This is K-Mod, version 0.7, a nethack mod that focuses on improving balance.
 
 Introduction:
 The main motivation for K-Mod is that I believe Nethack is a really fun game, but that it suffers from many balance problems and game-play weaknesses. I enjoy playing nethack a lot, and I also enjoy thinking of ways to improve games. So I've been making this mod for my own enjoyment. But I'm quite pleased with the work I've done and so I'm happy to share the mod for others to enjoy.
