@@ -177,9 +177,9 @@ register struct monst *mtmp;
 	/* original code
 	demand = (cash * (rnd(80) + 20 * Athome)) /
 	    (100 * (1 + (sgn(u.ualign.type) == sgn(mtmp->data->maligntyp))));*/
-	demand = 4 * level_difficulty()
+	demand = 3 * level_difficulty()
 		* (rn1(50, 30) + 20*Athome - 20*(sgn(u.ualign.type) == sgn(mtmp->data->maligntyp)));
-	// Typical demand in hell: 4 * 35 * (25+30+20) = 10500 gold.
+	// Typical demand in hell: 3 * 35 * (25+30+20) = 7875 gold.
 // K-Mod end
 
 	if (!demand) {		/* you have no gold */

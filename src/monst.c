@@ -1181,16 +1181,22 @@ NEARDATA struct permonst mons[] = {
 	 * As reptiles, dragons are cold-blooded and thus aren't seen
 	 * with infravision.  Red dragons are the exception.
 	 */
+/*
+** K-Mod, 1/mar/2011, karadoc
+** I've given the dragons a special bite damage to match their breath
+** Note, for breath attacks, the ad (damage dice sides) is ignored. It is hard coded for each type
+** also, AT_DRST breath actually drains dexterity, not strength. (It's not my fault!)
+*/
     MON("baby gray dragon", S_DRAGON,
 	LVL(12, 9, 2, 10, 0), G_GENO,
-	A(ATTK(AT_BITE, AD_PHYS, 2, 6),
+	A(ATTK(AT_BITE, AD_STUN, 2, 6),
 	  NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK),
 	SIZ(1500, 500, 0, MS_ROAR, MZ_HUGE), 0, 0,
 	M1_FLY|M1_THICK_HIDE|M1_NOHANDS|M1_CARNIVORE,
 	M2_HOSTILE|M2_STRONG|M2_GREEDY|M2_JEWELS, 0, CLR_GRAY),
     MON("baby silver dragon", S_DRAGON,
 	LVL(12, 9, 2, 10, 0), G_GENO,
-	A(ATTK(AT_BITE, AD_PHYS, 2, 6),
+	A(ATTK(AT_BITE, AD_PHYS, 2, 8),
 	  NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK),
 	SIZ(1500, 500, 0, MS_ROAR, MZ_HUGE), 0, 0,
 	M1_FLY|M1_THICK_HIDE|M1_NOHANDS|M1_CARNIVORE,
@@ -1206,59 +1212,53 @@ NEARDATA struct permonst mons[] = {
 #endif
     MON("baby red dragon", S_DRAGON,
 	LVL(12, 9, 2, 10, 0), G_GENO,
-	A(ATTK(AT_BITE, AD_PHYS, 2, 6),
+	A(ATTK(AT_BITE, AD_FIRE, 2, 6),
 	  NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK),
 	SIZ(1500, 500, 0, MS_ROAR, MZ_HUGE), MR_FIRE, 0,
 	M1_FLY|M1_THICK_HIDE|M1_NOHANDS|M1_CARNIVORE,
 	M2_HOSTILE|M2_STRONG|M2_GREEDY|M2_JEWELS, M3_INFRAVISIBLE, CLR_RED),
     MON("baby white dragon", S_DRAGON,
 	LVL(12, 9, 2, 10, 0), G_GENO,
-	A(ATTK(AT_BITE, AD_PHYS, 2, 6),
+	A(ATTK(AT_BITE, AD_COLD, 2, 6),
 	  NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK),
 	SIZ(1500, 500, 0, MS_ROAR, MZ_HUGE), MR_COLD, 0,
 	M1_FLY|M1_THICK_HIDE|M1_NOHANDS|M1_CARNIVORE,
 	M2_HOSTILE|M2_STRONG|M2_GREEDY|M2_JEWELS, 0, CLR_WHITE),
     MON("baby orange dragon", S_DRAGON,
 	LVL(12, 9, 2, 10, 0), G_GENO,
-	A(ATTK(AT_BITE, AD_PHYS, 2, 6),
+	A(ATTK(AT_BITE, AD_PLYS, 2, 4),
 	  NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK),
 	SIZ(1500, 500, 0, MS_ROAR, MZ_HUGE), MR_SLEEP, 0,
 	M1_FLY|M1_THICK_HIDE|M1_NOHANDS|M1_CARNIVORE,
 	M2_HOSTILE|M2_STRONG|M2_GREEDY|M2_JEWELS, 0, CLR_ORANGE),
     MON("baby black dragon", S_DRAGON,
 	LVL(12, 9, 2, 10, 0), G_GENO,
-	A(ATTK(AT_BITE, AD_PHYS, 2, 6),
+	A(ATTK(AT_BITE, AD_ACID, 2, 6),
 	  NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK),
 	SIZ(1500, 500, 0, MS_ROAR, MZ_HUGE), MR_DISINT, 0,
 	M1_FLY|M1_THICK_HIDE|M1_NOHANDS|M1_CARNIVORE,
 	M2_HOSTILE|M2_STRONG|M2_GREEDY|M2_JEWELS, 0, CLR_BLACK),
     MON("baby blue dragon", S_DRAGON,
 	LVL(12, 9, 2, 10, 0), G_GENO,
-	A(ATTK(AT_BITE, AD_PHYS, 2, 6),
+	A(ATTK(AT_BITE, AD_ELEC, 2, 6),
 	  NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK),
 	SIZ(1500, 500, 0, MS_ROAR, MZ_HUGE), MR_ELEC, 0,
 	M1_FLY|M1_THICK_HIDE|M1_NOHANDS|M1_CARNIVORE,
 	M2_HOSTILE|M2_STRONG|M2_GREEDY|M2_JEWELS, 0, CLR_BLUE),
     MON("baby green dragon", S_DRAGON,
 	LVL(12, 9, 2, 10, 0), G_GENO,
-	A(ATTK(AT_BITE, AD_PHYS, 2, 6),
+	A(ATTK(AT_BITE, AD_DRST, 2, 6),
 	  NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK),
 	SIZ(1500, 500, 0, MS_ROAR, MZ_HUGE), MR_POISON, 0,
 	M1_FLY|M1_THICK_HIDE|M1_NOHANDS|M1_CARNIVORE|M1_POIS,
 	M2_HOSTILE|M2_STRONG|M2_GREEDY|M2_JEWELS, 0, CLR_GREEN),
     MON("baby yellow dragon", S_DRAGON,
 	LVL(12, 9, 2, 10, 0), G_GENO,
-	A(ATTK(AT_BITE, AD_PHYS, 2, 6),
+	A(ATTK(AT_BITE, AD_ACID, 2, 6),
 	  NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK),
 	SIZ(1500, 500, 0, MS_ROAR, MZ_HUGE), MR_ACID|MR_STONE, 0,
 	M1_FLY|M1_THICK_HIDE|M1_NOHANDS|M1_CARNIVORE|M1_ACID,
 	M2_HOSTILE|M2_STRONG|M2_GREEDY|M2_JEWELS, 0, CLR_YELLOW),
-/*
-** K-Mod, 1/mar/2011, karadoc
-** I've given the dragons a special bite damage to match their breath
-** Note, for breath attacks, the ad (damage dice sides) is ignored. It is hard coded for each type
-** also, AT_DRST breath actually drains dexterity, not strength. (It's not my fault!)
-*/
     MON("gray dragon", S_DRAGON,
 	LVL(16, 9, -2, 20, 4), (G_GENO|1),
 	A(ATTK(AT_BREA, AD_MAGM, 6, 6), ATTK(AT_BITE, AD_STUN, 3, 8), // AD_DREN has too many complications
@@ -1270,7 +1270,7 @@ NEARDATA struct permonst mons[] = {
 	M2_HOSTILE|M2_STRONG|M2_NASTY|M2_GREEDY|M2_JEWELS|M2_MAGIC, 0, CLR_GRAY),
     MON("silver dragon", S_DRAGON,
 	LVL(16, 9, -2, 20, 4), (G_GENO|1),
-	A(ATTK(AT_BREA, AD_COLD, 6, 6), ATTK(AT_BITE, AD_PHYS, 3, 10), // No special bite. Just a bit more dmg
+	A(ATTK(AT_BREA, AD_COLD, 6, 6), ATTK(AT_BITE, AD_PHYS, 4, 8), // No special bite. Just a bit more dmg
 	  ATTK(AT_CLAW, AD_PHYS, 1, 4), ATTK(AT_CLAW, AD_PHYS, 1, 4),
 	  NO_ATTK, NO_ATTK),
 	SIZ(WT_DRAGON, 1500, 0, MS_ROAR, MZ_GIGANTIC), MR_COLD, 0,
@@ -1311,7 +1311,7 @@ NEARDATA struct permonst mons[] = {
 	M2_HOSTILE|M2_STRONG|M2_NASTY|M2_GREEDY|M2_JEWELS|M2_MAGIC, 0, CLR_WHITE),
     MON("orange dragon", S_DRAGON,
 	LVL(16, 9, -2, 20, 5), (G_GENO|1),
-	A(ATTK(AT_BREA, AD_SLEE, 4,25), ATTK(AT_BITE, AD_PLYS, 2, 4), // lower dmg because paralysis is so strong
+	A(ATTK(AT_BREA, AD_SLEE, 4,25), ATTK(AT_BITE, AD_PLYS, 2, 8), // lower dmg because paralysis is so strong
 	  ATTK(AT_CLAW, AD_PHYS, 1, 4), ATTK(AT_CLAW, AD_PHYS, 1, 4),
 	  NO_ATTK, NO_ATTK),
 	SIZ(WT_DRAGON, 1500, 0, MS_ROAR, MZ_GIGANTIC), MR_SLEEP, MR_SLEEP,
@@ -2941,7 +2941,7 @@ struct permonst _mons2[] = {
 	LVL(10, 12, 10, 1, 0), G_NOGEN,
 	A(ATTK(AT_WEAP, AD_PHYS, 1, 6), ATTK(AT_WEAP, AD_PHYS, 1, 6),
 	  NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK),
-	SIZ(WT_HUMAN, 400, 0, MS_HUMANOID, MZ_HUMAN), MR_POISON, 0, // poison immunity
+	SIZ(WT_HUMAN, 400, 0, MS_HUMANOID, MZ_HUMAN), 0, 0, // MR_POISON would be poison immunity
 	M1_HUMANOID|M1_OMNIVORE,
 	M2_NOPOLY|M2_HUMAN|M2_STRONG|M2_COLLECT, M3_INFRAVISIBLE, HI_DOMESTIC),
     MON("caveman", S_HUMAN,

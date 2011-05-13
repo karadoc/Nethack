@@ -103,5 +103,9 @@ This is a very rough list of the changes I have made, starting at Nethack 3.4.3 
 + minor changes to some maps (mostly just aesthetics)
 + incremented version number to v0.7
 
-++ added a new option: weight_system
-++ updated the guidebook files
++ added a new option: weight_system
++ updated the guidebook files
++ gave special bite damage to baby dragons
++ reduced the size of gold piles in the late game.
++ barbarians are no longer immune to poison (but are still resistant)
++ reverted the behavior of '*' in item menus. '?' already has the desired functionality.

@@ -881,7 +881,8 @@ int x, y;
     register struct obj *gold = g_at(x,y);
 
     if (amount <= 0L)
-	amount = (long)(1 + rnd(level_difficulty()+2) * rnd(30));
+	//amount = (long)(1 + rnd(level_difficulty()+2) * rnd(30));
+	amount = (long)(1 + rnd(level_difficulty()+6) * rnd(20)); // lower after level 6 (roughly)
     if (gold) {
 	gold->quan += amount;
     } else {
