@@ -297,7 +297,11 @@ do_room_or_subroom(croom, lowx, lowy, hix, hiy, lit, rtype, special, is_room)
 		levl[lowx-1][hiy+1].typ = BLCORNER;
 		levl[hix+1][hiy+1].typ = BRCORNER;
 	    } else {	/* a subroom */
-		wallification(lowx-1, lowy-1, hix+1, hiy+1);
+		//wallification(lowx-1, lowy-1, hix+1, hiy+1); // disabled by K-Mod.
+		/* K-Mod note. wallification should be called when
+		   the whole map is complete. Calling it here will
+		   create crosswalls which will then be erronously
+		   made into open spaces by remove_boundary_syms */
 	    }
 	}
 }
@@ -421,7 +425,7 @@ mk_split_room()
 		}
 	}
 	topologize(&rooms[nroom-1]);
-	//wallification(lx-1, ly-1, lx+wid+1, ly+hei+1); // to fix up the joining tiles
+	wallification(lx-1, ly-1, lx+wid+1, ly+hei+1); // to fix up the joining tiles
 
 #ifdef DUAL_ROOM_SPLIT_METHOD
 	if ((wid > hei) || (wid == hei && rn2(2)))
