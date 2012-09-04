@@ -476,6 +476,13 @@ long wp_mask;
 	    if (on) EReflecting |= wp_mask;
 	    else EReflecting &= ~wp_mask;
 	}
+	// K-Mod
+	if ((spfx & SPFX_CONFL))
+	{
+	    if (on) EConflict |= wp_mask;
+	    else EConflict &= ~wp_mask;
+	}
+	// K-Mod end
 
 	if(wp_mask == W_ART && !on && oart->inv_prop) {
 	    /* might have to turn off invoked power too */

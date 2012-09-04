@@ -20,7 +20,8 @@
 struct version_translator version_conversion_table[] =
 {
 /*  {VERSION_NUMBER, VERSION_SANITY1, VERSION_SANITY2, new_objects}, */
-	{0x00070000UL, 0x221b217dUL, 0xac8195d8UL, 0}, //  this version
+	{0x00070100UL, 0x231b217dUL, 0xac8195d8UL, 0}, // v0.7.1
+	{0x00070000UL, 0x221b217dUL, 0xac8195d8UL, 0}, // v0.7.0, before Insanity's Edge.
 	{0x00060000UL, 0x221b117dUL, 0xac8195d8UL, 1}, // v0.6.0, before helm of anti-magic
 };
 

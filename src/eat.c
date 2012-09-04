@@ -2179,7 +2179,12 @@ gethungry()	/* as time goes by - called by moveloop() and domove() */
 	} else {		/* even turns */
 	    if (Hunger) u.uhunger--;
 	    /* Conflict uses up food too */
-	    if (HConflict || (EConflict & (~W_ARTI))) u.uhunger--;
+	    //if (HConflict || (EConflict & (~W_ARTI))) u.uhunger--;
+		// K-Mod. similar rules to Regeneration.
+		if (HConflict || ((EConflict & (~W_ARTI)) &&
+				(EConflict != W_WEP || !uwep->oartifact)))
+			u.uhunger--;
+		// K-Mod end
 	    /* +0 charged rings don't do anything, so don't affect hunger */
 	    /* Slow digestion still uses ring hunger */
 	    switch ((int)(moves % 20)) {	/* note: use even cases only */

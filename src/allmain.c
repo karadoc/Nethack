@@ -317,6 +317,21 @@ moveloop()
 			}
 		    }
 
+			// K-Mod. Insanity's Edge hallucinations.
+			if (!Blind && uwep && uwep->oartifact == ART_INSANITY_S_EDGE)
+			{
+				if (!HHallucination)
+				{
+					pline("A strange light emanates from %s...", cxname(uwep));
+					make_hallucinated(3, FALSE, 0);
+				}
+				else
+				{
+					make_hallucinated(HHallucination+1, FALSE, 0);
+				}
+			}
+			// K-Mod end
+
 		    if(Searching && multi >= 0) (void) dosearch0(1);
 		    dosounds();
 		    do_storms();

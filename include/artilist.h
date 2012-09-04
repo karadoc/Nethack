@@ -241,6 +241,19 @@ A("The Eye of the Aethiopica",	AMULET_OF_ESP,
 	CREATE_PORTAL,	A_NEUTRAL, PM_WIZARD, NON_PM, 4000L ),
 
 /*
+** K-Mod. Note: new artifacts should be added at the end of the list,
+** to preserve compatibility.
+*/
+/* K-Mod, 04/sep/2012, New silver sword.
+** It has a stun attack, and causes conflict without hunger,
+** but it will make the wielder hallucinate if they can see it.
+** (The hallucination effect is unique & hard-coded, not a spfx.)
+*/
+A("Insanity's Edge",	SILVER_SHORT_SWORD,
+  (SPFX_RESTR|SPFX_CONFL|SPFX_ATTK), 0, 0,
+  STUN(5, 10), NO_DFNS, NO_CARY, 0, A_CHAOTIC, NON_PM, NON_PM, 2000L ),
+
+/*
  *  terminator; otyp must be zero
  */
 A(0, 0, 0, 0, 0, NO_ATTK, NO_DFNS, NO_CARY, 0, A_NONE, NON_PM, NON_PM, 0L )
