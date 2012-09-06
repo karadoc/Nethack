@@ -104,6 +104,10 @@ pick_move:
 			obj_extract_self(ib);
 			(void) mpickobj(mtmp, ib);
 		}
+		// K-Mod. Let shop keepers collect gold dropped in their shop.
+		if(likes_gold(mtmp->data) && curr_mon_load(mtmp) * 100 / max_mon_load(mtmp) < 95) // cf. 'likegold' in m_move
+			mpickgold(mtmp);
+		// K-Mod end
 		return(1);
 	}
 	return(0);
