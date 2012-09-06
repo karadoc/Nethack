@@ -492,6 +492,7 @@ int style;
 					otmp->corpsenm = PM_WIZARD_OF_YENDOR;
 			}
 		}
+		// continue to make the rest of the rooms.
 	}
 	else if (style == LEVSTYLE_GRID)
 	{
@@ -1318,6 +1319,29 @@ skip0:
 			    !occupied(x, y))
 			(void) maketrap(x, y, WEB);
 		}
+		/* K-Mod. put an additional monster in the hub room. */
+		if (style == LEVSTYLE_HUB && croom == rooms)
+		{
+			/* I'd like to make this an especially strong monster,
+			 * so lets pick the strongest from a few random monsters. */
+			struct permonst *best_mon=0, *temp_mon;
+			int i;
+			for (i = 0; i < 5; i++)
+			{
+				temp_mon = rndmonst();
+				if (!best_mon || temp_mon->mlevel > best_mon->mlevel)
+					best_mon = temp_mon;
+			}
+		    x = somex(croom); y = somey(croom);
+			if (best_mon)
+				tmonst = makemon(best_mon, x, y, NO_MM_FLAGS);
+			else
+				tmonst = makemon((struct permonst *) 0, x,y,NO_MM_FLAGS);
+
+		    if (tmonst && tmonst->data == &mons[PM_GIANT_SPIDER] && !occupied(x, y))
+				(void) maketrap(x, y, WEB);
+		}
+		// K-Mod end
 		/* put traps and mimics inside */
 		x = 8 - (level_difficulty()/6);
 		if (x <= 1) x = 2;
@@ -1382,7 +1406,7 @@ skip0:
 skip_nonrogue:
 #endif
 		// Some extra loot. K-Mod sets these probabilies higher than vanilla, but much lower than sporkhack.
-		if(!rn2(3))
+		if(!rn2(3) || (style == LEVSTYLE_HUB && croom == rooms)) // (always create loot for the hub-room.)
 		{
 			(void) mkobj_at(0, somex(croom), somey(croom), TRUE);
 			tryct = 0;
