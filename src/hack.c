@@ -2291,6 +2291,24 @@ inv_cnt()
 	return(ct);
 }
 
+/* K-Mod. If a magical effect was resisted, call this function to
+ * handle any side effects. (ie. helm_of_anti-magic throb.)*/
+boolean
+magic_resisted_effect(odds, effect_strength)
+int odds;
+int effect_strength;
+{
+	odds += uarmh->blessed - uarmh->cursed;
+	if (uarmh && uarmh->otyp == HELM_OF_ANTI_MAGIC && (odds <= 1 || !rn2(odds)))
+	{
+		Your("%s throbs.", body_part(HEAD));
+		make_stunned(max(HStun, d(effect_strength,4)), FALSE);
+		return TRUE;
+	}
+	return FALSE;
+}
+// K-Mod end
+
 #ifdef GOLDOBJ
 /* Counts the money in an object chain. */
 /* Intended use is for your or some monsters inventory, */

@@ -3165,12 +3165,7 @@ xchar sx, sy;
 		break;
 	    } else if (Antimagic) {
 		shieldeff(sx, sy);
-		if (uarmh && uarmh->otyp == HELM_OF_ANTI_MAGIC && (uarmh->cursed || !rn2(2+uarmh->blessed)))
-		{
-			Your("%s throbs.", body_part(HEAD));
-			make_stunned(d(2,4), FALSE);
-		}
-		else
+		if (!magic_resisted_effect(1, 3))
 			You("aren't affected.");
 		break;
 	    }

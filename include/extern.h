@@ -735,6 +735,7 @@ E int FDECL(calc_capacity, (int));
 E int NDECL(max_capacity);
 E boolean FDECL(check_capacity, (const char *));
 E int NDECL(inv_cnt);
+E boolean FDECL(magic_resisted_effect, (int, int)); // K-Mod
 #ifdef GOLDOBJ
 E long FDECL(money_cnt, (struct obj *));
 #endif

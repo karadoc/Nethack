@@ -845,11 +845,7 @@ struct trap *trap;
 		if (Antimagic)
 			shieldeff(u.ux, u.uy);
 		You_feel("a wrenching sensation.");
-		if (uarmh && uarmh->otyp == HELM_OF_ANTI_MAGIC && (uarmh->cursed || !rn2(2+uarmh->blessed)))
-		{
-			Your("%s throbs.", body_part(HEAD));
-			make_stunned(d(2,4), FALSE);
-		}
+		magic_resisted_effect(2, 2);
 	} else if (!next_to_u()) {
 		You(shudder_for_moment);
 	} else if (trap->once) {
@@ -872,11 +868,7 @@ struct trap *trap;
 	}
 	if (Antimagic || In_endgame(&u.uz)) {
 	    You_feel("a wrenching sensation.");
-		if (uarmh && uarmh->otyp == HELM_OF_ANTI_MAGIC && (uarmh->cursed || !rn2(2+uarmh->blessed)))
-		{
-			Your("%s throbs.", body_part(HEAD));
-			make_stunned(d(2,4), FALSE);
-		}
+		magic_resisted_effect(2, 3);
 	    return;
 	}
 	if (!Blind)
