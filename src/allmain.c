@@ -322,7 +322,7 @@ moveloop()
 			{
 				if (!HHallucination)
 				{
-					pline("A strange light emanates from %s...", cxname(uwep));
+					pline("A strange light emanates from %s...", the(xname(uwep)));
 					make_hallucinated(3, FALSE, 0);
 				}
 				else
