@@ -535,6 +535,7 @@ LOOP [12]
 {
 	OBJECT:('`',"boulder"),(14,05)
 }
+ENGRAVING:(14,04),burn,"XII"
 
 TRAP:"hole",(02,07)
 TRAP:"hole",(03,07)
