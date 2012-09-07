@@ -119,6 +119,7 @@ fightm(mtmp)		/* have monsters fight each other */
 ** (Tame monsters are not emboldened by the dungeon level, and thus are not subject to this additional check)
 ** Note: all this assumes that fightm() has been called because of a ring of conflict.
 */
+	//(!mtmp->mtame && !(EConflict & (W_ARTI|W_ART) || (EConflict & W_WEP && uwep->oartifact))) // possible conditions on the new K-Mod check?
 	if ((!mtmp->mtame && rn2(level_difficulty()) >= u.ulevel-(int)mtmp->m_lev/2) || // K-Mod
 		resist(mtmp, RING_CLASS, 0, 0)) // original
 	{

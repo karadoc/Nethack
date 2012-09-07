@@ -103,9 +103,26 @@ This is a very rough list of the changes I have made, starting at Nethack 3.4.3 
 + minor changes to some maps (mostly just aesthetics)
 + incremented version number to v0.7
 
-+ added a new option: weight_system
-+ updated the guidebook files
-+ gave special bite damage to baby dragons
-+ reduced the size of gold piles in the late game.
-+ barbarians are no longer immune to poison (but are still resistant)
-+ reverted the behavior of '*' in item menus. '?' already has the desired functionality.
+--
+--
+
+Changes from v0.7.0 to v0.7.1:
+
++ Implemented new silver short sword artifact: Insanity's Edge. (with special effects)
++ Adjusted the stun effect of Helm of Anti-magic to fix a couple of minor problems and to slightly increase its viability in the end-game.
+
++ Shop keepers will now pick up any gold that they happen to step onto
++ Barbarians are no longer immune to poison (but are still resistant)
++ Baby dragons now have special bite damage similar to their adult counterparts.
+
++ 'Hub' style maps are now guarenteed to have at least one random item, and one fairly strong random monster in the centre room.
++ Adjusted the spawn probability and gold cost value of some weapons - in particular, a couple of weapons which don't load on monster will now have much higher spawn probability.
++ Corrected a bug which caused crosswalls to be removed in some versions of mine-town.
++ Reduced the size of gold piles in the late game.
++ The sokoban with the stacked boulders now has "XII" burnt into the floor
++ Added a new option: weight_system, so that players can choose between metric and imperial units for the inventory screen.
++ Updated some of the guidebook files
+
+--
+--
+

@@ -2181,7 +2181,7 @@ gethungry()	/* as time goes by - called by moveloop() and domove() */
 	    /* Conflict uses up food too */
 	    //if (HConflict || (EConflict & (~W_ARTI))) u.uhunger--;
 		// K-Mod. similar rules to Regeneration.
-		if (HConflict || ((EConflict & (~W_ARTI)) &&
+		if (HConflict || ((EConflict & ~(W_ARTI|W_ART)) &&
 				(EConflict != W_WEP || !uwep->oartifact)))
 			u.uhunger--;
 		// K-Mod end
