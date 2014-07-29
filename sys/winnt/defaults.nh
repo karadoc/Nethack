@@ -108,10 +108,11 @@ OPTIONS=map_mode:tiles,scroll_margin:5
 OPTIONS=sparkle_speed:2
 
 # Message window settings
-OPTIONS=font_message:Verdana,font_size_message:9,align_message:top
+#(note: Unlike most sans serif fonts, Trebuchet MS uses different glyphs for I and l)
+OPTIONS=font_message:Trebuchet MS,font_size_message:9,align_message:top
 
 # Menu settings
-OPTIONS=font_menu:Verdana,font_size_menu:9
+OPTIONS=font_menu:Trebuchet MS,font_size_menu:9
 
 # Text settings
 OPTIONS=font_text:Courier New,font_size_text:9
