@@ -4,13 +4,13 @@
 
 
 
-/* K-Mod 0.7.1 */
+/* K-Mod 0.7.2 */
 #define VERSION_MAJOR	0
 #define VERSION_MINOR	7
 /*
  * PATCHLEVEL is updated for each release.
  */
-#define PATCHLEVEL	1
+#define PATCHLEVEL	2
 /*
  * Incrementing EDITLEVEL can be used to force invalidation of old bones
  * and save files.
@@ -25,7 +25,7 @@
 "         by Stichting Mathematisch Centrum and M. Stephenson, 1985-2003"
 
 #define COPYRIGHT_BANNER_C \
-"         K-Mod by karadoc, 2011, 2012."
+"         K-Mod by karadoc, 2011, 2012, 2014."
  
 
 /*
@@ -42,6 +42,7 @@
 // v0.6, initial K-Mod release.
 // v0.7, helm of anti-magic
 // v0.7.1, insanity's edge
+// v0.7.2, scoring changes
 
 /*****************************************************************************/
 

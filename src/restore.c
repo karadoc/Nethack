@@ -410,6 +410,17 @@ unsigned int *stuckid, *steedid;	/* STEED */
 	    u.uz.dlevel = 1;
 	    return(FALSE);
 	}
+	/* K-Mod note: saves from versions pre 0x00070200UL may have imposibly large
+	 * values of u.urscore. But unfortunately I don't currently have a way of
+	 * of checking the version at this point. I've considered doing this:
+	if (u.urexp)
+	{
+		u.urscore = 0;
+		u.urexp = 0;
+	}
+	 * Because v. 0x00070200UL doesn't use urexp. But future versions might,
+	 * so I'm going to leave it out to avoid creating a bug in the future. */
+	//
 
 	/* this stuff comes after potential aborted restore attempts */
 	restore_timers(fd, RANGE_GLOBAL, FALSE, 0L);

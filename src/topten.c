@@ -528,6 +528,9 @@ int how;
 	}
 	if(rank0 >= rank) if(!done_stopprint)
 		outentry(0, t0, TRUE);
+#ifdef DUMP_LOG
+	dump("", "");
+#endif
 #ifdef UPDATE_RECORD_IN_PLACE
 	if (flg) {
 # ifdef TRUNCATE_FILE

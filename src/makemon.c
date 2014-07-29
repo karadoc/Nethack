@@ -1398,11 +1398,13 @@ register struct permonst *ptr;
 	}
 
 	if((tmp = ptr->mlevel) > 49) return(50); /* "special" demons/devils */
+
 	tmp2 = (level_difficulty() - tmp);
 	if(tmp2 < 0) tmp--;		/* if mlevel > u.uz decrement tmp */
 	else tmp += (tmp2 / 5);		/* else increment 1 per five diff */
 
-	tmp2 = (u.ulevel - ptr->mlevel);	/* adjust vs. the player */
+	// tmp2 = (u.ulevel - ptr->mlevel);	/* adjust vs. the player */
+	tmp2 = min(MAXULEV, (u.ulevel + moves/1500 + 1)/2) - ptr->mlevel; // K-Mod. cf. rndmonst
 	if(tmp2 > 0) tmp += (tmp2 / 4);		/* level as well */
 
 	tmp2 = (3 * ((int) ptr->mlevel))/ 2;	/* crude upper limit */

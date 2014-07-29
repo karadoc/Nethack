@@ -1414,7 +1414,7 @@ struct obj *otmp;
 			  "Mmm, tripe... not bad!");
 		else {
 		    pline("Yak - dog food!");
-		    more_experienced(1,1,0);
+		    more_experienced(1,4);
 		    newexplevel();
 		    /* not cannibalism, but we use similar criteria
 		       for deciding whether to be sickened by this meal */

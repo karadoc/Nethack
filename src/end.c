@@ -38,6 +38,7 @@ STATIC_DCL void FDECL(disclose,(int,BOOLEAN_P));
 STATIC_DCL void FDECL(get_valuables, (struct obj *));
 STATIC_DCL void FDECL(sort_valuables, (struct valuable_data *,int));
 STATIC_DCL void FDECL(artifact_score, (struct obj *,BOOLEAN_P,winid));
+STATIC_DCL long FDECL(vanquished_score, (void)); /* K-Mod */
 STATIC_DCL void FDECL(savelife, (int));
 STATIC_DCL void FDECL(list_vanquished, (CHAR_P,BOOLEAN_P));
 #ifdef DUMP_LOG
@@ -632,6 +633,35 @@ winid endwin;
     }
 }
 
+/* K-Mod: calculate the points earned for vanquishing enemy
+ * Note: this includes all monsters that died in your presence, regardless
+ *  of whether you were directly resposible. */
+STATIC_OVL int
+vanquished_score(void)
+{
+    register int i, n;
+	long score = 0;
+	int xp_value;
+
+    for (i = LOW_PM; i < NUMMONS; i++)
+	{
+		if (mvitals[i].died)
+		{
+			/* Incremental score per kill is xp_value / kill_count
+			 * so the first kill of a given type earns xp/1.
+			 * Unfortunately, there is no closed form for this formula */
+			xp_value = experience(0, i);
+			if (xp_value > 0)
+			{
+				for (n = 1; n <= mvitals[i].died; n++)
+					score += xp_value / n;
+			}
+		}
+	}
+	return score;
+}
+/* end vanquished_score() */
+
 /* Be careful not to call panic from here! */
 void
 done(how)
@@ -853,6 +883,12 @@ die:
 	    u.urscore += 50L * (long)(deepest - 1);
 	    if (deepest > 20)
 		u.urscore += 1000L * (long)((deepest > 30) ? 10 : deepest - 20);
+		/* K-Mod: add score for all vanquished monsters.
+		 * Originally score was 4*xp earned from kills (and double if ascended).
+		 * Now it is 1*xp of all monsters deaths regardless of how they died.
+		 * Generally, this will be a lot less than before. */
+		u.urscore += vanquished_score();
+
 	    if (how == ASCENDED) u.urscore *= 2L;
 	}
 
@@ -1088,7 +1124,11 @@ die:
 	    topten(how);
 	}
 #ifdef DUMP_LOG
-	if (dump_fp) dump_exit();
+	if (dump_fp)
+	{
+		dump("Nethack K-Mod version ", version_string(pbuf));
+		dump_exit();
+	}
 #endif
 
 	if(done_stopprint) { raw_print(""); raw_print(""); }

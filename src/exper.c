@@ -44,29 +44,42 @@ int en;
 }
 
 int
-experience(mtmp, nk)	/* return # of exp points for mtmp after nk killed */
+experience(mtmp, mnum)	/* return # of exp points for mtmp, or monster type mnum */
 	register struct	monst *mtmp;
-	register int	nk;
+	short mnum;
 #if defined(macintosh) && (defined(__SC__) || defined(__MRC__))
 # pragma unused(nk)
 #endif
 {
-	register struct permonst *ptr = mtmp->data;
-	int	i, tmp, tmp2;
+	int	i, tmp, tmp2, mlvl;
+	register struct permonst *mdat;
 
-	tmp = 1 + mtmp->m_lev * mtmp->m_lev;
+	if (mtmp)
+	{
+		mnum = mtmp->mnum;
+		mdat = mtmp->data;
+		mlvl = mtmp->m_lev;
+	}
+	else
+	{
+		mdat = &mons[mnum];
+		mlvl = mdat->mlevel;
+	}
+
+	tmp = 1 + mlvl * mlvl;
 
 /*	For higher ac values, give extra experience */
-	if ((i = find_mac(mtmp)) < 3) tmp += (7 - i) * ((i < 0) ? 2 : 1);
+	tmp2 = (mtmp ? find_mac(mtmp) : mdat->ac);
+	if (tmp2 < 3) tmp += (7 - tmp2) * ((tmp2 < 0) ? 2 : 1);
 
 /*	For very fast monsters, give extra experience */
-	if (ptr->mmove > NORMAL_SPEED)
-	    tmp += (ptr->mmove > (3*NORMAL_SPEED/2)) ? 5 : 3;
+	if (mdat->mmove > NORMAL_SPEED)
+	    tmp += (mdat->mmove > (3*NORMAL_SPEED/2)) ? 5 : 3;
 
 /*	For each "special" attack type give extra experience */
 	for(i = 0; i < NATTK; i++) {
 
-	    tmp2 = ptr->mattk[i].aatyp;
+	    tmp2 = mdat->mattk[i].aatyp;
 	    if(tmp2 > AT_BUTT) {
 
 		if(tmp2 == AT_WEAP) tmp += 5;
@@ -77,23 +90,23 @@ experience(mtmp, nk)	/* return # of exp points for mtmp after nk killed */
 
 /*	For each "special" damage type give extra experience */
 	for(i = 0; i < NATTK; i++) {
-	    tmp2 = ptr->mattk[i].adtyp;
-	    if(tmp2 > AD_PHYS && tmp2 < AD_BLND) tmp += 2*mtmp->m_lev;
+	    tmp2 = mdat->mattk[i].adtyp;
+	    if(tmp2 > AD_PHYS && tmp2 < AD_BLND) tmp += 2*mlvl;
 	    else if((tmp2 == AD_DRLI) || (tmp2 == AD_STON) ||
 	    		(tmp2 == AD_SLIM)) tmp += 50;
-	    else if(tmp != AD_PHYS) tmp += mtmp->m_lev;
+	    else if(tmp != AD_PHYS) tmp += mlvl;
 		/* extra heavy damage bonus */
-	    if((int)(ptr->mattk[i].damd * ptr->mattk[i].damn) > 23)
-		tmp += mtmp->m_lev;
-	    if (tmp2 == AD_WRAP && ptr->mlet == S_EEL && !Amphibious)
+	    if((int)(mdat->mattk[i].damd * mdat->mattk[i].damn) > 23)
+		tmp += mlvl;
+	    if (tmp2 == AD_WRAP && mdat->mlet == S_EEL && !Amphibious)
 		tmp += 1000;
 	}
 
 /*	For certain "extra nasty" monsters, give even more */
-	if (extra_nasty(ptr)) tmp += (7 * mtmp->m_lev);
+	if (extra_nasty(mdat)) tmp += (7 * mlvl);
 
 /*	For higher level monsters, an additional bonus is given */
-	if(mtmp->m_lev > 8) tmp += 50;
+	if(mlvl > 8) tmp += 50;
 
 #ifdef MAIL
 	/* Mail daemons put up no fight. */
@@ -107,18 +120,19 @@ experience(mtmp, nk)	/* return # of exp points for mtmp after nk killed */
  * Adds to Experience and Scoring counter
  */
 void
-more_experienced(exp, score, rexp)
-	register int exp, score, rexp;
+more_experienced(exp, score)
+	register int exp, score;
 {
 	u.uexp += exp;
-	u.urexp += 4*exp + rexp;
-	u.urscore += 4*score + rexp;
+	/* u.urexp += 4*exp + rexp; */
+	u.urscore += score;
 	if(exp
 #ifdef SCORE_ON_BOTL
 	   || flags.showscore
 #endif
 	   ) flags.botl = 1;
-	if (u.urexp >= (Role_if(PM_WIZARD) ? 1000 : 2000))
+	/* disabled by K-Mod. (what is the purpose of flags.beginner anyway?)
+	if (u.urexp >= (Role_if(PM_WIZARD) ? 1000 : 2000)) */
 		flags.beginner = 0;
 }
 

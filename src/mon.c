@@ -1755,14 +1755,13 @@ xkilled(mtmp, dest)
  */
 	int	dest;
 {
-	register int tmp, x = mtmp->mx, y = mtmp->my;
+	register int x = mtmp->mx, y = mtmp->my;
 	register struct permonst *mdat;
 	int mndx;
 	register struct obj *otmp;
 	register struct trap *t;
 	boolean redisp = FALSE;
 	boolean wasinside = u.uswallow && (u.ustuck == mtmp);
-	int nr_killed;
 
 
 	/* KMH, conduct */
@@ -1883,9 +1882,7 @@ cleanup:
 	}
 
 	/* give experience points */
-	nr_killed = (int)mvitals[mndx].died;
-	tmp = experience(mtmp, nr_killed);
-	more_experienced(tmp, max(tmp/nr_killed,1), 0);
+	more_experienced(experience(mtmp, 0), 0);
 	newexplevel();		/* will decide if you go up */
 
 	/* adjust alignment points */
