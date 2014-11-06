@@ -652,6 +652,11 @@ register struct	monst	*mtmp;
 			(void)mongets(mtmp, WAN_FIRE);
 		}
 		break;
+		// K-Mod. Gnomes have a small chance of holding candles.
+		case S_GNOME:
+			if (!rn2(30)) (void) mongets(mtmp, rn2(4) ? TALLOW_CANDLE : WAX_CANDLE);
+		break;
+		// K-Mod end
 	    default:
 		break;
 	}
